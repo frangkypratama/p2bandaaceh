@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'CoreUI Laravel')</title>
-    <link href="https://cdn.jsdelivr.net/npm/@coreui/icons@3.0.1/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@coreui/icons@2.1.0/css/all.min.css">
     @vite(['resources/css/app.scss', 'resources/js/app.js'])
 </head>
 
@@ -33,6 +33,9 @@
         @include('layouts.footer')
 
     </div>
+    
+    {{-- Custom Scripts --}}
+    @stack('scripts')
 
 </body>
 </html>

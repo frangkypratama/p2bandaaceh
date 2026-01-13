@@ -1,5 +1,5 @@
 // Import CoreUI styles
-@import '@coreui/coreui/scss/coreui';
+@use '@coreui/coreui/scss/coreui';
 
 .wrapper {
     margin-left: var(--cui-sidebar-occupy-start, 0);
