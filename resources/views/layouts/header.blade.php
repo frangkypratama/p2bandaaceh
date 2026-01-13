@@ -10,15 +10,5 @@
                 <path d="M4 6H20M4 12H20M4 18H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
         </button>
-
-        <nav class="header-nav d-none d-md-flex" aria-label="Top Navigation">
-            <a class="nav-link" href="{{ url('/dashboard') }}">Dashboard</a>
-            <a class="nav-link" href="{{ url('/users') }}">Users</a>
-            <a class="nav-link" href="{{ url('/settings') }}">Settings</a>
-        </nav>
-
-        <nav class="header-nav ms-auto" aria-label="User Menu">
-            <a class="nav-link" href="#">Notifications</a>
-        </nav>
     </div>
 </header>
