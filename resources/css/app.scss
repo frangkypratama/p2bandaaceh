@@ -1,0 +1,8 @@
+// Import CoreUI styles
+@import '@coreui/coreui/scss/coreui';
+
+.wrapper {
+    margin-left: var(--cui-sidebar-occupy-start, 0);
+    margin-right: var(--cui-sidebar-occupy-end, 0);
+    transition: margin .15s ease;
+  }
