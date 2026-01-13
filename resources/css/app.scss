@@ -1,6 +1,9 @@
 // Import CoreUI styles
 @import '@coreui/coreui/scss/coreui';
 
+// Import CoreUI Icons
+@import '@coreui/icons/css/free.css';
+
 .wrapper {
     margin-left: var(--cui-sidebar-occupy-start, 0);
     margin-right: var(--cui-sidebar-occupy-end, 0);

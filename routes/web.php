@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SbpController;
 
 Route::get('/', function () {
     return redirect('/dashboard');
@@ -15,11 +16,11 @@ Route::get('/colors', function () {
     return view('colors');
 });
 
-Route::get('/input-sbp', function () {
-    return view('input-sbp');
-});
+Route::get('/input-sbp', [SbpController::class, 'create'])->name('sbp.create');
+Route::post('/input-sbp', [SbpController::class, 'store'])->name('sbp.store');
 
-// Fallback route for 404 pages
-Route::fallback(function () {
-    return view('dashboard');
-});
+// Routes for Data SBP (CRUD)
+Route::get('/data-sbp', [SbpController::class, 'index'])->name('sbp.index');
+// Route::get('/data-sbp/{sbp}/edit', [SbpController::class, 'edit'])->name('sbp.edit'); // No longer needed
+Route::put('/data-sbp/{sbp}', [SbpController::class, 'update'])->name('sbp.update');
+Route::delete('/data-sbp/{sbp}', [SbpController::class, 'destroy'])->name('sbp.destroy');

@@ -11,14 +11,21 @@
         <ul class="nav flex-column">
             <li class="nav-item">
                 <a class="nav-link" href="{{ url('/dashboard') }}" aria-current="page">
-                    <i class="nav-icon cil-speedometer"></i> Dashboard  <!-- Tambahkan icon jika diperlukan -->
+                    <i class="nav-icon cil-speedometer"></i> Dashboard
                 </a>
             </li>
 
             <li class="nav-item">
-                <a class="nav-link" href="/input-sbp">
+                <a class="nav-link" href="{{ route('sbp.create') }}">
                     <i class="nav-icon cil-input"></i>
                     Input SBP
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('sbp.index') }}">
+                    <i class="nav-icon cil-list-rich"></i>
+                    Data SBP
                 </a>
             </li>
 
@@ -28,7 +35,7 @@
 
             <li class="nav-item">
                 <a class="nav-link" href="{{ url('/colors') }}">
-                    <i class="nav-icon cil-palette"></i> Colors  <!-- Tambahkan icon jika diperlukan -->
+                    <i class="nav-icon cil-palette"></i> Colors
                 </a>
             </li>
         </ul>

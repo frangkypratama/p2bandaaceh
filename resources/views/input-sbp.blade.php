@@ -8,7 +8,12 @@
                 <div class="card-header"><strong>Input SBP</strong></div>
 
                 <div class="card-body">
-                    <form method="POST" action="">
+                    @if (session('success'))
+                        <div class="alert alert-success" role="alert">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+                    <form method="POST" action="{{ route('sbp.store') }}">
                         @csrf
 
                         <h5>Penomoran</h5>
