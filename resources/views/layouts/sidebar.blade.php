@@ -17,7 +17,7 @@
 
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('sbp.create') }}">
-                    <i class="nav-icon cil-input"></i>
+                    <i class="nav-icon cil-pencil"></i>
                     Input SBP
                 </a>
             </li>
