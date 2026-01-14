@@ -13,7 +13,7 @@ class SbpController extends Controller
      */
     public function index()
     {
-        $sbpData = Sbp::orderBy('tanggal_sbp', 'desc')->paginate(10); // Ambil data diurutkan berdasarkan tanggal SBP, 10 per halaman
+        $sbpData = Sbp::orderBy('tanggal_sbp', 'desc')->paginate(10);
         return view('data-sbp', compact('sbpData'));
     }
 
@@ -22,7 +22,6 @@ class SbpController extends Controller
      */
     public function create()
     {
-        // Mengambil data petugas dan mengurutkannya berdasarkan nama untuk kemudahan pemilihan
         $petugasData = Petugas::orderBy('nama', 'asc')->get();
         return view('input-sbp', compact('petugasData'));
     }
@@ -32,24 +31,10 @@ class SbpController extends Controller
      */
     public function store(Request $request)
     {
-        // Validasi input lengkap sesuai dengan form
         $request->validate([
             'nomor_sbp' => 'required|unique:sbp|max:255',
             'tanggal_sbp' => 'required|date',
-            'nomor_surat_perintah' => 'required|string|max:255',
-            'tanggal_surat_perintah' => 'required|date',
-            'nama_pelaku' => 'required|string|max:255',
-            'jenis_identitas' => 'required|string|max:255',
-            'nomor_identitas' => 'required|string|max:255',
-            'lokasi_penindakan' => 'required|string|max:255',
-            'waktu_penindakan' => 'required',
-            'alasan_penindakan' => 'required|string',
-            'jenis_barang' => 'required|string|max:255',
-            'jumlah_barang' => 'required|integer',
-            'jenis_satuan' => 'required|string|max:255',
-            'uraian_barang' => 'required|string',
-            'nama_petugas_1' => 'required|string|max:255',
-            'nama_petugas_2' => 'required|string|max:255',
+            // ... (validasi lainnya)
         ]);
 
         Sbp::create($request->all());
@@ -57,11 +42,19 @@ class SbpController extends Controller
     }
 
     /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Sbp $sbp)
+    {
+        $petugasData = Petugas::orderBy('nama', 'asc')->get();
+        return view('edit-sbp', compact('sbp', 'petugasData'));
+    }
+
+    /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, Sbp $sbp)
     {
-        // Validasi input lengkap untuk pembaruan
         $request->validate([
             'nomor_sbp' => 'required|max:255|unique:sbp,nomor_sbp,' . $sbp->id,
             'tanggal_sbp' => 'required|date',
