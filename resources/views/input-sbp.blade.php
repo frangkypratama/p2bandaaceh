@@ -229,7 +229,12 @@
                                                 <label for="nama_petugas_1" class="form-label">Nama Petugas 1</label>
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="cil-user-follow"></i></span>
-                                                    <input id="nama_petugas_1" type="text" class="form-control" name="nama_petugas_1" placeholder="Nama petugas pertama" required>
+                                                    <select id="nama_petugas_1" class="form-select" name="nama_petugas_1" required>
+                                                        <option selected disabled value="">Pilih Petugas 1...</option>
+                                                        @foreach($petugasData as $petugas)
+                                                            <option value="{{ $petugas->nama }}">{{ $petugas->nama }}</option>
+                                                        @endforeach
+                                                    </select>
                                                 </div>
                                             </div>
                                         </div>
@@ -238,7 +243,12 @@
                                                 <label for="nama_petugas_2" class="form-label">Nama Petugas 2</label>
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="cil-user-follow"></i></span>
-                                                    <input id="nama_petugas_2" type="text" class="form-control" name="nama_petugas_2" placeholder="Nama petugas kedua" required>
+                                                     <select id="nama_petugas_2" class="form-select" name="nama_petugas_2" required>
+                                                        <option selected disabled value="">Pilih Petugas 2...</option>
+                                                        @foreach($petugasData as $petugas)
+                                                            <option value="{{ $petugas->nama }}">{{ $petugas->nama }}</option>
+                                                        @endforeach
+                                                    </select>
                                                 </div>
                                             </div>
                                         </div>

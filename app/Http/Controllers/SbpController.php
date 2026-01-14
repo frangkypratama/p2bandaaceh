@@ -22,7 +22,8 @@ class SbpController extends Controller
      */
     public function create()
     {
-        $petugasData = Petugas::all();
+        // Mengambil data petugas dan mengurutkannya berdasarkan nama untuk kemudahan pemilihan
+        $petugasData = Petugas::orderBy('nama', 'asc')->get();
         return view('input-sbp', compact('petugasData'));
     }
 

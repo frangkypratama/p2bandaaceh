@@ -9,7 +9,7 @@
                     <a href="{{ route('database.database') }}" class="btn btn-sm btn-light me-2" title="Kembali ke daftar tabel">
                         <i class="cil-arrow-left"></i>
                     </a>
-                    <h1 class="mb-0 d-inline-block">Tabel: <strong>{{ $tableName }}</strong></h1>
+                    <h4 class="mb-0 d-inline-block">Tabel: <strong>{{ $tableName }}</strong></h4>
                 </div>
             </div>
         </div>
