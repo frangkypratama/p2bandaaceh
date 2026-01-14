@@ -29,5 +29,5 @@ Route::put('/data-petugas/{petugas}', [PetugasController::class, 'update'])->nam
 Route::delete('/data-petugas/{petugas}', [PetugasController::class, 'destroy'])->name('petugas.destroy');
 
 // Route untuk Database Explorer
-Route::get('/database', [DatabaseController::class, 'index'])->name('database.index');
+Route::get('/database', [DatabaseController::class, 'database'])->name('database.database');
 Route::get('/database/{table}', [DatabaseController::class, 'showTable'])->name('database.table');

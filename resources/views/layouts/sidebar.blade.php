@@ -41,7 +41,7 @@
             </li>
 
             <li class="nav-item">
-                <a class="nav-link" href="{{ route('database.index') }}">
+                <a class="nav-link" href="{{ route('database.database') }}">
                     <i class="nav-icon cil-storage"></i> Database
                 </a>
             </li>

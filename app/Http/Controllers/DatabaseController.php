@@ -11,7 +11,7 @@ class DatabaseController extends Controller
     /**
      * Menampilkan daftar semua tabel di database.
      */
-    public function index()
+    public function database()
     {
         $tables = Schema::getTables();
         
@@ -21,7 +21,7 @@ class DatabaseController extends Controller
             return $table['name'];
         }, $tables);
 
-        return view('database.index', ['tables' => $tableNames]);
+        return view('database.database', ['tables' => $tableNames]);
     }
 
     /**
