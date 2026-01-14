@@ -4,7 +4,7 @@
 <div class="container-lg">
     <div class="card mb-4">
         <div class="card-header">
-            <h1 class="mb-0">Data Surat Bukti Pelanggaran (SBP)</h1>
+            <h4 class="mb-0">Data Surat Bukti Penindakan (SBP)</h4>
         </div>
         <div class="card-body">
             @if(session('success'))

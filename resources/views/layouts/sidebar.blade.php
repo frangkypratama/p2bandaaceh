@@ -10,7 +10,7 @@
     <nav class="sidebar-nav" role="navigation" aria-label="Primary Navigation" data-coreui="navigation" data-simplebar>
         <ul class="nav flex-column">
             <li class="nav-item">
-                <a class="nav-link" href="{{ url('/dashboard') }}" aria-current="page">
+                <a class="nav-link" href="{{ route('dashboard') }}" aria-current="page">
                     <i class="nav-icon cil-speedometer"></i> Dashboard
                 </a>
             </li>
@@ -33,6 +33,16 @@
                 <a class="nav-link" href="{{ route('petugas.index') }}">
                     <i class="nav-icon cil-user"></i>
                     Data Petugas
+                </a>
+            </li>
+
+            <li class="nav-title">
+                <h2 class="fs-6 text-uppercase">System</h2>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('database.index') }}">
+                    <i class="nav-icon cil-storage"></i> Database
                 </a>
             </li>
 

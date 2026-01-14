@@ -4,7 +4,7 @@
 <div class="container-lg">
     <div class="card mb-4">
         <div class="card-header">
-            <h1 class="mb-0">Data Petugas</h1>
+            <h4 class="mb-0">Data Petugas</h4>
         </div>
         <div class="card-body">
             <div class="d-flex justify-content-end mb-3">
@@ -13,9 +13,22 @@
                 </button>
             </div>
 
+            {{-- Menampilkan Pesan Sukses --}}
             @if(session('success'))
                 <div class="alert alert-success" role="alert">
                     {{ session('success') }}
+                </div>
+            @endif
+
+            {{-- Menampilkan Pesan Error Validasi --}}
+            @if ($errors->any())
+                <div class="alert alert-danger" role="alert">
+                    <h5 class="alert-heading">Terjadi Kesalahan!</h5>
+                    <ul class="mb-0">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
                 </div>
             @endif
 

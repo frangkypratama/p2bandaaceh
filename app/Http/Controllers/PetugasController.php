@@ -43,7 +43,7 @@ class PetugasController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Petugas $petuga)
+    public function show(Petugas $petugas)
     {
         //
     }
@@ -51,7 +51,7 @@ class PetugasController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Petugas $petuga)
+    public function edit(Petugas $petugas)
     {
         //
     }
@@ -59,14 +59,14 @@ class PetugasController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Petugas $petuga)
+    public function update(Request $request, Petugas $petugas)
     {
         $request->validate([
             'nama' => 'required',
-            'nip' => 'required|unique:petugas,nip,'.$petuga->id,
+            'nip' => 'required|unique:petugas,nip,'.$petugas->id,
         ]);
 
-        $petuga->update($request->all());
+        $petugas->update($request->all());
 
         return redirect()->route('petugas.index')
                         ->with('success', 'Data petugas berhasil diperbarui.');
@@ -75,9 +75,9 @@ class PetugasController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Petugas $petuga)
+    public function destroy(Petugas $petugas)
     {
-        $petuga->delete();
+        $petugas->delete();
 
         return redirect()->route('petugas.index')
                         ->with('success', 'Data petugas berhasil dihapus.');

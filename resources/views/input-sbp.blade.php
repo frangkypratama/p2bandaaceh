@@ -6,7 +6,7 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title mb-0"><strong>Input Surat Bukti Pelanggaran (SBP)</strong></h4>
+                    <h4 class="card-title mb-0"><strong>Input Surat Bukti Penindakan (SBP)</strong></h4>
                     <small class="text-medium-emphasis">Lengkapi semua informasi yang diperlukan di bawah ini.</small>
                 </div>
 
