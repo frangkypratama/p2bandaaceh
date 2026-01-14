@@ -158,7 +158,7 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="row">
-                                        <div class="col-md-6">
+                                        <div class="col-12">
                                             <div class="mb-3">
                                                 <label for="jenis_barang" class="form-label">Jenis Barang</label>
                                                 <div class="input-group">
@@ -167,12 +167,40 @@
                                                 </div>
                                             </div>
                                         </div>
+                                    </div>
+                                    <div class="row">
                                         <div class="col-md-6">
                                             <div class="mb-3">
                                                 <label for="jumlah_barang" class="form-label">Jumlah Barang</label>
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="cil-calculator"></i></span>
                                                     <input id="jumlah_barang" type="number" class="form-control" name="jumlah_barang" placeholder="0" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="jenis_satuan" class="form-label">Jenis Satuan</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text"><i class="cil-puzzle"></i></span>
+                                                    <select id="jenis_satuan" class="form-select" name="jenis_satuan" required>
+                                                        <option selected disabled value="">Pilih Satuan...</option>
+                                                        <option value="Pcs">Pcs</option>
+                                                        <option value="Pkg">Package</option>
+                                                        <option value="Unit">Unit</option>
+                                                        <option value="Batang">Batang</option>
+                                                        <option value="Botol">Botol</option>
+                                                        <option value="Gram">Gram</option>
+                                                        <option value="Kilogram">Kilogram</option>                                                        
+                                                        <option value="Buah">Buah</option>
+                                                        <option value="Bungkus">Bungkus</option>
+                                                        <option value="Kotak">Kotak</option>
+                                                        <option value="Liter">Liter</option>
+                                                        <option value="Mililiter">Mililiter</option>
+                                                        <option value="Karton">Karton</option>
+                                                        <option value="Set">Set</option>
+                                                        <option value="Pasang">Pasang</option>
+                                                    </select>
                                                 </div>
                                             </div>
                                         </div>

@@ -6,7 +6,7 @@
         <div class="card-header">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <a href="{{ route('database.index') }}" class="btn btn-sm btn-light me-2" title="Kembali ke daftar tabel">
+                    <a href="{{ route('database.database') }}" class="btn btn-sm btn-light me-2" title="Kembali ke daftar tabel">
                         <i class="cil-arrow-left"></i>
                     </a>
                     <h1 class="mb-0 d-inline-block">Tabel: <strong>{{ $tableName }}</strong></h1>

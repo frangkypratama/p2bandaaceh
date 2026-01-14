@@ -29,6 +29,7 @@ class Sbp extends Model
         'alasan_penindakan',
         'jenis_barang',
         'jumlah_barang',
+        'jenis_satuan',
         'uraian_barang',
         'nama_petugas_1',
         'nama_petugas_2',

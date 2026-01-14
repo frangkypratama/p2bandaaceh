@@ -13,7 +13,7 @@ class SbpController extends Controller
      */
     public function index()
     {
-        $sbpData = Sbp::latest()->paginate(10); // Ambil data terbaru, 10 per halaman
+        $sbpData = Sbp::orderBy('tanggal_sbp', 'desc')->paginate(10); // Ambil data diurutkan berdasarkan tanggal SBP, 10 per halaman
         return view('data-sbp', compact('sbpData'));
     }
 
@@ -45,6 +45,7 @@ class SbpController extends Controller
             'alasan_penindakan' => 'required|string',
             'jenis_barang' => 'required|string|max:255',
             'jumlah_barang' => 'required|integer',
+            'jenis_satuan' => 'required|string|max:255',
             'uraian_barang' => 'required|string',
             'nama_petugas_1' => 'required|string|max:255',
             'nama_petugas_2' => 'required|string|max:255',
@@ -73,6 +74,7 @@ class SbpController extends Controller
             'alasan_penindakan' => 'required|string',
             'jenis_barang' => 'required|string|max:255',
             'jumlah_barang' => 'required|integer',
+            'jenis_satuan' => 'required|string|max:255',
             'uraian_barang' => 'required|string',
             'nama_petugas_1' => 'required|string|max:255',
             'nama_petugas_2' => 'required|string|max:255',
