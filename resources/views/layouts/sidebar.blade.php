@@ -29,6 +29,13 @@
                 </a>
             </li>
 
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('petugas.index') }}">
+                    <i class="nav-icon cil-user"></i>
+                    Data Petugas
+                </a>
+            </li>
+
             <li class="nav-title">
                 <h2 class="fs-6 text-uppercase">Theme</h2>
             </li>

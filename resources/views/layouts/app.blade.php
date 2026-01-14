@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'CoreUI Laravel')</title>
+    <title>@yield('title', 'P2 Banda Aceh')</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@coreui/icons@2.1.0/css/all.min.css">
     @vite(['resources/css/app.scss', 'resources/js/app.js'])
 </head>
@@ -34,6 +34,7 @@
 
     </div>
     
+    <script src="https://cdn.jsdelivr.net/npm/@coreui/coreui@4.2.0/dist/js/coreui.bundle.min.js"></script>
     {{-- Custom Scripts --}}
     @stack('scripts')
 
