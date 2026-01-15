@@ -52,9 +52,15 @@ class SbpController extends Controller
         ]);
 
         $year = Carbon::parse($validatedData['tanggal_sbp'])->year;
-        $formattedSbp = "SBP-{$validatedData['nomor_sbp']}/KBC.0102/{$year}";
+        $nomorSbpInt = $validatedData['nomor_sbp'];
 
-        // Validate uniqueness on the formatted string
+        // Format Nomor SBP
+        $formattedSbp = "SBP-{$nomorSbpInt}/KBC.0102/{$year}";
+
+        // Format Nomor BA Riksa
+        $formattedBaRiksa = "BA-{$nomorSbpInt}/RIKSA/KBC.010202/{$year}";
+
+        // Validate uniqueness on the formatted SBP string
         $request->merge(['nomor_sbp_formatted' => $formattedSbp]);
         $request->validate([
             'nomor_sbp_formatted' => 'unique:sbp,nomor_sbp'
@@ -62,8 +68,9 @@ class SbpController extends Controller
             'nomor_sbp_formatted.unique' => 'Kombinasi Nomor SBP dan Tahun sudah ada.'
         ]);
 
-        // Replace the integer with the formatted string for storage
+        // Add the formatted numbers to the data for storage
         $validatedData['nomor_sbp'] = $formattedSbp;
+        $validatedData['nomor_ba_riksa'] = $formattedBaRiksa;
 
         Sbp::create($validatedData);
         return redirect()->route('sbp.create')->with('success', "Data SBP dengan nomor {$formattedSbp} berhasil disimpan.");
@@ -107,7 +114,13 @@ class SbpController extends Controller
         ]);
         
         $year = Carbon::parse($validatedData['tanggal_sbp'])->year;
-        $formattedSbp = "SBP-{$validatedData['nomor_sbp']}/KBC.0102/{$year}";
+        $nomorSbpInt = $validatedData['nomor_sbp'];
+        
+        // Format Nomor SBP
+        $formattedSbp = "SBP-{$nomorSbpInt}/KBC.0102/{$year}";
+
+        // Format Nomor BA Riksa
+        $formattedBaRiksa = "BA-{$nomorSbpInt}/RIKSA/KBC.010202/{$year}";
 
         // Validate uniqueness on the formatted string, ignoring the current SBP's ID
         $request->merge(['nomor_sbp_formatted' => $formattedSbp]);
@@ -117,8 +130,9 @@ class SbpController extends Controller
             'nomor_sbp_formatted.unique' => 'Kombinasi Nomor SBP dan Tahun sudah ada.'
         ]);
         
-        // Replace the integer with the formatted string for storage
+        // Add the formatted numbers to the data for storage
         $validatedData['nomor_sbp'] = $formattedSbp;
+        $validatedData['nomor_ba_riksa'] = $formattedBaRiksa;
 
         $sbp->update($validatedData);
         return redirect()->route('sbp.index')->with('success', 'Data SBP berhasil diperbarui.');

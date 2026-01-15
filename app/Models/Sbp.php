@@ -18,6 +18,7 @@ class Sbp extends Model
      */
     protected $fillable = [
         'nomor_sbp',
+        'nomor_ba_riksa',
         'tanggal_sbp',
         'nomor_surat_perintah',
         'tanggal_surat_perintah',
