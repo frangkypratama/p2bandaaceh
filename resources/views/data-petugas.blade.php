@@ -14,7 +14,10 @@
             @endif
 
             <div class="mb-3">
-                <a href="{{ route('petugas.create') }}" class="btn btn-primary">Tambah Petugas</a>
+                <!-- Tombol untuk membuka modal tambah petugas -->
+                <button type="button" class="btn btn-primary" data-coreui-toggle="modal" data-coreui-target="#tambahPetugasModal">
+                    Tambah Petugas
+                </button>
             </div>
 
             <div class="table-responsive">
@@ -109,6 +112,35 @@
             </div>
              <div class="mt-3">
                 {{ $petugasData->links() }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Tambah Petugas -->
+<div class="modal fade" id="tambahPetugasModal" tabindex="-1" aria-labelledby="tambahPetugasModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tambahPetugasModalLabel">Tambah Petugas Baru</h5>
+                <button type="button" class="btn-close" data-coreui-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{{ route('petugas.store') }}" method="POST">
+                    @csrf
+                    <div class="mb-3">
+                        <label for="nama" class="form-label">Nama Petugas</label>
+                        <input type="text" class="form-control" id="nama" name="nama" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="nip" class="form-label">NIP</label>
+                        <input type="text" class="form-control" id="nip" name="nip" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-coreui-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

@@ -33,7 +33,7 @@
                                                 <label for="nomor_sbp" class="form-label">Nomor SBP</label>
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="cil-notes"></i></span>
-                                                    <input id="nomor_sbp" type="text" class="form-control" name="nomor_sbp" placeholder="Contoh: SBP-001" required>
+                                                    <input id="nomor_sbp" type="number" class="form-control" name="nomor_sbp" placeholder="Masukkan hanya angka" required>
                                                 </div>
                                             </div>
                                         </div>
@@ -51,7 +51,7 @@
                                                 <label for="nomor_surat_perintah" class="form-label">Nomor Surat Perintah</label>
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="cil-file"></i></span>
-                                                    <input id="nomor_surat_perintah" type="text" class="form-control" name="nomor_surat_perintah" placeholder="Contoh: SP-001" required>
+                                                    <input id="nomor_surat_perintah" type="text" class="form-control" name="nomor_surat_perintah" placeholder="Contoh: PRIN-1/KBC.0102/2025" required>
                                                 </div>
                                             </div>
                                         </div>

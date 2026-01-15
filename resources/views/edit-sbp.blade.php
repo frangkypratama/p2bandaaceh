@@ -34,7 +34,7 @@
                                                 <label for="nomor_sbp" class="form-label">Nomor SBP</label>
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="cil-notes"></i></span>
-                                                    <input id="nomor_sbp" type="text" class="form-control" name="nomor_sbp" value="{{ $sbp->nomor_sbp }}" required>
+                                                    <input id="nomor_sbp" type="number" class="form-control" name="nomor_sbp" value="{{ $sbp->nomor_sbp_int }}" required>
                                                 </div>
                                             </div>
                                         </div>
