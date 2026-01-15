@@ -7,36 +7,21 @@
             <h4 class="mb-0">Data Petugas</h4>
         </div>
         <div class="card-body">
-            <div class="d-flex justify-content-end mb-3">
-                <button type="button" class="btn btn-primary" data-coreui-toggle="modal" data-coreui-target="#tambahModal">
-                    Tambah Petugas
-                </button>
-            </div>
-
-            {{-- Menampilkan Pesan Sukses --}}
             @if(session('success'))
                 <div class="alert alert-success" role="alert">
                     {{ session('success') }}
                 </div>
             @endif
 
-            {{-- Menampilkan Pesan Error Validasi --}}
-            @if ($errors->any())
-                <div class="alert alert-danger" role="alert">
-                    <h5 class="alert-heading">Terjadi Kesalahan!</h5>
-                    <ul class="mb-0">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
+            <div class="mb-3">
+                <a href="{{ route('petugas.create') }}" class="btn btn-primary">Tambah Petugas</a>
+            </div>
 
             <div class="table-responsive">
                 <table class="table table-hover align-middle">
                     <thead>
                         <tr>
-                            <th>Nama</th>
+                            <th>Nama Petugas</th>
                             <th>NIP</th>
                             <th>Aksi</th>
                         </tr>
@@ -45,7 +30,7 @@
                         @forelse ($petugasData as $petugas)
                             <tr>
                                 <td>
-                                    <div class="fw-bold">{{ $petugas->nama }}</div>
+                                    <div>{{ $petugas->nama }}</div>
                                 </td>
                                 <td>
                                     <div>{{ $petugas->nip }}</div>
@@ -64,32 +49,32 @@
 
                             <!-- Modal Edit -->
                             <div class="modal fade" id="editModal{{ $petugas->id }}" tabindex="-1" aria-labelledby="editModalLabel{{ $petugas->id }}" aria-hidden="true">
-                              <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content">
-                                  <div class="modal-header">
-                                    <h5 class="modal-title" id="editModalLabel{{ $petugas->id }}">Edit Petugas</h5>
-                                    <button type="button" class="btn-close" data-coreui-dismiss="modal" aria-label="Close"></button>
-                                  </div>
-                                  <form action="{{ route('petugas.update', $petugas->id) }}" method="POST">
-                                      @csrf
-                                      @method('PUT')
-                                      <div class="modal-body">
-                                          <div class="mb-3">
-                                              <label for="nama{{ $petugas->id }}" class="form-label">Nama</label>
-                                              <input type="text" class="form-control" id="nama{{ $petugas->id }}" name="nama" value="{{ $petugas->nama }}" required>
-                                          </div>
-                                          <div class="mb-3">
-                                              <label for="nip{{ $petugas->id }}" class="form-label">NIP</label>
-                                              <input type="text" class="form-control" id="nip{{ $petugas->id }}" name="nip" value="{{ $petugas->nip }}" required>
-                                          </div>
-                                      </div>
-                                      <div class="modal-footer">
-                                          <button type="button" class="btn btn-secondary" data-coreui-dismiss="modal">Batal</button>
-                                          <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
-                                      </div>
-                                  </form>
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="editModalLabel{{ $petugas->id }}">Edit Petugas</h5>
+                                            <button type="button" class="btn-close" data-coreui-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form action="{{ route('petugas.update', $petugas->id) }}" method="POST">
+                                                @csrf
+                                                @method('PUT')
+                                                <div class="mb-3">
+                                                    <label for="nama" class="form-label">Nama Petugas</label>
+                                                    <input type="text" class="form-control" id="nama" name="nama" value="{{ $petugas->nama }}" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="nip" class="form-label">NIP</label>
+                                                    <input type="text" class="form-control" id="nip" name="nip" value="{{ $petugas->nip }}" required>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-coreui-dismiss="modal">Batal</button>
+                                                    <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
                                 </div>
-                              </div>
                             </div>
 
                             <!-- Modal Hapus -->
@@ -101,7 +86,7 @@
                                     <button type="button" class="btn-close" data-coreui-dismiss="modal" aria-label="Close"></button>
                                   </div>
                                   <div class="modal-body">
-                                    Apakah Anda yakin ingin menghapus data petugas dengan nama <strong>{{ $petugas->nama }}</strong>?
+                                    Apakah Anda yakin ingin menghapus data petugas <strong>{{ $petugas->nama }}</strong>?
                                   </div>
                                   <div class="modal-footer">
                                     <form action="{{ route('petugas.destroy', $petugas->id) }}" method="POST">
@@ -122,39 +107,10 @@
                     </tbody>
                 </table>
             </div>
-            <div class="mt-3">
+             <div class="mt-3">
                 {{ $petugasData->links() }}
             </div>
         </div>
     </div>
-</div>
-
-<!-- Modal Tambah -->
-<div class="modal fade" id="tambahModal" tabindex="-1" aria-labelledby="tambahModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="tambahModalLabel">Tambah Petugas</h5>
-        <button type="button" class="btn-close" data-coreui-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <form action="{{ route('petugas.store') }}" method="POST">
-          @csrf
-          <div class="modal-body">
-              <div class="mb-3">
-                  <label for="nama_tambah" class="form-label">Nama</label>
-                  <input type="text" class="form-control" id="nama_tambah" name="nama" required>
-              </div>
-              <div class="mb-3">
-                  <label for="nip_tambah" class="form-label">NIP</label>
-                  <input type="text" class="form-control" id="nip_tambah" name="nip" required>
-              </div>
-          </div>
-          <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-coreui-dismiss="modal">Batal</button>
-              <button type="submit" class="btn btn-primary">Simpan</button>
-          </div>
-      </form>
-    </div>
-  </div>
 </div>
 @endsection

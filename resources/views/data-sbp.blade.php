@@ -27,7 +27,7 @@
                         @forelse ($sbpData as $sbp)
                             <tr>
                                 <td>
-                                    <div class="fw-bold">{{ $sbp->nomor_sbp }}</div>
+                                    <div>{{ $sbp->nomor_sbp }}</div>
                                 </td>
                                 <td>
                                     <div>{{ \Carbon\Carbon::parse($sbp->tanggal_sbp)->translatedFormat('d F Y') }}</div>
