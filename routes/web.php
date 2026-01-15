@@ -22,6 +22,10 @@ Route::get('/data-sbp/{sbp}/edit', [SbpController::class, 'edit'])->name('sbp.ed
 Route::put('/data-sbp/{sbp}', [SbpController::class, 'update'])->name('sbp.update');
 Route::delete('/data-sbp/{sbp}', [SbpController::class, 'destroy'])->name('sbp.destroy');
 
+// Route untuk Pratinjau dan PDF SBP
+Route::get('/data-sbp/cetak-preview/{id}', [SbpController::class, 'cetakPreview'])->name('sbp.cetak.preview');
+Route::get('/data-sbp/pdf/{id}', [SbpController::class, 'generatePdf'])->name('sbp.pdf');
+
 // Route untuk Petugas
 Route::get('/input-petugas', [PetugasController::class, 'create'])->name('petugas.create');
 Route::post('/input-petugas', [PetugasController::class, 'store'])->name('petugas.store');

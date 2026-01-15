@@ -6,6 +6,7 @@ use App\Models\Sbp;
 use App\Models\Petugas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use PDF;
 
 class SbpController extends Controller
 {
@@ -153,5 +154,31 @@ class SbpController extends Controller
     {
         $sbp->delete();
         return redirect()->route('sbp.index')->with('success', 'Data SBP berhasil dihapus.');
+    }
+
+    /**
+     * Menampilkan halaman pratinjau cetak untuk SBP.
+     */
+    public function cetakPreview($id)
+    {
+        $sbp = Sbp::findOrFail($id);
+        return view('preview-sbp', compact('sbp'));
+    }
+
+    /**
+     * Generate and stream the PDF for the specified SBP.
+     */
+    public function generatePdf($id)
+    {
+        $sbp = Sbp::findOrFail($id);
+        $pdf = PDF::loadView('templatecetak.templatesbp', compact('sbp'));
+        
+        // Set paper size to F4 as defined in the template CSS
+        $pdf->setPaper('F4', 'portrait');
+
+        // Generate a filename
+        $filename = str_replace('/', '-', $sbp->nomor_sbp) . '.pdf';
+
+        return $pdf->stream($filename);
     }
 }
