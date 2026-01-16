@@ -17,6 +17,12 @@
                         </div>
                     @endif
 
+                    @error('nomor_sbp_formatted')
+                        <div class="alert alert-danger" role="alert">
+                            Data sudah ada 
+                        </div>
+                    @enderror
+
                     <form method="POST" action="{{ route('sbp.store') }}" class="row g-3">
                         @csrf
 
