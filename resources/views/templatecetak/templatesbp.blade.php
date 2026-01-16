@@ -3,26 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <title>Surat Bukti Penindakan</title>
+
     <style>
-        /* ===== SETTING KERTAS F4 ===== */
         @page {
-            size: 210mm 330mm; /* F4 */
-            margin: 30mm 25mm 30mm 25mm;
+            size: 215mm 330mm;
+            margin: 15mm;
         }
 
         body {
             font-family: Arial, Helvetica, sans-serif;
             font-size: 11pt;
-            line-height: 1.4;
-        }
-
-        .center { text-align: center; }
-        .bold { font-weight: bold; }
-        .uppercase { text-transform: uppercase; }
-
-        hr {
-            border: 1px solid #000;
-            margin: 8px 0 2px;
+            line-height: 1.5;
+            color: #000;
         }
 
         table {
@@ -32,132 +24,220 @@
 
         td {
             vertical-align: top;
-            padding: 4px 2px;
         }
 
-        .kop {
-            font-size: 11pt;
+        /* ===== HEADER ===== */
+        .header-table td {
+            border-bottom: 2px solid #000;
+            padding-bottom: 8px;
         }
 
-        .content-table td:first-child {
-            width: 28px;
+        .logo {
+            width: 90px;
         }
 
-        .signature-table td {
-            width: 50%;
+        .header-text {
             text-align: center;
-            padding-top: 50px;
         }
 
-        @media print {
-            body { margin: 0; }
+        .header-text h1 {
+            font-size: 13pt;
+            margin: 0;
+        }
+
+        .header-text h2 {
+            font-size: 11pt;
+            margin: 0;
+        }
+
+        .header-text p {
+            font-size: 8pt;
+            margin-top: 4px;
+        }
+
+        /* ===== TITLE ===== */
+        .title {
+            text-align: center;
+            margin: 12px 0;
+        }
+
+        .title h3 {
+            font-size: 12pt;
+            text-decoration: underline;
+            margin-bottom: 4px;
+        }
+
+        /* ===== CONTENT ===== */
+        .content-table td {
+            padding: 4px 2px;
+            font-size: 10.5pt;
+        }
+
+        .num {
+            width: 20px;
+        }
+
+        .label {
+            width: 150px;
+        }
+
+        .colon {
+            width: 10px;
+        }
+
+        .value {
+            text-align: justify;
+            word-wrap: break-word;
+        }
+
+        /* ===== SIGNATURE ===== */
+        .signature {
+            margin-top: 40px;
+        }
+
+        .signature td {
+            width: 50%;
+            font-size: 10.5pt;
+        }
+
+        .name {
+            margin-top: 60px;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            margin-top: 30px;
+            font-size: 9pt;
+            font-style: italic;
+            text-align: justify;
         }
     </style>
 </head>
+
 <body>
 
-<div class="center kop">
-    <div class="bold uppercase">Kementerian Keuangan Republik Indonesia</div>
-    <div class="bold uppercase">Direktorat Jenderal Bea dan Cukai</div>
-    <br>
-    <div class="bold uppercase">Kantor Wilayah Direktorat Jenderal Bea dan Cukai Aceh</div>
-    <div class="bold uppercase">Kantor Pengawasan dan Pelayanan Bea dan Cukai Tipe Madya Pabean C Banda Aceh</div>
-    <div>Jalan Soekarno Hatta Nomor 3A, Geuceu Menara, Banda Aceh 23241</div>
-    <div>Telepon (0651) 43137; Faksimile (0651) 43136</div>
-    <div>Laman www.beacukai.go.id; Pusat Kontak Layanan 1500225</div>
-    <div>Surel bcaceh@customs.go.id</div>
+{{-- HEADER --}}
+<table class="header-table">
+    <tr>
+        <td class="logo">
+            <img src="{{ public_path('logo/logo-bc.png') }}" width="87">
+        </td>
+        <td class="header-text">
+            <h1>KEMENTERIAN KEUANGAN REPUBLIK INDONESIAS</h1>
+            <h2>DIREKTORAT JENDERAL BEA DAN CUKAI</h2>
+            <h2>KANTOR WILAYAH DJBC ACEH</h2>
+            <h2>KPPBC TMP C BANDA ACEH</h2>
+            <p>
+                Jalan Soekarno Hatta Nomor 3a Banda Aceh 23241<br>
+                Telp. (0651) 43137 | Fax (0651) 43136
+            </p>
+        </td>
+    </tr>
+</table>
+
+{{-- TITLE --}}
+<div class="title">
+    <h3>SURAT BUKTI PENINDAKAN</h3>
+    <p>Nomor : {{ $sbp->nomor_sbp ?? '-' }}</p>
 </div>
 
-<hr>
-
-<div style="margin-top:20px; margin-bottom:10px;">
-    <div class="center uppercase bold" style="font-size:14pt;">Surat Bukti Penindakan</div>
-</div>
-
-<p class="center" style="margin-bottom:20px;">Nomor : <span class="bold">{{ $sbp->nomor_sbp }}</span></p>
-
+{{-- CONTENT --}}
 <table class="content-table">
     <tr>
-        <td>1.</td>
-        <td>Dasar Penindakan</td>
-        <td>: Surat Perintah Nomor {{ $sbp->nomor_surat_perintah }}</td>
+        <td class="num">1.</td>
+        <td class="label">Dasar Penindakan</td>
+        <td class="colon">:</td>
+        <td class="value">{{ $sbp->dasar_penindakan ?? '-' }}</td>
     </tr>
+
     <tr>
-        <td>2.</td>
-        <td>Skema Penindakan</td>
-        <td>: Mandiri</td>
+        <td class="num">2.</td>
+        <td class="label">Skema Penindakan</td>
+        <td class="colon">:</td>
+        <td class="value">{{ $sbp->skema_penindakan ?? 'Mandiri' }}</td>
     </tr>
+
     <tr>
-        <td>3.</td>
-        <td colspan="2">Telah dilaksanakan penindakan berupa:</td>
+        <td class="num">3.</td>
+        <td class="label">Pelaksanaan</td>
+        <td class="colon">:</td>
+        <td class="value">Telah dilakukan penindakan berupa:</td>
     </tr>
-    <tr>
-        <td></td>
-        <td>Pemeriksaan</td>
-        <td>: {{ $sbp->nomor_pemeriksaan ?? '-' }}</td>
-    </tr>
-    <tr>
-        <td></td>
-        <td>Penegahan</td>
-        <td>: {{ $sbp->nomor_penegahan ?? '-' }}</td>
-    </tr>
+
     <tr>
         <td></td>
-        <td>Penyegelan</td>
-        <td>: {{ $sbp->nomor_penyegelan ?? '-' }}</td>
+        <td class="label">Pemeriksaan</td>
+        <td class="colon">:</td>
+        <td class="value">{{ $sbp->ba_pemeriksaan ?? '-' }}</td>
     </tr>
-    <tr>
-        <td>4.</td>
-        <td>Lokasi Penindakan</td>
-        <td>: {{ $sbp->lokasi_penindakan }}</td>
-    </tr>
+
     <tr>
         <td></td>
-        <td>Alasan Penindakan</td>
-        <td>: {{ $sbp->alasan_penindakan }}</td>
+        <td class="label">Penegahan</td>
+        <td class="colon">:</td>
+        <td class="value">{{ $sbp->ba_penegahan ?? '-' }}</td>
     </tr>
+
     <tr>
         <td></td>
-        <td>Uraian Penindakan</td>
-        <td>: {{ $sbp->uraian_barang }}</td>
+        <td class="label">Penyegelan</td>
+        <td class="colon">:</td>
+        <td class="value">{{ $sbp->ba_penyegelan ?? '-' }}</td>
     </tr>
+
+    <tr>
+        <td class="num">4.</td>
+        <td class="label">Lokasi Penindakan</td>
+        <td class="colon">:</td>
+        <td class="value">{{ $sbp->lokasi_penindakan ?? '-' }}</td>
+    </tr>
+
     <tr>
         <td></td>
-        <td>Kesimpulan</td>
-        <td>: Barang dibawa ke KPPBC TMP C Banda Aceh untuk ditindaklanjuti</td>
+        <td class="label">Alasan Penindakan</td>
+        <td class="colon">:</td>
+        <td class="value">{{ $sbp->alasan_penindakan ?? '-' }}</td>
+    </tr>
+
+    <tr>
+        <td></td>
+        <td class="label">Uraian Penindakan</td>
+        <td class="colon">:</td>
+        <td class="value">{{ $sbp->uraian_penindakan ?? '-' }}</td>
+    </tr>
+
+    <tr>
+        <td></td>
+        <td class="label">Kesimpulan</td>
+        <td class="colon">:</td>
+        <td class="value">{{ $sbp->kesimpulan ?? '-' }}</td>
     </tr>
 </table>
 
-<br>
-<p>Aceh Besar, {{ \Carbon\Carbon::parse($sbp->tanggal_sbp)->translatedFormat('d F Y') }}</p>
-
-<table class="signature-table">
+{{-- SIGNATURE --}}
+<table class="signature">
     <tr>
         <td>
-            Pemilik / Kuasanya / Saksi<br><br><br>
-            <u>{{ $sbp->nama_pelaku }}</u>
+            Pemilik / Kuasa / Saksi*,<br>
+            <div class="name">{{ $sbp->nama_saksi ?? '-' }}</div>
         </td>
         <td>
-            Pejabat yang Melakukan Penindakan<br><br><br>
-            <u>{{ $sbp->nama_petugas_1 }}</u><br>
-            NIP. {{ $sbp->nip_petugas_1 ?? '-' }}
-        </td>
-    </tr>
-    <tr>
-        <td></td>
-        <td>
-            <br><br>
-            <u>{{ $sbp->nama_petugas_2 }}</u><br>
-            NIP. {{ $sbp->nip_petugas_2 ?? '-' }}
+            {{ $sbp->tempat ?? '-' }},
+            {{ optional($sbp->tanggal)->translatedFormat('d F Y') }}<br>
+            Pejabat yang melakukan penindakan,
+            
+                <div class="name">
+                    {{ $sbp->nama_petugas_1 ?? '-' }}<br>
+                    NIP. {{ $sbp->nama_petugas_1 ?? '-' }}
+                </div>
         </td>
     </tr>
 </table>
 
-<br><br>
-<p style="font-size:10pt; text-align:justify;">
-Yang dimaksud dengan "barang yang dikuasai negara" adalah barang yang untuk sementara waktu penguasaannya berada pada negara sampai dapat ditentukan status barang yang sebenarnya.
-</p>
+{{-- FOOTER --}}
+<div class="footer">
+    {{ $sbp->catatan ?? '-' }}
+</div>
 
 </body>
 </html>
-```

@@ -1,10 +1,12 @@
 @extends('layouts.app')
 
+@section('title', 'Database')
+
 @section('content')
 <div class="container-lg">
     <div class="card">
         <div class="card-header">
-            <h4 class="mb-0">Database Explorer</h4>
+            <h4 class="mb-0">Database</h4>
             <small class="text-medium-emphasis">Pilih tabel untuk melihat isinya.</small>
         </div>
         <div class="card-body">

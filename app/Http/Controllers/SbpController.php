@@ -6,7 +6,7 @@ use App\Models\Sbp;
 use App\Models\Petugas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use PDF;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class SbpController extends Controller
 {
@@ -33,7 +33,7 @@ class SbpController extends Controller
      */
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
+        $validated = $request->validate([
             'nomor_sbp' => 'required|integer',
             'tanggal_sbp' => 'required|date',
             'nomor_surat_perintah' => 'required|string|max:255',
@@ -52,33 +52,34 @@ class SbpController extends Controller
             'nama_petugas_2' => 'required|string|max:255',
         ]);
 
-        $year = Carbon::parse($validatedData['tanggal_sbp'])->year;
-        $nomorSbpInt = $validatedData['nomor_sbp'];
+        $year = Carbon::parse($validated['tanggal_sbp'])->year;
+        $nomor = $validated['nomor_sbp'];
 
-        // Format Nomor SBP
-        $formattedSbp = "SBP-{$nomorSbpInt}/KBC.0102/{$year}";
+        // ===== FORMAT NOMOR =====
+        $formattedSbp = "SBP-{$nomor}/KBC.0102/{$year}";
+        $formattedBaRiksa = "BA-{$nomor}/RIKSA/KBC.010202/{$year}";
+        $formattedBaTegah = "BA-{$nomor}/TEGAH/KBC.010202/{$year}";
+        $formattedBaSegel = "BA-{$nomor}/SEGEL/KBC.010202/{$year}";
 
-        // Format Nomor BA Riksa, Tegah, and Segel
-        $formattedBaRiksa = "BA-{$nomorSbpInt}/RIKSA/KBC.010202/{$year}";
-        $formattedBaTegah = "BA-{$nomorSbpInt}/TEGAH/KBC.010202/{$year}";
-        $formattedBaSegel = "BA-{$nomorSbpInt}/SEGEL/KBC.010202/{$year}";
-
-        // Validate uniqueness on the formatted SBP string
-        $request->merge(['nomor_sbp_formatted' => $formattedSbp]);
+        // ===== VALIDASI UNIK (STRING FINAL) =====
+        $request->merge(['nomor_sbp_final' => $formattedSbp]);
         $request->validate([
-            'nomor_sbp_formatted' => 'unique:sbp,nomor_sbp'
+            'nomor_sbp_final' => 'unique:sbp,nomor_sbp'
         ], [
-            'nomor_sbp_formatted.unique' => 'Kombinasi Nomor SBP dan Tahun sudah ada.'
+            'nomor_sbp_final.unique' => 'Nomor SBP dengan tahun tersebut sudah ada.'
         ]);
 
-        // Add the formatted numbers to the data for storage
-        $validatedData['nomor_sbp'] = $formattedSbp;
-        $validatedData['nomor_ba_riksa'] = $formattedBaRiksa;
-        $validatedData['nomor_ba_tegah'] = $formattedBaTegah;
-        $validatedData['nomor_ba_segel'] = $formattedBaSegel;
+        // ===== SIMPAN =====
+        $validated['nomor_sbp'] = $formattedSbp;
+        $validated['nomor_ba_riksa'] = $formattedBaRiksa;
+        $validated['nomor_ba_tegah'] = $formattedBaTegah;
+        $validated['nomor_ba_segel'] = $formattedBaSegel;
 
-        Sbp::create($validatedData);
-        return redirect()->route('sbp.create')->with('success', "Data SBP dengan nomor {$formattedSbp} berhasil disimpan.");
+        Sbp::create($validated);
+
+        return redirect()
+            ->route('sbp.create')
+            ->with('success', "SBP {$formattedSbp} berhasil disimpan.");
     }
 
     /**
@@ -86,9 +87,9 @@ class SbpController extends Controller
      */
     public function edit(Sbp $sbp)
     {
-        // Extract the integer part from the formatted string for the form
-        preg_match('/^SBP-(\d+)\/KBC\.0102\/\d{4}$/', $sbp->nomor_sbp, $matches);
-        $sbp->nomor_sbp_int = $matches[1] ?? '';
+        // Ambil angka dari "SBP-12/KBC.0102/2025"
+        preg_match('/SBP-(\d+)\//', $sbp->nomor_sbp, $match);
+        $sbp->nomor_sbp_int = $match[1] ?? '';
 
         $petugasData = Petugas::orderBy('nama', 'asc')->get();
         return view('edit-sbp', compact('sbp', 'petugasData'));
@@ -99,7 +100,7 @@ class SbpController extends Controller
      */
     public function update(Request $request, Sbp $sbp)
     {
-        $validatedData = $request->validate([
+        $validated = $request->validate([
             'nomor_sbp' => 'required|integer',
             'tanggal_sbp' => 'required|date',
             'nomor_surat_perintah' => 'required|string|max:255',
@@ -117,34 +118,30 @@ class SbpController extends Controller
             'nama_petugas_1' => 'required|string|max:255',
             'nama_petugas_2' => 'required|string|max:255',
         ]);
-        
-        $year = Carbon::parse($validatedData['tanggal_sbp'])->year;
-        $nomorSbpInt = $validatedData['nomor_sbp'];
-        
-        // Format Nomor SBP
-        $formattedSbp = "SBP-{$nomorSbpInt}/KBC.0102/{$year}";
 
-        // Format Nomor BA Riksa, Tegah, and Segel
-        $formattedBaRiksa = "BA-{$nomorSbpInt}/RIKSA/KBC.010202/{$year}";
-        $formattedBaTegah = "BA-{$nomorSbpInt}/TEGAH/KBC.010202/{$year}";
-        $formattedBaSegel = "BA-{$nomorSbpInt}/SEGEL/KBC.010202/{$year}";
+        $year = Carbon::parse($validated['tanggal_sbp'])->year;
+        $nomor = $validated['nomor_sbp'];
 
-        // Validate uniqueness on the formatted string, ignoring the current SBP's ID
-        $request->merge(['nomor_sbp_formatted' => $formattedSbp]);
+        $formattedSbp = "SBP-{$nomor}/KBC.0102/{$year}";
+        $formattedBaRiksa = "BA-{$nomor}/RIKSA/KBC.010202/{$year}";
+        $formattedBaTegah = "BA-{$nomor}/TEGAH/KBC.010202/{$year}";
+        $formattedBaSegel = "BA-{$nomor}/SEGEL/KBC.010202/{$year}";
+
+        $request->merge(['nomor_sbp_final' => $formattedSbp]);
         $request->validate([
-            'nomor_sbp_formatted' => 'unique:sbp,nomor_sbp,' . $sbp->id
-        ], [
-            'nomor_sbp_formatted.unique' => 'Kombinasi Nomor SBP dan Tahun sudah ada.'
+            'nomor_sbp_final' => 'unique:sbp,nomor_sbp,' . $sbp->id
         ]);
-        
-        // Add the formatted numbers to the data for storage
-        $validatedData['nomor_sbp'] = $formattedSbp;
-        $validatedData['nomor_ba_riksa'] = $formattedBaRiksa;
-        $validatedData['nomor_ba_tegah'] = $formattedBaTegah;
-        $validatedData['nomor_ba_segel'] = $formattedBaSegel;
 
-        $sbp->update($validatedData);
-        return redirect()->route('sbp.index')->with('success', 'Data SBP berhasil diperbarui.');
+        $validated['nomor_sbp'] = $formattedSbp;
+        $validated['nomor_ba_riksa'] = $formattedBaRiksa;
+        $validated['nomor_ba_tegah'] = $formattedBaTegah;
+        $validated['nomor_ba_segel'] = $formattedBaSegel;
+
+        $sbp->update($validated);
+
+        return redirect()
+            ->route('sbp.index')
+            ->with('success', 'Data SBP berhasil diperbarui.');
     }
 
     /**
@@ -157,7 +154,7 @@ class SbpController extends Controller
     }
 
     /**
-     * Menampilkan halaman pratinjau cetak untuk SBP.
+     * Preview cetak SBP (iframe).
      */
     public function cetakPreview($id)
     {
@@ -166,17 +163,16 @@ class SbpController extends Controller
     }
 
     /**
-     * Generate and stream the PDF for the specified SBP.
+     * Generate PDF SBP (F4 FIX).
      */
     public function generatePdf($id)
     {
         $sbp = Sbp::findOrFail($id);
-        $pdf = PDF::loadView('templatecetak.templatesbp', compact('sbp'));
-        
-        // Set paper size to F4 as defined in the template CSS
-        $pdf->setPaper('F4', 'portrait');
 
-        // Generate a filename
+        $pdf = Pdf::loadView('templatecetak.templatesbp', compact('sbp'))
+            // ===== F4 REAL SIZE (pt) =====
+            ->setPaper([0, 0, 595.28, 935.43], 'portrait');
+
         $filename = str_replace('/', '-', $sbp->nomor_sbp) . '.pdf';
 
         return $pdf->stream($filename);

@@ -1,83 +1,39 @@
 @extends('layouts.app')
 
-@section('title', 'Pratinjau Cetak SBP - ' . $sbp->nomor_sbp)
-
-@push('styles')
-<style>
-    #pdf-viewer {
-        border: 1px solid #ccc;
-        width: 100%;
-        height: 800px;
-    }
-    /* Aturan khusus untuk proses cetak (Ctrl+P) */
-    @media print {
-        /* Sembunyikan semua elemen dari layout utama secara default */
-        body * {
-            visibility: hidden;
-        }
-
-        /* Tampilkan HANYA area yang bisa dicetak dan semua isinya */
-        .printable-area, .printable-area * {
-            visibility: visible;
-        }
-
-        /* Atur posisi area cetak agar mengisi seluruh halaman kertas */
-        .printable-area {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            margin: 0;
-            padding: 0;
-        }
-
-        /* Spesifikasi ukuran kertas F4 dan margin dari template asli */
-        @page {
-            size: 210mm 330mm;
-            margin: 30mm 25mm;
-        }
-
-        /* Pastikan elemen .no-print dan elemen UI lainnya benar-benar tidak muncul */
-        .no-print, .no-print *,.sidebar, .header, .footer,.c-sidebar, .c-header, .c-footer,.card, .card-body /* Sembunyikan card wrapper saat cetak */
-        {
-            display: none !important;
-            visibility: hidden;
-        }
-
-        /* Override khusus untuk printable-area di dalam card-body yang di-hidden */
-        .card .card-body .printable-area {
-            display: block !important;
-        }
-    }
-</style>
-@endpush
+@section('title', 'Pratinjau ' . $sbp->nomor_sbp)
 
 @section('content')
 <div class="container-lg">
-    {{-- BAGIAN KONTROL CETAK (TIDAK IKUT DICETAK) --}}
-    <div class="card mb-4 no-print">
+
+    {{-- KONTROL (TIDAK DICETAK) --}}
+    <div class="card mb-4">
         <div class="card-header">
-            <h5 class="mb-0">Kontrol Pratinjau</h5>
+            <strong>Pratinjau Dokumen SBP</strong>
         </div>
         <div class="card-body">
-            <p class="mb-3">Halaman ini adalah pratinjau dokumen. Gunakan tombol di bawah untuk tindakan lebih lanjut.</p>
-            <a href="{{ route('sbp.pdf', $sbp->id) }}" target="_blank" class="btn btn-primary">
-                <i class="cil-cloud-download"></i> Unduh PDF
+            <p>Gunakan tombol di bawah untuk mencetak dokumen.</p>
+
+            <a href="{{ route('sbp.pdf', $sbp->id) }}" target="_blank" class="btn btn-success">
+                <i class="cil-print"></i> Cetak Dokumen
             </a>
+
             <a href="{{ route('sbp.index') }}" class="btn btn-secondary">
-                <i class="cil-action-undo"></i> Kembali ke Daftar
+                Kembali
             </a>
         </div>
     </div>
 
-    {{-- CARD WRAPPER UNTUK TAMPILAN RAPI DI LAYAR --}}
+    {{-- PREVIEW PDF --}}
     <div class="card">
-        <div class="card-body">
-            {{-- AREA YANG SEBENARNYA AKAN DICETAK --}}
-            <div class="printable-area">
-                <iframe id="pdf-viewer" src="{{ route('sbp.pdf', $sbp->id) }}" width="100%" height="800px"></iframe>
-            </div>
+        <div class="card-body p-0">
+            <iframe 
+                src="{{ route('sbp.pdf', $sbp->id) }}" 
+                width="100%" 
+                height="900px"
+                style="border:none;">
+            </iframe>
         </div>
     </div>
+
 </div>
 @endsection
