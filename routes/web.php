@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SbpController;
 use App\Http\Controllers\PetugasController;
 use App\Http\Controllers\DatabaseController;
+use App\Http\Controllers\PangkatGolonganController;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,18 +46,10 @@ Route::delete('/data-sbp/{sbp}', [SbpController::class, 'destroy'])
 | Petugas
 |--------------------------------------------------------------------------
 */
-Route::get('/input-petugas', [PetugasController::class, 'create'])->name('petugas.create');
-Route::post('/input-petugas', [PetugasController::class, 'store'])->name('petugas.store');
 Route::get('/data-petugas', [PetugasController::class, 'index'])->name('petugas.index');
-
-Route::get('/data-petugas/{petugas}/edit', [PetugasController::class, 'edit'])
-    ->name('petugas.edit');
-
-Route::put('/data-petugas/{petugas}', [PetugasController::class, 'update'])
-    ->name('petugas.update');
-
-Route::delete('/data-petugas/{petugas}', [PetugasController::class, 'destroy'])
-    ->name('petugas.destroy');
+Route::post('/data-petugas', [PetugasController::class, 'store'])->name('petugas.store');
+Route::put('/data-petugas/{petugas}', [PetugasController::class, 'update'])->name('petugas.update');
+Route::delete('/data-petugas/{petugas}', [PetugasController::class, 'destroy'])->name('petugas.destroy');
 
 /*
 |--------------------------------------------------------------------------

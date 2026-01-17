@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Petugas extends Model
+class PangkatGolongan extends Model
 {
     use HasFactory;
 
@@ -14,7 +14,7 @@ class Petugas extends Model
      *
      * @var string
      */
-    protected $table = 'petugas';
+    protected $table = 'pangkat_golongan';
 
     /**
      * The attributes that are mass assignable.
@@ -22,10 +22,7 @@ class Petugas extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'nama',
-        'nip',
         'pangkat',
         'golongan',
-        'jabatan',
     ];
 }

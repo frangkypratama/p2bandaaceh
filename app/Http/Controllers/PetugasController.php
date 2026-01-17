@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Petugas;
+use App\Models\PangkatGolongan;
 use Illuminate\Http\Request;
 
 class PetugasController extends Controller
@@ -12,16 +13,9 @@ class PetugasController extends Controller
      */
     public function index()
     {
-        $petugasData = Petugas::paginate(10);
-        return view('data-petugas', compact('petugasData'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        $petugasData = Petugas::orderBy('nama', 'asc')->paginate(10);
+        $pangkatGolonganData = PangkatGolongan::orderBy('golongan', 'asc')->get();
+        return view('data-petugas', compact('petugasData', 'pangkatGolonganData'));
     }
 
     /**
@@ -30,30 +24,24 @@ class PetugasController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama' => 'required',
-            'nip' => 'required|unique:petugas',
+            'nama' => 'required|string|max:255',
+            'nip' => 'required|string|max:20|unique:petugas',
+            'pangkat_golongan_id' => 'nullable|exists:pangkat_golongan,id',
+            'jabatan' => 'nullable|string|max:255',
         ]);
 
-        Petugas::create($request->all());
+        $pangkatGolongan = PangkatGolongan::find($request->pangkat_golongan_id);
+
+        Petugas::create([
+            'nama' => $request->nama,
+            'nip' => $request->nip,
+            'pangkat' => $pangkatGolongan ? $pangkatGolongan->pangkat : null,
+            'golongan' => $pangkatGolongan ? $pangkatGolongan->golongan : null,
+            'jabatan' => $request->jabatan,
+        ]);
 
         return redirect()->route('petugas.index')
                         ->with('success', 'Data petugas berhasil ditambahkan.');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Petugas $petugas)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Petugas $petugas)
-    {
-        //
     }
 
     /**
@@ -62,11 +50,21 @@ class PetugasController extends Controller
     public function update(Request $request, Petugas $petugas)
     {
         $request->validate([
-            'nama' => 'required',
-            'nip' => 'required|unique:petugas,nip,'.$petugas->id,
+            'nama' => 'required|string|max:255',
+            'nip' => 'required|string|max:20|unique:petugas,nip,'.$petugas->id,
+            'pangkat_golongan_id' => 'nullable|exists:pangkat_golongan,id',
+            'jabatan' => 'nullable|string|max:255',
         ]);
 
-        $petugas->update($request->all());
+        $pangkatGolongan = PangkatGolongan::find($request->pangkat_golongan_id);
+
+        $petugas->update([
+            'nama' => $request->nama,
+            'nip' => $request->nip,
+            'pangkat' => $pangkatGolongan ? $pangkatGolongan->pangkat : null,
+            'golongan' => $pangkatGolongan ? $pangkatGolongan->golongan : null,
+            'jabatan' => $request->jabatan,
+        ]);
 
         return redirect()->route('petugas.index')
                         ->with('success', 'Data petugas berhasil diperbarui.');
