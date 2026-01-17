@@ -233,14 +233,14 @@
                     <div class="name">{{ $sbp->nama_pelaku ?? '-' }}</div>
                 </td>
                 <td class="sig-right">
-                    <div class="name">{{ optional($sbp->petugas1)->nama ?? '-' }}<br>NIP {{ optional($sbp->petugas1)->nip ?? '-' }}</div>
+                    <div class="name">{{ optional($sbp->petugas1)->nama ?? '-' }}<br>NIP {{ optional($sbp->petugas1)->nip_formatted ?? '-' }}</div>
                 </td>
             </tr>
             <tr>
                 <td class="num"></td>
                 <td class="sig-left"><br></td>
                 <td class="sig-right">
-                    <div class="name">{{ optional($sbp->petugas2)->nama ?? '-' }}<br>NIP {{ optional($sbp->petugas2)->nip ?? '-' }}</div>
+                    <div class="name">{{ optional($sbp->petugas2)->nama ?? '-' }}<br>NIP {{ optional($sbp->petugas2)->nip_formatted ?? '-' }}</div>
                 </td>
             </tr>
             <tr>
