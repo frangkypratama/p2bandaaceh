@@ -75,7 +75,6 @@ class SbpController extends Controller
         $validated['nomor_ba_tegah'] = $formattedBaTegah;
         $validated['nomor_ba_segel'] = $formattedBaSegel;
         $validated['nomor_sbp_int'] = $nomor_sbp_int;
-        $validated['tahun_sbp'] = $tahun_sbp;
 
         Sbp::create($validated);
 
@@ -139,7 +138,6 @@ class SbpController extends Controller
         $validated['nomor_ba_tegah'] = $formattedBaTegah;
         $validated['nomor_ba_segel'] = $formattedBaSegel;
         $validated['nomor_sbp_int'] = $nomor_sbp_int;
-        $validated['tahun_sbp'] = $tahun_sbp;
 
         $sbp->update($validated);
 

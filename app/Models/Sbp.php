@@ -37,7 +37,6 @@ class Sbp extends Model
         'nama_petugas_1',
         'nama_petugas_2',
         'nomor_sbp_int',
-        'tahun_sbp',
     ];
 
     /**
