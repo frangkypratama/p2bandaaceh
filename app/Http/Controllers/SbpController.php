@@ -50,8 +50,8 @@ class SbpController extends Controller
             'jumlah_barang' => 'required|integer',
             'jenis_satuan' => 'required|string|max:255',
             'uraian_barang' => 'required|string',
-            'nama_petugas_1' => 'required|string|max:255',
-            'nama_petugas_2' => 'required|string|max:255',
+            'id_petugas_1' => 'required|integer|exists:petugas,id',
+            'id_petugas_2' => 'required|integer|exists:petugas,id|different:id_petugas_1',
         ]);
 
         $nomor_sbp_int = $validated['nomor_sbp'];
@@ -70,15 +70,22 @@ class SbpController extends Controller
         ], [
             'nomor_sbp_final.unique' => 'Nomor SBP dengan tahun tersebut sudah ada.'
         ]);
+        
+        // ===== AMBIL NAMA PETUGAS =====
+        $petugas1 = Petugas::find($validated['id_petugas_1']);
+        $petugas2 = Petugas::find($validated['id_petugas_2']);
 
         // ===== SIMPAN =====
-        $validated['nomor_sbp'] = $formattedSbp;
-        $validated['nomor_ba_riksa'] = $formattedBaRiksa;
-        $validated['nomor_ba_tegah'] = $formattedBaTegah;
-        $validated['nomor_ba_segel'] = $formattedBaSegel;
-        $validated['nomor_sbp_int'] = $nomor_sbp_int;
+        $dataToStore = $validated;
+        $dataToStore['nama_petugas_1'] = $petugas1->nama;
+        $dataToStore['nama_petugas_2'] = $petugas2->nama;
+        $dataToStore['nomor_sbp'] = $formattedSbp;
+        $dataToStore['nomor_ba_riksa'] = $formattedBaRiksa;
+        $dataToStore['nomor_ba_tegah'] = $formattedBaTegah;
+        $dataToStore['nomor_ba_segel'] = $formattedBaSegel;
+        $dataToStore['nomor_sbp_int'] = $nomor_sbp_int;
 
-        Sbp::create($validated);
+        Sbp::create($dataToStore);
 
         return redirect()
             ->route('sbp.create')
@@ -95,6 +102,14 @@ class SbpController extends Controller
         $sbp->nomor_sbp_int = $match[1] ?? '';
 
         $petugasData = Petugas::orderBy('nama', 'asc')->get();
+        
+        // Cari ID petugas berdasarkan nama untuk pre-select di form edit
+        $petugas1 = Petugas::where('nama', $sbp->nama_petugas_1)->first();
+        $petugas2 = Petugas::where('nama', $sbp->nama_petugas_2)->first();
+
+        $sbp->id_petugas_1 = $petugas1 ? $petugas1->id : null;
+        $sbp->id_petugas_2 = $petugas2 ? $petugas2->id : null;
+
         return view('edit-sbp', compact('sbp', 'petugasData'));
     }
 
@@ -118,8 +133,8 @@ class SbpController extends Controller
             'jumlah_barang' => 'required|integer',
             'jenis_satuan' => 'required|string|max:255',
             'uraian_barang' => 'required|string',
-            'nama_petugas_1' => 'required|string|max:255',
-            'nama_petugas_2' => 'required|string|max:255',
+            'id_petugas_1' => 'required|integer|exists:petugas,id',
+            'id_petugas_2' => 'required|integer|exists:petugas,id|different:id_petugas_1',
         ]);
 
         $nomor_sbp_int = $validated['nomor_sbp'];
@@ -135,13 +150,19 @@ class SbpController extends Controller
             'nomor_sbp_final' => 'unique:sbp,nomor_sbp,' . $sbp->id
         ]);
 
-        $validated['nomor_sbp'] = $formattedSbp;
-        $validated['nomor_ba_riksa'] = $formattedBaRiksa;
-        $validated['nomor_ba_tegah'] = $formattedBaTegah;
-        $validated['nomor_ba_segel'] = $formattedBaSegel;
-        $validated['nomor_sbp_int'] = $nomor_sbp_int;
+        $petugas1 = Petugas::find($validated['id_petugas_1']);
+        $petugas2 = Petugas::find($validated['id_petugas_2']);
 
-        $sbp->update($validated);
+        $dataToUpdate = $validated;
+        $dataToUpdate['nama_petugas_1'] = $petugas1->nama;
+        $dataToUpdate['nama_petugas_2'] = $petugas2->nama;
+        $dataToUpdate['nomor_sbp'] = $formattedSbp;
+        $dataToUpdate['nomor_ba_riksa'] = $formattedBaRiksa;
+        $dataToUpdate['nomor_ba_tegah'] = $formattedBaTegah;
+        $dataToUpdate['nomor_ba_segel'] = $formattedBaSegel;
+        $dataToUpdate['nomor_sbp_int'] = $nomor_sbp_int;
+
+        $sbp->update($dataToUpdate);
 
         return redirect()
             ->route('sbp.index')

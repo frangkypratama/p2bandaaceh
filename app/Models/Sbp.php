@@ -36,6 +36,8 @@ class Sbp extends Model
         'uraian_barang',
         'nama_petugas_1',
         'nama_petugas_2',
+        'id_petugas_1',
+        'id_petugas_2',
         'nomor_sbp_int',
     ];
 

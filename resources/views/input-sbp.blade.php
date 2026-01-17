@@ -232,13 +232,13 @@
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="mb-3">
-                                                <label for="nama_petugas_1" class="form-label">Nama Petugas 1</label>
+                                                <label for="id_petugas_1" class="form-label">Petugas 1</label>
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="cil-user-follow"></i></span>
-                                                    <select id="nama_petugas_1" class="form-select" name="nama_petugas_1" required>
+                                                    <select id="id_petugas_1" class="form-select" name="id_petugas_1" required>
                                                         <option selected disabled value="">Pilih Petugas 1...</option>
                                                         @foreach($petugasData as $petugas)
-                                                            <option value="{{ $petugas->nama }}">{{ $petugas->nama }}</option>
+                                                            <option value="{{ $petugas->id }}">{{ $petugas->nama }}</option>
                                                         @endforeach
                                                     </select>
                                                 </div>
@@ -246,13 +246,13 @@
                                         </div>
                                         <div class="col-md-6">
                                             <div class="mb-3">
-                                                <label for="nama_petugas_2" class="form-label">Nama Petugas 2</label>
+                                                <label for="id_petugas_2" class="form-label">Petugas 2</label>
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="cil-user-follow"></i></span>
-                                                     <select id="nama_petugas_2" class="form-select" name="nama_petugas_2" required>
+                                                     <select id="id_petugas_2" class="form-select" name="id_petugas_2" required>
                                                         <option selected disabled value="">Pilih Petugas 2...</option>
                                                         @foreach($petugasData as $petugas)
-                                                            <option value="{{ $petugas->nama }}">{{ $petugas->nama }}</option>
+                                                            <option value="{{ $petugas->id }}">{{ $petugas->nama }}</option>
                                                         @endforeach
                                                     </select>
                                                 </div>
