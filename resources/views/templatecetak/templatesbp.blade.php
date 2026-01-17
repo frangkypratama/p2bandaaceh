@@ -233,20 +233,20 @@
                     <div class="name">{{ $sbp->nama_pelaku ?? '-' }}</div>
                 </td>
                 <td class="sig-right">
-                    <div class="name">{{ $sbp->nama_petugas_1 ?? '-' }}<br>NIP {{ $sbp->nip_petugas_1 ?? '-' }}</div>
+                    <div class="name">{{ optional($sbp->petugas1)->nama ?? '-' }}<br>NIP {{ optional($sbp->petugas1)->nip ?? '-' }}</div>
                 </td>
             </tr>
             <tr>
                 <td class="num"></td>
                 <td class="sig-left"><br></td>
                 <td class="sig-right">
-                    <div class="name">{{ $sbp->nama_petugas_2 ?? '-' }}<br>NIP {{ $sbp->nip_petugas_2 ?? '-' }}</div>
+                    <div class="name">{{ optional($sbp->petugas2)->nama ?? '-' }}<br>NIP {{ optional($sbp->petugas2)->nip ?? '-' }}</div>
                 </td>
             </tr>
             <tr>
                 <td class="num"></td>
                 <td colspan="2">
-                    <div class="footer">{{ $sbp->catatan ?? 'Yang dimaksud dengan &quot;barang yang dikuasai negara&quot; adalah barang yang untuk sementara waktu penguasaannya berada pada negara sampai dapat ditentukan status barang yang sebenarnya. Perubahan status ini dimaksudkan agar pejabat bea dan cukai dapat memproses barang tersebut secara administrasi sampai dapat dibuktikan bahwa telah terjadi kesalahan atau sama sekali tidak terjadi kesalahan ' }}</div>
+                    <div class="footer">{{ $sbp->catatan ?? 'Yang dimaksud dengan barang yang dikuasai negara adalah barang yang untuk sementara waktu penguasaannya berada pada negara sampai dapat ditentukan status barang yang sebenarnya. Perubahan status ini dimaksudkan agar pejabat bea dan cukai dapat memproses barang tersebut secara administrasi sampai dapat dibuktikan bahwa telah terjadi kesalahan atau sama sekali tidak terjadi kesalahan ' }}</div>
                 </td>
             </tr>
         </tbody>

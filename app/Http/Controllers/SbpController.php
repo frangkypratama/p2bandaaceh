@@ -15,7 +15,7 @@ class SbpController extends Controller
      */
     public function index()
     {
-        $sbpData = Sbp::orderBy('tanggal_sbp', 'desc')
+        $sbpData = Sbp::with(['petugas1', 'petugas2'])->orderBy('tanggal_sbp', 'desc')
                         ->orderBy('nomor_sbp_int', 'desc')
                         ->paginate(10);
         return view('data-sbp', compact('sbpData'));
@@ -102,13 +102,6 @@ class SbpController extends Controller
         $sbp->nomor_sbp_int = $match[1] ?? '';
 
         $petugasData = Petugas::orderBy('nama', 'asc')->get();
-        
-        // Cari ID petugas berdasarkan nama untuk pre-select di form edit
-        $petugas1 = Petugas::where('nama', $sbp->nama_petugas_1)->first();
-        $petugas2 = Petugas::where('nama', $sbp->nama_petugas_2)->first();
-
-        $sbp->id_petugas_1 = $petugas1 ? $petugas1->id : null;
-        $sbp->id_petugas_2 = $petugas2 ? $petugas2->id : null;
 
         return view('edit-sbp', compact('sbp', 'petugasData'));
     }
@@ -183,7 +176,7 @@ class SbpController extends Controller
      */
     public function cetakPreview($id)
     {
-        $sbp = Sbp::findOrFail($id);
+        $sbp = Sbp::with(['petugas1', 'petugas2'])->findOrFail($id);
         return view('preview-sbp', compact('sbp'));
     }
 
@@ -192,7 +185,7 @@ class SbpController extends Controller
      */
     public function generatePdf($id)
     {
-        $sbp = Sbp::findOrFail($id);
+        $sbp = Sbp::with(['petugas1', 'petugas2'])->findOrFail($id);
 
         $pdf = Pdf::loadView('templatecetak.templatesbp', compact('sbp'))
             // ===== F4 REAL SIZE (pt) =====

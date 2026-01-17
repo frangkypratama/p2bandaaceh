@@ -50,4 +50,20 @@ class Sbp extends Model
         'tanggal_sbp' => 'date',
         'tanggal_surat_perintah' => 'date',
     ];
+
+    /**
+     * Get the petugas 1 that owns the SBP.
+     */
+    public function petugas1()
+    {
+        return $this->belongsTo(Petugas::class, 'id_petugas_1');
+    }
+
+    /**
+     * Get the petugas 2 that owns the SBP.
+     */
+    public function petugas2()
+    {
+        return $this->belongsTo(Petugas::class, 'id_petugas_2');
+    }
 }
