@@ -40,8 +40,7 @@ class PetugasController extends Controller
             'jabatan' => $request->jabatan,
         ]);
 
-        return redirect()->route('petugas.index')
-                        ->with('success', 'Data petugas berhasil ditambahkan.');
+        return redirect()->back()->with('success', 'Data petugas berhasil ditambahkan.');
     }
 
     /**
@@ -66,8 +65,7 @@ class PetugasController extends Controller
             'jabatan' => $request->jabatan,
         ]);
 
-        return redirect()->route('petugas.index')
-                        ->with('success', 'Data petugas berhasil diperbarui.');
+        return redirect()->back()->with('success', 'Data petugas berhasil diperbarui.');
     }
 
     /**
@@ -77,7 +75,6 @@ class PetugasController extends Controller
     {
         $petugas->delete();
 
-        return redirect()->route('petugas.index')
-                        ->with('success', 'Data petugas berhasil dihapus.');
+        return redirect()->back()->with('success', 'Data petugas berhasil dihapus.');
     }
 }

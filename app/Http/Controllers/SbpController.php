@@ -88,7 +88,7 @@ class SbpController extends Controller
         Sbp::create($dataToStore);
 
         return redirect()
-            ->route('sbp.create')
+            ->route('sbp.index')
             ->with('success', "{$formattedSbp} berhasil disimpan.");
     }
 
@@ -157,9 +157,7 @@ class SbpController extends Controller
 
         $sbp->update($dataToUpdate);
 
-        return redirect()
-            ->route('sbp.index')
-            ->with('success', 'Data SBP berhasil diperbarui.');
+        return redirect()->back()->with('success', 'Data SBP berhasil diperbarui.');
     }
 
     /**
@@ -168,7 +166,7 @@ class SbpController extends Controller
     public function destroy(Sbp $sbp)
     {
         $sbp->delete();
-        return redirect()->route('sbp.index')->with('success', 'Data SBP berhasil dihapus.');
+        return redirect()->back()->with('success', 'Data SBP berhasil dihapus.');
     }
 
     /**
