@@ -36,10 +36,14 @@ class Sbp extends Model
         'uraian_barang',
         'nama_petugas_1',
         'nama_petugas_2',
+        'nomor_sbp_int',
+        'tahun_sbp',
     ];
 
     /**
-     * Casting attribute ke tipe data yang benar
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
      */
     protected $casts = [
         'tanggal_sbp' => 'date',

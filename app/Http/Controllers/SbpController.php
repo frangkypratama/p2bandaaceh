@@ -52,14 +52,14 @@ class SbpController extends Controller
             'nama_petugas_2' => 'required|string|max:255',
         ]);
 
-        $year = Carbon::parse($validated['tanggal_sbp'])->year;
-        $nomor = $validated['nomor_sbp'];
+        $nomor_sbp_int = $validated['nomor_sbp'];
+        $tahun_sbp = Carbon::parse($validated['tanggal_sbp'])->year;
 
         // ===== FORMAT NOMOR =====
-        $formattedSbp = "SBP-{$nomor}/KBC.0102/{$year}";
-        $formattedBaRiksa = "BA-{$nomor}/RIKSA/KBC.010202/{$year}";
-        $formattedBaTegah = "BA-{$nomor}/TEGAH/KBC.010202/{$year}";
-        $formattedBaSegel = "BA-{$nomor}/SEGEL/KBC.010202/{$year}";
+        $formattedSbp = "SBP-{$nomor_sbp_int}/KBC.0102/{$tahun_sbp}";
+        $formattedBaRiksa = "BA-{$nomor_sbp_int}/RIKSA/KBC.010202/{$tahun_sbp}";
+        $formattedBaTegah = "BA-{$nomor_sbp_int}/TEGAH/KBC.010202/{$tahun_sbp}";
+        $formattedBaSegel = "BA-{$nomor_sbp_int}/SEGEL/KBC.010202/{$tahun_sbp}";
 
         // ===== VALIDASI UNIK (STRING FINAL) =====
         $request->merge(['nomor_sbp_final' => $formattedSbp]);
@@ -74,6 +74,8 @@ class SbpController extends Controller
         $validated['nomor_ba_riksa'] = $formattedBaRiksa;
         $validated['nomor_ba_tegah'] = $formattedBaTegah;
         $validated['nomor_ba_segel'] = $formattedBaSegel;
+        $validated['nomor_sbp_int'] = $nomor_sbp_int;
+        $validated['tahun_sbp'] = $tahun_sbp;
 
         Sbp::create($validated);
 
@@ -119,13 +121,13 @@ class SbpController extends Controller
             'nama_petugas_2' => 'required|string|max:255',
         ]);
 
-        $year = Carbon::parse($validated['tanggal_sbp'])->year;
-        $nomor = $validated['nomor_sbp'];
+        $nomor_sbp_int = $validated['nomor_sbp'];
+        $tahun_sbp = Carbon::parse($validated['tanggal_sbp'])->year;
 
-        $formattedSbp = "SBP-{$nomor}/KBC.0102/{$year}";
-        $formattedBaRiksa = "BA-{$nomor}/RIKSA/KBC.010202/{$year}";
-        $formattedBaTegah = "BA-{$nomor}/TEGAH/KBC.010202/{$year}";
-        $formattedBaSegel = "BA-{$nomor}/SEGEL/KBC.010202/{$year}";
+        $formattedSbp = "SBP-{$nomor_sbp_int}/KBC.0102/{$tahun_sbp}";
+        $formattedBaRiksa = "BA-{$nomor_sbp_int}/RIKSA/KBC.010202/{$tahun_sbp}";
+        $formattedBaTegah = "BA-{$nomor_sbp_int}/TEGAH/KBC.010202/{$tahun_sbp}";
+        $formattedBaSegel = "BA-{$nomor_sbp_int}/SEGEL/KBC.010202/{$tahun_sbp}";
 
         $request->merge(['nomor_sbp_final' => $formattedSbp]);
         $request->validate([
@@ -136,6 +138,8 @@ class SbpController extends Controller
         $validated['nomor_ba_riksa'] = $formattedBaRiksa;
         $validated['nomor_ba_tegah'] = $formattedBaTegah;
         $validated['nomor_ba_segel'] = $formattedBaSegel;
+        $validated['nomor_sbp_int'] = $nomor_sbp_int;
+        $validated['tahun_sbp'] = $tahun_sbp;
 
         $sbp->update($validated);
 
