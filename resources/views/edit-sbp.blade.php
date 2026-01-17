@@ -49,7 +49,7 @@
                                                 <label for="tanggal_sbp" class="form-label">Tanggal SBP</label>
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="cil-calendar"></i></span>
-                                                    <input id="tanggal_sbp" type="date" class="form-control" name="tanggal_sbp" value="{{ $sbp->tanggal_sbp }}" required>
+                                                    <input id="tanggal_sbp" type="date" class="form-control" name="tanggal_sbp" value="{{ $sbp->tanggal_sbp->format('Y-m-d') }}" required>
                                                 </div>
                                             </div>
                                         </div>
@@ -67,7 +67,7 @@
                                                 <label for="tanggal_surat_perintah" class="form-label">Tanggal Surat Perintah</label>
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="cil-calendar"></i></span>
-                                                    <input id="tanggal_surat_perintah" type="date" class="form-control" name="tanggal_surat_perintah" value="{{ $sbp->tanggal_surat_perintah }}" required>
+                                                    <input id="tanggal_surat_perintah" type="date" class="form-control" name="tanggal_surat_perintah" value="{{ $sbp->tanggal_surat_perintah->format('Y-m-d') }}" required>
                                                 </div>
                                             </div>
                                         </div>

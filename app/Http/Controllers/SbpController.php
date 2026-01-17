@@ -15,7 +15,9 @@ class SbpController extends Controller
      */
     public function index()
     {
-        $sbpData = Sbp::orderBy('tanggal_sbp', 'desc')->paginate(10);
+        $sbpData = Sbp::orderBy('tanggal_sbp', 'desc')
+                        ->orderBy('nomor_sbp_int', 'desc')
+                        ->paginate(10);
         return view('data-sbp', compact('sbpData'));
     }
 
