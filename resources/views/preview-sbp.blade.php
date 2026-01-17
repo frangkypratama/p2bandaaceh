@@ -13,12 +13,12 @@
         <div class="card-body">
             <p>Gunakan tombol di bawah untuk mencetak dokumen.</p>
 
-            <a href="{{ route('sbp.pdf', $sbp->id) }}" target="_blank" class="btn btn-success">
-                <i class="cil-print"></i> Cetak Dokumen
+            <a href="{{ route('sbp.index') }}" class="btn btn-secondary">
+                <i class="cil-arrow-circle-left"></i> Kembali
             </a>
 
-            <a href="{{ route('sbp.index') }}" class="btn btn-secondary">
-                Kembali
+            <a href="{{ route('sbp.pdf', $sbp->id) }}" target="_blank" class="btn btn-success ms-2">
+                <i class="cil-print"></i> Cetak Dokumen
             </a>
         </div>
     </div>

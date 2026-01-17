@@ -257,7 +257,10 @@
                         </div>
 
                         <div class="col-12 text-center">
-                            <button type="submit" class="btn btn-primary btn-lg">
+                            <a href="{{ route('sbp.index') }}" class="btn btn-secondary btn-lg">
+                                <i class="cil-arrow-circle-left"></i> Kembali
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg ms-2">
                                 <i class="cil-sync"></i> Perbarui Data SBP
                             </button>
                         </div>
