@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Edit SBP')
+
 @section('content')
 <div class="container-lg">
     <div class="row justify-content-center">

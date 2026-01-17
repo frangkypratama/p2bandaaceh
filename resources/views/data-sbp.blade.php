@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Data SBP')
+
 @section('content')
 <div class="container-lg">
     <div class="card mb-4">
