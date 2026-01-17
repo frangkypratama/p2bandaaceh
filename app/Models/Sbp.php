@@ -37,4 +37,12 @@ class Sbp extends Model
         'nama_petugas_1',
         'nama_petugas_2',
     ];
+
+    /**
+     * Casting attribute ke tipe data yang benar
+     */
+    protected $casts = [
+        'tanggal_sbp' => 'date',
+        'tanggal_surat_perintah' => 'date',
+    ];
 }
