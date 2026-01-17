@@ -79,7 +79,7 @@ class SbpController extends Controller
 
         return redirect()
             ->route('sbp.create')
-            ->with('success', "SBP {$formattedSbp} berhasil disimpan.");
+            ->with('success', "{$formattedSbp} berhasil disimpan.");
     }
 
     /**
