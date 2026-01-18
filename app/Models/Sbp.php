@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Helpers\TerbilangHelper;
 
 class Sbp extends Model
 {
@@ -65,5 +66,15 @@ class Sbp extends Model
     public function petugas2()
     {
         return $this->belongsTo(Petugas::class, 'id_petugas_2');
+    }
+
+    /**
+     * Get the spelled out date of the SBP.
+     *
+     * @return string
+     */
+    public function getTanggalSbpTerbilangAttribute()
+    {
+        return TerbilangHelper::tanggal($this->tanggal_sbp);
     }
 }

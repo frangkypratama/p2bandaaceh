@@ -177,7 +177,7 @@
             <!-- INTRO TEXT -->
             <tr>
                 <td colspan="4" class="full-width">
-                    Pada hari ini {{ optional($sbp->tanggal_ba_riksa)->translatedFormat('l') ?? '-' }} tanggal {{ optional($sbp->tanggal_ba_riksa)->translatedFormat('d F Y') ?? '-' }}, berdasarkan Surat Perintah Kepala KPPBC Tipe Madya Pabean C Banda Aceh Nomor {{ $sbp->nomor_surat_perintah ?? '-' }} tanggal {{ optional($sbp->tanggal_surat_perintah)->translatedFormat('d F Y') ?? '-' }}. Kami yang bertanda tangan di bawah ini telah melakukan pemeriksaan terhadap:
+                    Pada hari ini {{ optional($sbp->tanggal_sbp)->translatedFormat('l') ?? '-' }} tanggal {{ $sbp->tanggal_sbp_terbilang ?? '-' }}, berdasarkan Surat Perintah Kepala KPPBC Tipe Madya Pabean C Banda Aceh Nomor {{ $sbp->nomor_surat_perintah ?? '-' }} tanggal {{ optional($sbp->tanggal_surat_perintah)->translatedFormat('d F Y') ?? '-' }}. Kami yang bertanda tangan di bawah ini telah melakukan pemeriksaan terhadap:
                 </td>
             </tr>
 
