@@ -27,6 +27,9 @@ Route::get('/data-sbp/cetak-preview/{id}', [SbpController::class, 'cetakPreview'
 Route::get('/data-sbp/pdf/{id}', [SbpController::class, 'generatePdf'])
     ->name('sbp.pdf');
 
+Route::get('/data-sbp/pdf-ba-riksa/{id}', [SbpController::class, 'generatePdfBaRiksa'])
+    ->name('sbp.pdf.ba-riksa');
+
 // CRUD SBP
 Route::get('/input-sbp', [SbpController::class, 'create'])->name('sbp.create');
 Route::post('/input-sbp', [SbpController::class, 'store'])->name('sbp.store');

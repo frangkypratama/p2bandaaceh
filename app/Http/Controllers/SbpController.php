@@ -185,11 +185,27 @@ class SbpController extends Controller
     {
         $sbp = Sbp::with(['petugas1', 'petugas2'])->findOrFail($id);
 
-        $pdf = Pdf::loadView('templatecetak.templatesbp', compact('sbp'))
+        $pdf = Pdf::loadView('templatecetak.template-sbp', compact('sbp'))
             // ===== F4 REAL SIZE (pt) =====
             ->setPaper([0, 0, 595.28, 935.43], 'portrait');
 
         $filename = str_replace('/', '-', $sbp->nomor_sbp) . '.pdf';
+
+        return $pdf->stream($filename);
+    }
+
+    /**
+     * Generate PDF BA Riksa (F4 FIX).
+     */
+    public function generatePdfBaRiksa($id)
+    {
+        $sbp = Sbp::with(['petugas1', 'petugas2'])->findOrFail($id);
+
+        $pdf = Pdf::loadView('templatecetak.template-ba-riksa', compact('sbp'))
+            // ===== F4 REAL SIZE (pt) =====
+            ->setPaper([0, 0, 595.28, 935.43], 'portrait');
+
+        $filename = str_replace('/', '-', $sbp->nomor_ba_riksa) . '.pdf';
 
         return $pdf->stream($filename);
     }

@@ -74,7 +74,7 @@
         /* ===== CONTENT ===== */
         .content-table td {
             padding: 2px 2px;
-            line-height: 1.15;
+            line-height: 1;
         }
 
         .num {
