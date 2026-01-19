@@ -33,6 +33,9 @@ Route::get('/data-sbp/pdf-ba-riksa/{id}', [SbpController::class, 'generatePdfBaR
 Route::get('/data-sbp/pdf-ba-tegah/{id}', [SbpController::class, 'generatePdfBaTegah'])
     ->name('sbp.pdf.ba-tegah');
 
+Route::get('/data-sbp/pdf-ba-segel/{id}', [SbpController::class, 'generatePdfBaSegel'])
+    ->name('sbp.pdf.ba-segel');
+
 // CRUD SBP
 Route::get('/input-sbp', [SbpController::class, 'create'])->name('sbp.create');
 Route::post('/input-sbp', [SbpController::class, 'store'])->name('sbp.store');

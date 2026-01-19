@@ -225,4 +225,20 @@ class SbpController extends Controller
 
         return $pdf->stream($filename);
     }
+
+    /**
+     * Generate PDF BA Segel (F4 FIX).
+     */
+    public function generatePdfBaSegel($id)
+    {
+        $sbp = Sbp::with(['petugas1', 'petugas2'])->findOrFail($id);
+
+        $pdf = Pdf::loadView('templatecetak.template-ba-segel', compact('sbp'))
+            // ===== F4 REAL SIZE (pt) =====
+            ->setPaper([0, 0, 595.28, 935.43], 'portrait');
+
+        $filename = str_replace('/', '-', $sbp->nomor_ba_segel) . '.pdf';
+
+        return $pdf->stream($filename);
+    }
 }
