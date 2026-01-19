@@ -370,7 +370,7 @@
             <tr>
                 <td class="num"></td>
                 <td class="sig-left"><br></td>
-                <td class="sig-right">{{ $sbp->tempat ?? 'Banda Aceh' }}, {{ optional($sbp->tanggal_sbp)->translatedFormat('d F Y') ?? '-' }}</td>
+                <td class="sig-right">{{ $sbp->kota_penindakan ?? 'Banda Aceh' }}, {{ optional($sbp->tanggal_sbp)->translatedFormat('d F Y') ?? '-' }}</td>
             </tr>
             <tr>
                 <td class="num"></td>

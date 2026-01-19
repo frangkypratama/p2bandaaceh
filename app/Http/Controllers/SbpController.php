@@ -52,6 +52,8 @@ class SbpController extends Controller
             'uraian_barang' => 'required|string',
             'id_petugas_1' => 'required|integer|exists:petugas,id',
             'id_petugas_2' => 'required|integer|exists:petugas,id|different:id_petugas_1',
+            'kota' => 'nullable|string|max:255',
+            'kecamatan' => 'nullable|string|max:255',
         ]);
 
         $nomor_sbp_int = $validated['nomor_sbp'];
@@ -77,6 +79,8 @@ class SbpController extends Controller
 
         // ===== SIMPAN =====
         $dataToStore = $validated;
+        $dataToStore['kota_penindakan'] = $validated['kota'];
+        $dataToStore['kecamatan_penindakan'] = $validated['kecamatan'];
         $dataToStore['nama_petugas_1'] = $petugas1->nama;
         $dataToStore['nama_petugas_2'] = $petugas2->nama;
         $dataToStore['nomor_sbp'] = $formattedSbp;
@@ -128,6 +132,8 @@ class SbpController extends Controller
             'uraian_barang' => 'required|string',
             'id_petugas_1' => 'required|integer|exists:petugas,id',
             'id_petugas_2' => 'required|integer|exists:petugas,id|different:id_petugas_1',
+            'kota' => 'nullable|string|max:255',
+            'kecamatan' => 'nullable|string|max:255',
         ]);
 
         $nomor_sbp_int = $validated['nomor_sbp'];
@@ -147,6 +153,8 @@ class SbpController extends Controller
         $petugas2 = Petugas::find($validated['id_petugas_2']);
 
         $dataToUpdate = $validated;
+        $dataToUpdate['kota_penindakan'] = $validated['kota'];
+        $dataToUpdate['kecamatan_penindakan'] = $validated['kecamatan'];
         $dataToUpdate['nama_petugas_1'] = $petugas1->nama;
         $dataToUpdate['nama_petugas_2'] = $petugas2->nama;
         $dataToUpdate['nomor_sbp'] = $formattedSbp;

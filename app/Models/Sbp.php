@@ -40,6 +40,8 @@ class Sbp extends Model
         'id_petugas_1',
         'id_petugas_2',
         'nomor_sbp_int',
+        'kota_penindakan',
+        'kecamatan_penindakan',
     ];
 
     /**
