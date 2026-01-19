@@ -261,7 +261,7 @@ class SbpController extends Controller
             // F4 REAL SIZE (pt)
             ->setPaper([0, 0, 595.28, 935.43], 'portrait');
 
-        $filename = 'SEMUA-DOKUMEN-' . str_replace('/', '-', $sbp->nomor_sbp) . '.pdf';
+        $filename = str_replace('/', '-', $sbp->nomor_sbp) . '.pdf';
 
         return $pdf->stream($filename);
     }
