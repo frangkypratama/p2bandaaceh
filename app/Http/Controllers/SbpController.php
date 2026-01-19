@@ -249,4 +249,20 @@ class SbpController extends Controller
 
         return $pdf->stream($filename);
     }
+
+    /**
+     * Generate PDF with all documents combined.
+     */
+    public function generatePdfSemua($id)
+    {
+        $sbp = Sbp::with(['petugas1', 'petugas2'])->findOrFail($id);
+
+        $pdf = Pdf::loadView('templatecetak.template-semua', compact('sbp'))
+            // F4 REAL SIZE (pt)
+            ->setPaper([0, 0, 595.28, 935.43], 'portrait');
+
+        $filename = 'SEMUA-DOKUMEN-' . str_replace('/', '-', $sbp->nomor_sbp) . '.pdf';
+
+        return $pdf->stream($filename);
+    }
 }

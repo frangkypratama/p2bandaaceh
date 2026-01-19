@@ -1,55 +1,57 @@
 
-# Project Blueprint
+# Proyek Aplikasi SBP (Surat Bukti Penindakan)
 
-## Overview
+## Ikhtisar
 
-This project is a full-stack web application for managing "Surat Berharga Pembangunan" (SBP) and "Petugas" (Officers). It is built with Laravel and is designed to be developed within the Firebase Studio (formerly Project IDX) environment.
+Aplikasi ini adalah aplikasi web berbasis Laravel untuk mengelola Surat Bukti Penindakan (SBP). Aplikasi ini memungkinkan pengguna untuk membuat, melihat, mengedit, dan mencetak dokumen SBP beserta dokumen terkait lainnya seperti Berita Acara Pemeriksaan, Penegahan, dan Penyegelan.
 
-## Implemented Features
+## Desain dan Fitur
 
-### Style and Design
+### Skema Warna
 
-*   **Framework**: Bootstrap 5 (via CoreUI)
-*   **Layout**: A consistent layout with a sidebar for navigation, a header, and a main content area.
-*   **Views**: Blade templates for all views.
-*   **UI Components**:
-    *   **Dashboard**: A central dashboard with summary information.
-    *   **Tables**: Styled tables for displaying data.
-    *   **Forms**: Styled forms for data input.
-    *   **Modals**: Modals for adding, editing, and deleting data.
-    *   **Pagination**: Pagination links for navigating through large datasets.
+*   **Primer:** Biru (misalnya, `#0d6efd`)
+*   **Sekunder:** Abu-abu (misalnya, `#6c757d`)
+*   **Success:** Hijau (misalnya, `#198754`)
+*   **Warning:** Kuning (misalnya, `#ffc107`)
+*   **Danger:** Merah (misalnya, `#dc3545`)
+*   **Info:** Biru muda (misalnya, `#0dcaf0`)
 
-### Features
+### Tipografi
 
-*   **SBP Management**:
-    *   Create, Read, Update, and Delete (CRUD) operations for SBP data.
-    *   Data is stored in a `sbp` table in the database.
-    *   The `SbpController` handles all SBP-related requests.
-    *   Views for creating, editing, and displaying SBP data.
-    *   **Nomor SBP Formatting**: The `nomor_sbp` is automatically formatted as `SBP-{input_number}/KBC.0102/{year}` before being stored in the database. The input form only accepts integers.
-*   **Petugas Management**:
-    *   CRUD operations for Petugas data.
-    *   Data is stored in a `petugas` table in the database.
-    *   The `PetugasController` handles all Petugas-related requests.
-    *   Views for creating, editing, and displaying Petugas data.
-    *   **Modal Form**: A modal form is used to add new Petugas data.
-*   **Database Explorer**:
-    *   A simple database explorer to view the tables in the database.
-    *   The `DatabaseController` handles requests for the database explorer.
+*   **Font:** Sistem UI default (misalnya, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif)
 
-## Current Task: SBP Number Formatting
+### Fitur Utama
 
-### Plan
+*   **Dashboard:** Halaman utama setelah login, menampilkan ringkasan data.
+*   **Manajemen SBP:**
+    *   Membuat SBP baru dengan formulir input yang valid.
+    *   Melihat daftar SBP yang ada dengan paginasi.
+    *   Mengedit data SBP yang sudah ada.
+    *   Mencetak SBP dalam format PDF.
+*   **Manajemen Petugas:**
+    *   Membuat, membaca, memperbarui, dan menghapus (CRUD) data petugas.
+*   **Manajemen Pangkat/Golongan:**
+    *   CRUD untuk data pangkat/golongan.
+*   **Cetak Dokumen Terkait:**
+    *   Mencetak Berita Acara Pemeriksaan.
+    *   Mencetak Berita Acara Penegahan.
+    *   Mencetak Berita Acara Penyegelan.
+*   **Pratinjau Dokumen:** Menampilkan pratinjau PDF dari semua dokumen yang dapat dicetak langsung di browser.
 
-1.  **Modify `resources/views/input-sbp.blade.php`**:
-    *   Change the input type for "Nomor SBP" from `text` to `number`.
-2.  **Modify `app/Http/Controllers/SbpController.php`**:
-    *   In the `store` and `update` methods:
-        *   Validate that `nomor_sbp` is an integer.
-        *   Format the `nomor_sbp` string as `SBP-{input_number}/KBC.0102/{year}`.
-        *   Validate the uniqueness of the formatted `nomor_sbp` string.
-        *   Save the formatted `nomor_sbp` to the database.
-    *   **FIX**: In the `edit` method, corrected the regular expression in `preg_match` to properly escape forward slashes, resolving the "Unknown modifier 'K'" error.
-3.  **Modify `resources/views/edit-sbp.blade.php`**:
-    *   Extract the integer part of the `nomor_sbp` and display it in the form for editing.
+## Rencana Perubahan Saat Ini
+
+### Permintaan
+
+"untuk preview dokumen, gunakan satu preview saya dimana akan mencetak satu pdf yang berisi, sbp, ba riksa, ba tegah, ba segel, dan buat satu tombol cetak sekaligus"
+
+### Rencana
+
+1.  **Buat Rute Baru:** Tambahkan rute `GET /sbp/{id}/pdf/semua` di `routes/web.php`.
+2.  **Buat Template Gabungan:** Buat file view baru di `resources/views/templatecetak/template-semua.blade.php` yang akan menyertakan (include) template untuk SBP, BA Riksa, BA Tegah, dan BA Segel. Ini akan memastikan semua dokumen dirender dalam satu halaman HTML.
+3.  **Perbarui SbpController:** Tambahkan metode `cetakSemua` ke `SbpController.php`. Metode ini akan memuat data SBP dan merender `template-semua.blade.php` menjadi satu PDF.
+4.  **Perbarui `preview-sbp.blade.php`:**
+    *   Hapus empat `<iframe>` yang ada.
+    *   Hapus tombol-tombol cetak yang terpisah dan dropdown.
+    *   Tambahkan satu `<iframe>` yang sumbernya menunjuk ke rute baru `/sbp/{id}/pdf/semua`.
+    *   Tambahkan satu tombol "Cetak Semua Dokumen" yang juga mengarah ke rute `/sbp/{id}/pdf/semua`.
 

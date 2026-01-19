@@ -17,21 +17,19 @@
                 <i class="cil-arrow-circle-left"></i> Kembali
             </a>
 
-            <a href="{{ route('sbp.pdf', $sbp->id) }}" target="_blank" class="btn btn-success ms-2">
-                <i class="cil-print"></i> Cetak SBP
-            </a>
-
-            <a href="{{ route('sbp.pdf.ba-riksa', $sbp->id) }}" target="_blank" class="btn btn-primary ms-2">
-                <i class="cil-print"></i> Cetak BA Pemeriksaan
-            </a>
-
-            <a href="{{ route('sbp.pdf.ba-tegah', $sbp->id) }}" target="_blank" class="btn btn-warning ms-2">
-                <i class="cil-print"></i> Cetak BA Penegahan
-            </a>
-
-            <a href="{{ route('sbp.pdf.ba-segel', $sbp->id) }}" target="_blank" class="btn btn-danger ms-2">
-                <i class="cil-print"></i> Cetak BA Penyegelan
-            </a>
+            <div class="btn-group ms-2">
+                <button type="button" class="btn btn-success dropdown-toggle" data-coreui-toggle="dropdown" aria-expanded="false">
+                    <i class="cil-print"></i> Cetak
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item fw-bold" href="{{ route('sbp.pdf.semua', $sbp->id) }}" target="_blank">Cetak Semua Dokumen</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="{{ route('sbp.pdf', $sbp->id) }}" target="_blank">Cetak SBP</a></li>
+                    <li><a class="dropdown-item" href="{{ route('sbp.pdf.ba-riksa', $sbp->id) }}" target="_blank">Cetak BA Pemeriksaan</a></li>
+                    <li><a class="dropdown-item" href="{{ route('sbp.pdf.ba-tegah', $sbp->id) }}" target="_blank">Cetak BA Penegahan</a></li>
+                    <li><a class="dropdown-item" href="{{ route('sbp.pdf.ba-segel', $sbp->id) }}" target="_blank">Cetak BA Penyegelan</a></li>
+                </ul>
+            </div>
         </div>
     </div>
 
