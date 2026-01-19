@@ -35,9 +35,6 @@
 
     {{-- PREVIEW PDF SBP --}}
     <div class="card mb-4">
-        <div class="card-header">
-            <strong>Pratinjau Dokumen SBP</strong>
-        </div>
         <div class="card-body p-0">
             <iframe 
                 src="{{ route('sbp.pdf.semua', $sbp->id) }}" 
