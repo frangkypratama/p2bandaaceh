@@ -5,6 +5,7 @@ use App\Http\Controllers\SbpController;
 use App\Http\Controllers\PetugasController;
 use App\Http\Controllers\DatabaseController;
 use App\Http\Controllers\PangkatGolonganController;
+use App\Http\Controllers\BastController;
 
 /*
 |--------------------------------------------------------------------------
@@ -62,6 +63,13 @@ Route::get('/data-petugas', [PetugasController::class, 'index'])->name('petugas.
 Route::post('/data-petugas', [PetugasController::class, 'store'])->name('petugas.store');
 Route::put('/data-petugas/{petugas}', [PetugasController::class, 'update'])->name('petugas.update');
 Route::delete('/data-petugas/{petugas}', [PetugasController::class, 'destroy'])->name('petugas.destroy');
+
+/*
+|--------------------------------------------------------------------------
+| BAST
+|--------------------------------------------------------------------------
+*/
+Route::resource('bast', BastController::class);
 
 /*
 |--------------------------------------------------------------------------

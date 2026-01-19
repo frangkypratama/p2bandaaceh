@@ -42,6 +42,7 @@ class Sbp extends Model
         'nomor_sbp_int',
         'kota_penindakan',
         'kecamatan_penindakan',
+        'flag_bast',
     ];
 
     /**
@@ -52,6 +53,7 @@ class Sbp extends Model
     protected $casts = [
         'tanggal_sbp' => 'date',
         'tanggal_surat_perintah' => 'date',
+        'flag_bast' => 'boolean',
     ];
 
     /**
@@ -78,5 +80,13 @@ class Sbp extends Model
     public function getTanggalSbpTerbilangAttribute()
     {
         return TerbilangHelper::tanggal($this->tanggal_sbp);
+    }
+
+    /**
+     * Get the BAST associated with the SBP.
+     */
+    public function bast()
+    {
+        return $this->hasOne(Bast::class);
     }
 }
