@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Sbp;
 use App\Models\Petugas;
+use App\Models\Bast;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class SbpController extends Controller
@@ -15,7 +17,7 @@ class SbpController extends Controller
      */
     public function index()
     {
-        $sbpData = Sbp::with(['petugas1', 'petugas2'])->orderBy('tanggal_sbp', 'desc')
+        $sbpData = Sbp::with(['petugas1', 'petugas2', 'bast'])->orderBy('tanggal_sbp', 'desc')
                         ->orderBy('nomor_sbp_int', 'desc')
                         ->paginate(10);
         return view('data-sbp', compact('sbpData'));
@@ -54,7 +56,21 @@ class SbpController extends Controller
             'id_petugas_2' => 'required|integer|exists:petugas,id|different:id_petugas_1',
             'kota' => 'nullable|string|max:255',
             'kecamatan' => 'nullable|string|max:255',
+            'flag_bast' => 'nullable|boolean',
         ]);
+
+        if ($request->boolean('flag_bast')) {
+            $request->validate([
+                'nomor_bast' => 'required|string|max:255|unique:bast,nomor_bast',
+                'tanggal_bast' => 'required|date',
+                'jenis_dokumen' => 'required|string|max:255',
+                'tanggal_dokumen' => 'required|date',
+                'petugas_eksternal' => 'required|string|max:255',
+                'nip_nrp_petugas_eksternal' => 'required|string|max:255',
+                'instansi_eksternal' => 'required|string|max:255',
+                'dalam_rangka' => 'required|string',
+            ]);
+        }
 
         $nomor_sbp_int = $validated['nomor_sbp'];
         $tahun_sbp = Carbon::parse($validated['tanggal_sbp'])->year;
@@ -73,23 +89,41 @@ class SbpController extends Controller
             'nomor_sbp_final.unique' => 'Nomor SBP dengan tahun tersebut sudah ada.'
         ]);
         
-        // ===== AMBIL NAMA PETUGAS =====
-        $petugas1 = Petugas::find($validated['id_petugas_1']);
-        $petugas2 = Petugas::find($validated['id_petugas_2']);
+        DB::transaction(function () use ($validated, $request, $nomor_sbp_int, $tahun_sbp, $formattedSbp, $formattedBaRiksa, $formattedBaTegah, $formattedBaSegel) {
+            // ===== AMBIL NAMA PETUGAS =====
+            $petugas1 = Petugas::find($validated['id_petugas_1']);
+            $petugas2 = Petugas::find($validated['id_petugas_2']);
 
-        // ===== SIMPAN =====
-        $dataToStore = $validated;
-        $dataToStore['kota_penindakan'] = $validated['kota'];
-        $dataToStore['kecamatan_penindakan'] = $validated['kecamatan'];
-        $dataToStore['nama_petugas_1'] = $petugas1->nama;
-        $dataToStore['nama_petugas_2'] = $petugas2->nama;
-        $dataToStore['nomor_sbp'] = $formattedSbp;
-        $dataToStore['nomor_ba_riksa'] = $formattedBaRiksa;
-        $dataToStore['nomor_ba_tegah'] = $formattedBaTegah;
-        $dataToStore['nomor_ba_segel'] = $formattedBaSegel;
-        $dataToStore['nomor_sbp_int'] = $nomor_sbp_int;
+            // ===== SIMPAN SBP =====
+            $dataToStore = $validated;
+            $dataToStore['kota_penindakan'] = $validated['kota'];
+            $dataToStore['kecamatan_penindakan'] = $validated['kecamatan'];
+            $dataToStore['nama_petugas_1'] = $petugas1->nama;
+            $dataToStore['nama_petugas_2'] = $petugas2->nama;
+            $dataToStore['nomor_sbp'] = $formattedSbp;
+            $dataToStore['nomor_ba_riksa'] = $formattedBaRiksa;
+            $dataToStore['nomor_ba_tegah'] = $formattedBaTegah;
+            $dataToStore['nomor_ba_segel'] = $formattedBaSegel;
+            $dataToStore['nomor_sbp_int'] = $nomor_sbp_int;
+            $dataToStore['flag_bast'] = $request->boolean('flag_bast');
 
-        Sbp::create($dataToStore);
+            $sbp = Sbp::create($dataToStore);
+
+            // ===== SIMPAN BAST JIKA ADA =====
+            if ($request->boolean('flag_bast')) {
+                $bastData = $request->only([
+                    'nomor_bast',
+                    'tanggal_bast',
+                    'jenis_dokumen',
+                    'tanggal_dokumen',
+                    'petugas_eksternal',
+                    'nip_nrp_petugas_eksternal',
+                    'instansi_eksternal',
+                    'dalam_rangka',
+                ]);
+                $sbp->bast()->create($bastData);
+            }
+        });
 
         return redirect()
             ->route('sbp.index')
@@ -104,6 +138,8 @@ class SbpController extends Controller
         // Ambil angka dari "SBP-12/KBC.0102/2025"
         preg_match('/SBP-(\d+)\//', $sbp->nomor_sbp, $match);
         $sbp->nomor_sbp_int = $match[1] ?? '';
+        
+        $sbp->load('bast');
 
         $petugasData = Petugas::orderBy('nama', 'asc')->get();
 
@@ -134,7 +170,21 @@ class SbpController extends Controller
             'id_petugas_2' => 'required|integer|exists:petugas,id|different:id_petugas_1',
             'kota' => 'nullable|string|max:255',
             'kecamatan' => 'nullable|string|max:255',
+            'flag_bast' => 'nullable|boolean',
         ]);
+
+        if ($request->boolean('flag_bast')) {
+            $request->validate([
+                'nomor_bast' => 'required|string|max:255|unique:bast,nomor_bast,' . ($sbp->bast->id ?? 'NULL') . ',id',
+                'tanggal_bast' => 'required|date',
+                'jenis_dokumen' => 'nullable|string|max:255',
+                'tanggal_dokumen' => 'nullable|date',
+                'petugas_eksternal' => 'required|string|max:255',
+                'nip_nrp_petugas_eksternal' => 'required|string|max:255',
+                'instansi_eksternal' => 'required|string|max:255',
+                'dalam_rangka' => 'required|string',
+            ]);
+        }
 
         $nomor_sbp_int = $validated['nomor_sbp'];
         $tahun_sbp = Carbon::parse($validated['tanggal_sbp'])->year;
@@ -149,21 +199,42 @@ class SbpController extends Controller
             'nomor_sbp_final' => 'unique:sbp,nomor_sbp,' . $sbp->id
         ]);
 
-        $petugas1 = Petugas::find($validated['id_petugas_1']);
-        $petugas2 = Petugas::find($validated['id_petugas_2']);
+        DB::transaction(function () use ($sbp, $validated, $request, $nomor_sbp_int, $tahun_sbp, $formattedSbp, $formattedBaRiksa, $formattedBaTegah, $formattedBaSegel) {
+            $petugas1 = Petugas::find($validated['id_petugas_1']);
+            $petugas2 = Petugas::find($validated['id_petugas_2']);
 
-        $dataToUpdate = $validated;
-        $dataToUpdate['kota_penindakan'] = $validated['kota'];
-        $dataToUpdate['kecamatan_penindakan'] = $validated['kecamatan'];
-        $dataToUpdate['nama_petugas_1'] = $petugas1->nama;
-        $dataToUpdate['nama_petugas_2'] = $petugas2->nama;
-        $dataToUpdate['nomor_sbp'] = $formattedSbp;
-        $dataToUpdate['nomor_ba_riksa'] = $formattedBaRiksa;
-        $dataToUpdate['nomor_ba_tegah'] = $formattedBaTegah;
-        $dataToUpdate['nomor_ba_segel'] = $formattedBaSegel;
-        $dataToUpdate['nomor_sbp_int'] = $nomor_sbp_int;
+            $dataToUpdate = $validated;
+            $dataToUpdate['kota_penindakan'] = $validated['kota'];
+            $dataToUpdate['kecamatan_penindakan'] = $validated['kecamatan'];
+            $dataToUpdate['nama_petugas_1'] = $petugas1->nama;
+            $dataToUpdate['nama_petugas_2'] = $petugas2->nama;
+            $dataToUpdate['nomor_sbp'] = $formattedSbp;
+            $dataToUpdate['nomor_ba_riksa'] = $formattedBaRiksa;
+            $dataToUpdate['nomor_ba_tegah'] = $formattedBaTegah;
+            $dataToUpdate['nomor_ba_segel'] = $formattedBaSegel;
+            $dataToUpdate['nomor_sbp_int'] = $nomor_sbp_int;
+            $dataToUpdate['flag_bast'] = $request->boolean('flag_bast');
 
-        $sbp->update($dataToUpdate);
+            $sbp->update($dataToUpdate);
+
+            if ($request->boolean('flag_bast')) {
+                $bastData = $request->only([
+                    'nomor_bast',
+                    'tanggal_bast',
+                    'jenis_dokumen',
+                    'tanggal_dokumen',
+                    'petugas_eksternal',
+                    'nip_nrp_petugas_eksternal',
+                    'instansi_eksternal',
+                    'dalam_rangka',
+                ]);
+                $sbp->bast()->updateOrCreate(['sbp_id' => $sbp->id], $bastData);
+            } else {
+                if ($sbp->bast) {
+                    $sbp->bast->delete();
+                }
+            }
+        });
 
         return redirect()->back()->with('success', 'Data SBP berhasil diperbarui.');
     }
