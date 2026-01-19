@@ -24,6 +24,10 @@
             <a href="{{ route('sbp.pdf.ba-riksa', $sbp->id) }}" target="_blank" class="btn btn-primary ms-2">
                 <i class="cil-print"></i> Cetak BA Pemeriksaan
             </a>
+
+            <a href="{{ route('sbp.pdf.ba-tegah', $sbp->id) }}" target="_blank" class="btn btn-warning ms-2">
+                <i class="cil-print"></i> Cetak BA Pencegahan
+            </a>
         </div>
     </div>
 
@@ -43,13 +47,28 @@
     </div>
 
     {{-- PREVIEW PDF BA RIKSA --}}
-    <div class="card">
+    <div class="card mb-4">
         <div class="card-header">
             <strong>Pratinjau Dokumen Berita Acara Pemeriksaan</strong>
         </div>
         <div class="card-body p-0">
             <iframe 
                 src="{{ route('sbp.pdf.ba-riksa', $sbp->id) }}" 
+                width="100%" 
+                height="900px"
+                style="border:none;">
+            </iframe>
+        </div>
+    </div>
+
+    {{-- PREVIEW PDF BA TEGAH --}}
+    <div class="card">
+        <div class="card-header">
+            <strong>Pratinjau Dokumen Berita Acara Penegahan</strong>
+        </div>
+        <div class="card-body p-0">
+            <iframe 
+                src="{{ route('sbp.pdf.ba-tegah', $sbp->id) }}" 
                 width="100%" 
                 height="900px"
                 style="border:none;">

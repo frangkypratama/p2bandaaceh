@@ -209,4 +209,20 @@ class SbpController extends Controller
 
         return $pdf->stream($filename);
     }
+
+    /**
+     * Generate PDF BA Tegah (F4 FIX).
+     */
+    public function generatePdfBaTegah($id)
+    {
+        $sbp = Sbp::with(['petugas1', 'petugas2'])->findOrFail($id);
+
+        $pdf = Pdf::loadView('templatecetak.template-ba-tegah', compact('sbp'))
+            // ===== F4 REAL SIZE (pt) =====
+            ->setPaper([0, 0, 595.28, 935.43], 'portrait');
+
+        $filename = str_replace('/', '-', $sbp->nomor_ba_tegah) . '.pdf';
+
+        return $pdf->stream($filename);
+    }
 }

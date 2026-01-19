@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>{{ $sbp->nomor_ba_riksa ?? '-' }}</title>
+    <title>{{ $sbp->nomor_ba_tegah ?? '-' }}</title>
     <style>
         @page {
             size: 215mm 330mm;
@@ -168,8 +168,8 @@
     </table>
 
     <div class="title">
-        <h3>BERITA ACARA PEMERIKSAAN</h3>
-        <p>Nomor : {{ $sbp->nomor_ba_riksa ?? '-' }}</p>
+        <h3>BERITA ACARA PENEGAHAN</h3>
+        <p>Nomor : {{ $sbp->nomor_ba_tegah ?? '-' }}</p>
     </div>
 
     <table class="content-table">
@@ -177,7 +177,7 @@
             <!-- INTRO TEXT -->
             <tr>
                 <td colspan="4" class="full-width">
-                    Pada hari ini {{ optional($sbp->tanggal_sbp)->translatedFormat('l') ?? '-' }} tanggal {{ $sbp->tanggal_sbp_terbilang ?? '-' }}, berdasarkan Surat Perintah Kepala KPPBC Tipe Madya Pabean C Banda Aceh Nomor {{ $sbp->nomor_surat_perintah ?? '-' }} tanggal {{ optional($sbp->tanggal_surat_perintah)->translatedFormat('d F Y') ?? '-' }}. Kami yang bertanda tangan di bawah ini telah melakukan pemeriksaan terhadap:
+                    Pada hari ini {{ optional($sbp->tanggal_sbp)->translatedFormat('l') ?? '-' }} tanggal {{ $sbp->tanggal_sbp_terbilang ?? '-' }}, berdasarkan Surat Perintah Kepala KPPBC Tipe Madya Pabean C Banda Aceh Nomor {{ $sbp->nomor_surat_perintah ?? '-' }} tanggal {{ optional($sbp->tanggal_surat_perintah)->translatedFormat('d F Y') ?? '-' }}. Kami yang bertanda tangan di bawah ini telah melakukan penegahan terhadap:
                 </td>
             </tr>
 
@@ -301,36 +301,15 @@
                 <td class="value">{{ $sbp->nomor_identitas_pemilik ?? '-' }}</td>
             </tr>
 
-            <!-- HASIL PEMERIKSAAN -->
-            <tr>
-                <td class="num"><br></td>
-                <td colspan="3"><br></td>
-            </tr>
-            <tr>
-                <td class="indent"></td>
-                <td class="label">Lokasi Pemeriksaan</td>
-                <td class="colon">:</td>
-                <td class="value">{{ $sbp->lokasi_penindakan ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td class="indent"></td>
-                <td class="label">Hasil Pemeriksaan</td>
-                <td class="colon">:</td>
-                <td class="value">Didapati {{ $sbp->uraian_barang ?? '-' }}</td>
-            </tr>
-
-            <!-- LAPORAN & SAKSI -->
+             <!-- LAPORAN & SAKSI -->
             <tr>
                 <td colspan="4"><br></td>
-            </tr>
-            <tr>
-                <td colspan="4" class="full-width">Laporan hasil pemeriksaan terlampir sebanyak 1 halaman</td>
             </tr>
             <tr>
                 <td colspan="4"><br></td>
             </tr>
             <tr>
-                <td colspan="4" class="full-width">Pemeriksaan disaksikan oleh pengangkut/pemilik/importir/eksportir atau kuasanya/ketua lingkungan/dll*:</td>
+                <td colspan="4" class="full-width">Penegahan disaksikan oleh pengangkut/pemilik/importir/eksportir atau kuasanya/ketua lingkungan/dll*:</td>
             </tr>
             <tr>
                 <td class="indent"></td>
@@ -375,7 +354,7 @@
             <tr>
                 <td class="num"></td>
                 <td class="sig-left">Pemilik/Kuasanya/Saksi*,</td>
-                <td class="sig-right">Pejabat yang melakukan pemeriksaan,</td>
+                <td class="sig-right">Pejabat yang melakukan penegahan,</td>
             </tr>
             <tr>
                 <td class="num"></td>
