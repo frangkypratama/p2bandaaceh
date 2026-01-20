@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('basts', function (Blueprint $table) {
+        Schema::create('bast', function (Blueprint $table) {
             $table->id();
             $table->string('nomor_bast');
             $table->date('tanggal_bast');
@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('nip_nrp_petugas_eksternal');
             $table->string('instansi_eksternal');
             $table->string('dalam_rangka');
-            $table->foreignId('sbp_id')->constrained('sbps');
+            $table->foreignId('sbp_id')->constrained('sbp');
             $table->timestamps();
         });
     }
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('basts');
+        Schema::dropIfExists('bast');
     }
 };
