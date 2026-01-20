@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Pratinjau Dokumen SBP ' . $sbp->nomor_sbp)
+@section('title', 'Pratinjau Dokumen ' . $sbp->nomor_sbp)
 
 @section('content')
 <div class="container-lg">

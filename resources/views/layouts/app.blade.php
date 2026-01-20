@@ -34,7 +34,6 @@
 
     </div>
     
-    <script src="https://cdn.jsdelivr.net/npm/@coreui/coreui@4.2.0/dist/js/coreui.bundle.min.js"></script>
     {{-- Custom Scripts --}}
     @stack('scripts')
 
