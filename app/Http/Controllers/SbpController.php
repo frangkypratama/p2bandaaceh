@@ -336,4 +336,13 @@ class SbpController extends Controller
 
         return $pdf->stream($filename);
     }
+
+    /**
+     * Menampilkan halaman checklist SBP.
+     */
+    public function checklist($id)
+    {
+        $sbp = Sbp::with(['petugas1', 'petugas2'])->findOrFail($id);
+        return view('templatecetak.template-checklist-sbp', compact('sbp'));
+    }
 }

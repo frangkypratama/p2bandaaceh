@@ -28,6 +28,7 @@
                     <li><a class="dropdown-item" href="{{ route('sbp.pdf.ba-riksa', $sbp->id) }}" target="_blank">Cetak BA Pemeriksaan</a></li>
                     <li><a class="dropdown-item" href="{{ route('sbp.pdf.ba-tegah', $sbp->id) }}" target="_blank">Cetak BA Penegahan</a></li>
                     <li><a class="dropdown-item" href="{{ route('sbp.pdf.ba-segel', $sbp->id) }}" target="_blank">Cetak BA Penyegelan</a></li>
+                    <li><a class="dropdown-item" href="{{ route('sbp.checklist', $sbp->id) }}">Checklist Kelengkapan</a></li>
                 </ul>
             </div>
         </div>

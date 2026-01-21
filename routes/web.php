@@ -40,6 +40,8 @@ Route::get('/data-sbp/pdf-ba-segel/{id}', [SbpController::class, 'generatePdfBaS
 Route::get('/data-sbp/pdf-semua/{id}', [SbpController::class, 'generatePdfSemua'])
     ->name('sbp.pdf.semua');
 
+Route::get('/sbp/{id}/checklist', [SbpController::class, 'checklist'])->name('sbp.checklist');
+
 // CRUD SBP
 Route::get('/input-sbp', [SbpController::class, 'create'])->name('sbp.create');
 Route::post('/input-sbp', [SbpController::class, 'store'])->name('sbp.store');
