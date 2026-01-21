@@ -338,11 +338,18 @@ class SbpController extends Controller
     }
 
     /**
-     * Menampilkan halaman checklist SBP.
+     * Generate PDF Checklist SBP.
      */
-    public function checklist($id)
+    public function generatePdfChecklist($id)
     {
         $sbp = Sbp::with(['petugas1', 'petugas2'])->findOrFail($id);
-        return view('templatecetak.template-checklist-sbp', compact('sbp'));
+
+        $pdf = Pdf::loadView('templatecetak.template-checklist-sbp', compact('sbp'))
+            // F4 REAL SIZE (pt)
+            ->setPaper([0, 0, 595.28, 935.43], 'portrait');
+
+        $filename = 'Checklist-' . str_replace('/', '-', $sbp->nomor_sbp) . '.pdf';
+
+        return $pdf->stream($filename);
     }
 }
