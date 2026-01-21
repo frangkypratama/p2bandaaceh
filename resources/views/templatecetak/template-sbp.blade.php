@@ -193,7 +193,7 @@
                 <td class="num">4.</td>
                 <td class="label">Lokasi Penindakan</td>
                 <td class="colon">:</td>
-                <td class="value">{{ $sbp->lokasi_penindakan ?? '-' }}</td>
+                <td class="value">{{ $sbp->lokasi_penindakan ?? '-' }}, Kecamatan {{ $sbp->kecamatan_penindakan ?? '-' }}, {{ $sbp->kota_penindakan ?? '-' }}</td>
             </tr>
             <tr>
                 <td class="indent"><br></td>
