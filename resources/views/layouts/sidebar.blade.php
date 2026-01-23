@@ -15,6 +15,10 @@
                 </a>
             </li>
 
+            <li class="nav-title">
+                <h2 class="fs-6 text-uppercase">Penindakan</h2>
+            </li>
+
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('sbp.create') }}">
                     <i class="nav-icon cil-pencil"></i>
@@ -27,6 +31,10 @@
                     <i class="nav-icon cil-list-rich"></i>
                     Data SBP
                 </a>
+            </li>
+
+            <li class="nav-title">
+                <h2 class="fs-6 text-uppercase">Referensi</h2>
             </li>
 
             <li class="nav-item">
