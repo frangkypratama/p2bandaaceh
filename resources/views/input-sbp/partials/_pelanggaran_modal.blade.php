@@ -6,7 +6,7 @@
                 <button type="button" class="btn-close" data-coreui-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p class="text-medium-emphasis">Pilih satu dugaan pelanggaran dari daftar di bawah ini. Modal akan otomatis tertutup.</p>
+                <p class="text-medium-emphasis">Pilih satu dugaan pelanggaran dari daftar di bawah ini.</p>
                 <div class="table-responsive">
                     <table class="table table-striped table-hover">
                         <thead class="table-dark">

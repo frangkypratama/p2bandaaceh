@@ -56,7 +56,7 @@ class SbpController extends Controller
             'uraian_barang' => 'required|string',
             'id_petugas_1' => 'required|integer|exists:petugas,id',
             'id_petugas_2' => 'required|integer|exists:petugas,id|different:id_petugas_1',
-            'kota' => 'nullable|string|max:255',
+            'kota' => 'required|string|max:255',
             'kecamatan' => 'nullable|string|max:255',
             'flag_bast' => 'nullable|boolean',
         ]);
@@ -239,7 +239,7 @@ class SbpController extends Controller
             }
         });
 
-        return redirect()->back()->with('success', 'Data SBP berhasil diperbarui.');
+        return redirect()->route('sbp.index')->with('success', 'Data SBP berhasil diperbarui.');
     }
 
     /**
@@ -351,7 +351,7 @@ class SbpController extends Controller
             // F4 REAL SIZE (pt)
             ->setPaper([0, 0, 595.28, 935.43], 'portrait');
 
-        $filename = 'Checklist-' . str_replace('/', '-', $sbp->nomor_sbp) . '.pdf';
+        $filename = 'Checklist' . str_replace('/', '-', $sbp->nomor_sbp) . '.pdf';
 
         return $pdf->stream($filename);
     }
