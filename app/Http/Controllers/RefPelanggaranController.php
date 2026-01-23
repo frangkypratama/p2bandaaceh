@@ -10,7 +10,7 @@ class RefPelanggaranController extends Controller
     public function index()
     {
         $pelanggaran = RefPelanggaran::all();
-        return view('ref_pelanggaran', compact('pelanggaran'));
+        return view('ref-pelanggaran', compact('pelanggaran'));
     }
 
     public function store(Request $request)
@@ -29,7 +29,7 @@ class RefPelanggaranController extends Controller
     {
         $pelanggaran_edit = RefPelanggaran::findOrFail($id);
         $pelanggaran = RefPelanggaran::all();
-        return view('ref_pelanggaran', compact('pelanggaran_edit', 'pelanggaran'));
+        return view('ref-pelanggaran', compact('pelanggaran_edit', 'pelanggaran'));
     }
 
     public function update(Request $request, $id)
