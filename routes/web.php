@@ -6,6 +6,7 @@ use App\Http\Controllers\PetugasController;
 use App\Http\Controllers\DatabaseController;
 use App\Http\Controllers\PangkatGolonganController;
 use App\Http\Controllers\BastController;
+use App\Http\Controllers\RefPelanggaranController;
 
 /*
 |--------------------------------------------------------------------------
@@ -73,6 +74,14 @@ Route::delete('/data-petugas/{petugas}', [PetugasController::class, 'destroy'])-
 |--------------------------------------------------------------------------
 */
 Route::resource('bast', BastController::class);
+
+/*
+|--------------------------------------------------------------------------
+| Referensi Pelanggaran
+|--------------------------------------------------------------------------
+*/
+Route::resource('ref-pelanggaran', RefPelanggaranController::class);
+
 
 /*
 |--------------------------------------------------------------------------

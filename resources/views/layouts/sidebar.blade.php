@@ -36,6 +36,13 @@
                 </a>
             </li>
 
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('ref-pelanggaran.index') }}">
+                    <i class="nav-icon cil-book"></i>
+                    Ref. Pelanggaran
+                </a>
+            </li>
+
             <li class="nav-title">
                 <h2 class="fs-6 text-uppercase">System</h2>
             </li>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Sbp;
 use App\Models\Petugas;
 use App\Models\Bast;
+use App\Models\RefPelanggaran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -29,7 +30,8 @@ class SbpController extends Controller
     public function create()
     {
         $petugasData = Petugas::orderBy('nama', 'asc')->get();
-        return view('input-sbp', compact('petugasData'));
+        $refPelanggaranData = RefPelanggaran::all();
+        return view('input-sbp', compact('petugasData', 'refPelanggaranData'));
     }
 
     /**
@@ -142,8 +144,9 @@ class SbpController extends Controller
         $sbp->load('bast');
 
         $petugasData = Petugas::orderBy('nama', 'asc')->get();
+        $refPelanggaranData = RefPelanggaran::all();
 
-        return view('edit-sbp', compact('sbp', 'petugasData'));
+        return view('edit-sbp', compact('sbp', 'petugasData', 'refPelanggaranData'));
     }
 
     /**

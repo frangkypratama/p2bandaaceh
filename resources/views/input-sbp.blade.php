@@ -61,68 +61,80 @@
     </div>
 </div>
 
-{{-- Include Modal --}}
+{{-- Include Modals --}}
 @include('input-sbp.partials._bast_modal')
+@include('input-sbp.partials._pelanggaran_modal')
 
 @endsection
 
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        // BAST Modal Logic
         const flagBastCheckbox = document.getElementById('flag_bast');
         const saveBastButton = document.getElementById('saveBastButton');
         const bastModalElement = document.getElementById('bastModal');
         
-        if (!bastModalElement || !flagBastCheckbox || !saveBastButton) {
-            console.error('One or more required elements for the BAST modal are missing.');
-            return;
-        }
+        if (bastModalElement && flagBastCheckbox && saveBastButton) {
+            const bastModal = coreui.Modal.getOrCreateInstance(bastModalElement);
 
-        const bastModal = coreui.Modal.getOrCreateInstance(bastModalElement);
-
-        // Function to load data from hidden inputs to modal
-        function loadModalData() {
-            document.getElementById('modal_nomor_bast').value = document.getElementById('hidden_nomor_bast').value;
-            document.getElementById('modal_tanggal_bast').value = document.getElementById('hidden_tanggal_bast').value;
-            document.getElementById('modal_jenis_dokumen').value = document.getElementById('hidden_jenis_dokumen').value;
-            document.getElementById('modal_tanggal_dokumen').value = document.getElementById('hidden_tanggal_dokumen').value;
-            document.getElementById('modal_petugas_eksternal').value = document.getElementById('hidden_petugas_eksternal').value;
-            document.getElementById('modal_nip_nrp_petugas_eksternal').value = document.getElementById('hidden_nip_nrp_petugas_eksternal').value;
-            document.getElementById('modal_instansi_eksternal').value = document.getElementById('hidden_instansi_eksternal').value;
-            document.getElementById('modal_dalam_rangka').value = document.getElementById('hidden_dalam_rangka').value;
-        }
-
-        flagBastCheckbox.addEventListener('change', function () {
-            if (this.checked) {
-                loadModalData();
-                bastModal.show();
+            function loadModalData() {
+                document.getElementById('modal_nomor_bast').value = document.getElementById('hidden_nomor_bast').value;
+                document.getElementById('modal_tanggal_bast').value = document.getElementById('hidden_tanggal_bast').value;
+                document.getElementById('modal_jenis_dokumen').value = document.getElementById('hidden_jenis_dokumen').value;
+                document.getElementById('modal_tanggal_dokumen').value = document.getElementById('hidden_tanggal_dokumen').value;
+                document.getElementById('modal_petugas_eksternal').value = document.getElementById('hidden_petugas_eksternal').value;
+                document.getElementById('modal_nip_nrp_petugas_eksternal').value = document.getElementById('hidden_nip_nrp_petugas_eksternal').value;
+                document.getElementById('modal_instansi_eksternal').value = document.getElementById('hidden_instansi_eksternal').value;
+                document.getElementById('modal_dalam_rangka').value = document.getElementById('hidden_dalam_rangka').value;
             }
-        });
 
-        saveBastButton.addEventListener('click', function () {
-            // Transfer data from modal to hidden inputs
-            document.getElementById('hidden_nomor_bast').value = document.getElementById('modal_nomor_bast').value;
-            document.getElementById('hidden_tanggal_bast').value = document.getElementById('modal_tanggal_bast').value;
-            document.getElementById('hidden_jenis_dokumen').value = document.getElementById('modal_jenis_dokumen').value;
-            document.getElementById('hidden_tanggal_dokumen').value = document.getElementById('modal_tanggal_dokumen').value;
-            document.getElementById('hidden_petugas_eksternal').value = document.getElementById('modal_petugas_eksternal').value;
-            document.getElementById('hidden_nip_nrp_petugas_eksternal').value = document.getElementById('modal_nip_nrp_petugas_eksternal').value;
-            document.getElementById('hidden_instansi_eksternal').value = document.getElementById('modal_instansi_eksternal').value;
-            document.getElementById('hidden_dalam_rangka').value = document.getElementById('modal_dalam_rangka').value;
+            flagBastCheckbox.addEventListener('change', function () {
+                if (this.checked) {
+                    loadModalData();
+                    bastModal.show();
+                }
+            });
+
+            saveBastButton.addEventListener('click', function () {
+                document.getElementById('hidden_nomor_bast').value = document.getElementById('modal_nomor_bast').value;
+                document.getElementById('hidden_tanggal_bast').value = document.getElementById('modal_tanggal_bast').value;
+                document.getElementById('hidden_jenis_dokumen').value = document.getElementById('modal_jenis_dokumen').value;
+                document.getElementById('hidden_tanggal_dokumen').value = document.getElementById('modal_tanggal_dokumen').value;
+                document.getElementById('hidden_petugas_eksternal').value = document.getElementById('modal_petugas_eksternal').value;
+                document.getElementById('hidden_nip_nrp_petugas_eksternal').value = document.getElementById('modal_nip_nrp_petugas_eksternal').value;
+                document.getElementById('hidden_instansi_eksternal').value = document.getElementById('modal_instansi_eksternal').value;
+                document.getElementById('hidden_dalam_rangka').value = document.getElementById('modal_dalam_rangka').value;
+                
+                bastModal.hide();
+            });
+
+            bastModalElement.addEventListener('hidden.coreui.modal', function () {
+                const nomorBastHidden = document.getElementById('hidden_nomor_bast');
+                if (!nomorBastHidden.value) { 
+                    flagBastCheckbox.checked = false;
+                }
+            });
             
-            bastModal.hide();
-        });
-
-        bastModalElement.addEventListener('hidden.coreui.modal', function () {
-            const nomorBastHidden = document.getElementById('hidden_nomor_bast');
-            if (!nomorBastHidden.value) { 
-                flagBastCheckbox.checked = false;
+            if (document.getElementById('hidden_nomor_bast').value) {
+                flagBastCheckbox.checked = true;
             }
-        });
-        
-        // If there are old BAST values (e.g., due to validation failure), check the box.
-        if (document.getElementById('hidden_nomor_bast').value) {
-            flagBastCheckbox.checked = true;
+        }
+
+        // Pelanggaran Modal Logic
+        const pelanggaranModalElement = document.getElementById('pelanggaranModal');
+        if (pelanggaranModalElement) {
+            const alasanTextarea = document.getElementById('alasan_penindakan');
+            const pelanggaranModal = coreui.Modal.getOrCreateInstance(pelanggaranModalElement);
+
+            pelanggaranModalElement.addEventListener('click', function(event) {
+                const button = event.target.closest('.btn-pilih-pelanggaran');
+                if (button) {
+                    const selectedPelanggaran = button.getAttribute('data-pelanggaran');
+                    alasanTextarea.value = 'Diduga melanggar ' + selectedPelanggaran + '.';
+                    pelanggaranModal.hide();
+                }
+            });
         }
     });
 </script>

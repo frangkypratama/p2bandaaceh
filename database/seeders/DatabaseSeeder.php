@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             PetugasSeeder::class,
             SbpSeeder::class,
+            RefPelanggaranSeeder::class,
         ]);
     }
 }

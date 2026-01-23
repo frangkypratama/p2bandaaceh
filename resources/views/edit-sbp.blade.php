@@ -19,11 +19,15 @@
                         </div>
                     @endif
 
-                    @error('nomor_sbp_formatted')
-                        <div class="alert alert-danger" role="alert">
-                            Data sudah ada
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
                         </div>
-                    @enderror
+                    @endif
 
                     <form method="POST" action="{{ route('sbp.update', $sbp->id) }}" class="row g-3">
                         @csrf
@@ -37,40 +41,32 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label for="nomor_sbp" class="form-label">Nomor SBP</label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="cil-notes"></i></span>
-                                                    <input id="nomor_sbp" type="number" class="form-control" name="nomor_sbp" value="{{ $sbp->nomor_sbp_int }}" required>
-                                                </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="nomor_sbp" class="form-label">Nomor SBP</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="cil-notes"></i></span>
+                                                <input id="nomor_sbp" type="number" class="form-control @error('nomor_sbp_final') is-invalid @enderror" name="nomor_sbp" value="{{ old('nomor_sbp', $sbp->nomor_sbp_int) }}" required>
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label for="tanggal_sbp" class="form-label">Tanggal SBP</label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="cil-calendar"></i></span>
-                                                    <input id="tanggal_sbp" type="date" class="form-control" name="tanggal_sbp" value="{{ $sbp->tanggal_sbp->format('Y-m-d') }}" required>
-                                                </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="tanggal_sbp" class="form-label">Tanggal SBP</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="cil-calendar"></i></span>
+                                                <input id="tanggal_sbp" type="date" class="form-control" name="tanggal_sbp" value="{{ old('tanggal_sbp', $sbp->tanggal_sbp->format('Y-m-d')) }}" required>
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label for="nomor_surat_perintah" class="form-label">Nomor Surat Perintah</label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="cil-file"></i></span>
-                                                    <input id="nomor_surat_perintah" type="text" class="form-control" name="nomor_surat_perintah" value="{{ $sbp->nomor_surat_perintah }}" required>
-                                                </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="nomor_surat_perintah" class="form-label">Nomor Surat Perintah</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="cil-file"></i></span>
+                                                <input id="nomor_surat_perintah" type="text" class="form-control" name="nomor_surat_perintah" value="{{ old('nomor_surat_perintah', $sbp->nomor_surat_perintah) }}" required>
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label for="tanggal_surat_perintah" class="form-label">Tanggal Surat Perintah</label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="cil-calendar"></i></span>
-                                                    <input id="tanggal_surat_perintah" type="date" class="form-control" name="tanggal_surat_perintah" value="{{ $sbp->tanggal_surat_perintah->format('Y-m-d') }}" required>
-                                                </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="tanggal_surat_perintah" class="form-label">Tanggal Surat Perintah</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="cil-calendar"></i></span>
+                                                <input id="tanggal_surat_perintah" type="date" class="form-control" name="tanggal_surat_perintah" value="{{ old('tanggal_surat_perintah', $sbp->tanggal_surat_perintah->format('Y-m-d')) }}" required>
                                             </div>
                                         </div>
                                     </div>
@@ -89,30 +85,26 @@
                                         <label for="nama_pelaku" class="form-label">Nama Pelaku</label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="cil-user"></i></span>
-                                            <input id="nama_pelaku" type="text" class="form-control" name="nama_pelaku" value="{{ $sbp->nama_pelaku }}" required>
+                                            <input id="nama_pelaku" type="text" class="form-control" name="nama_pelaku" value="{{ old('nama_pelaku', $sbp->nama_pelaku) }}" required>
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label for="jenis_identitas" class="form-label">Jenis Identitas</label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="cil-credit-card"></i></span>
-                                                    <select id="jenis_identitas" class="form-select" name="jenis_identitas" required>
-                                                        <option value="Paspor" {{ $sbp->jenis_identitas == 'Paspor' ? 'selected' : '' }}>Paspor</option>
-                                                        <option value="KTP" {{ $sbp->jenis_identitas == 'KTP' ? 'selected' : '' }}>KTP</option>
-                                                        <option value="SIM" {{ $sbp->jenis_identitas == 'SIM' ? 'selected' : '' }}>SIM</option>
-                                                    </select>
-                                                </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="jenis_identitas" class="form-label">Jenis Identitas</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="cil-credit-card"></i></span>
+                                                <select id="jenis_identitas" class="form-select" name="jenis_identitas" required>
+                                                    <option value="Paspor" {{ old('jenis_identitas', $sbp->jenis_identitas) == 'Paspor' ? 'selected' : '' }}>Paspor</option>
+                                                    <option value="KTP" {{ old('jenis_identitas', $sbp->jenis_identitas) == 'KTP' ? 'selected' : '' }}>KTP</option>
+                                                    <option value="SIM" {{ old('jenis_identitas', $sbp->jenis_identitas) == 'SIM' ? 'selected' : '' }}>SIM</option>
+                                                </select>
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label for="nomor_identitas" class="form-label">Nomor Identitas</label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="cil-info"></i></span>
-                                                    <input id="nomor_identitas" type="text" class="form-control" name="nomor_identitas" value="{{ $sbp->nomor_identitas }}" required>
-                                                </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="nomor_identitas" class="form-label">Nomor Identitas</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="cil-info"></i></span>
+                                                <input id="nomor_identitas" type="text" class="form-control" name="nomor_identitas" value="{{ old('nomor_identitas', $sbp->nomor_identitas) }}" required>
                                             </div>
                                         </div>
                                     </div>
@@ -132,14 +124,14 @@
                                             <label for="lokasi_penindakan" class="form-label">Lokasi Penindakan</label>
                                             <div class="input-group">
                                                 <span class="input-group-text"><i class="cil-location-pin"></i></span>
-                                                <input id="lokasi_penindakan" type="text" class="form-control" name="lokasi_penindakan" value="{{ $sbp->lokasi_penindakan }}" required>
+                                                <input id="lokasi_penindakan" type="text" class="form-control" name="lokasi_penindakan" value="{{ old('lokasi_penindakan', $sbp->lokasi_penindakan) }}" required>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <label for="waktu_penindakan" class="form-label">Waktu Penindakan</label>
                                             <div class="input-group">
                                                 <span class="input-group-text"><i class="cil-clock"></i></span>
-                                                <input id="waktu_penindakan" type="time" class="form-control" name="waktu_penindakan" value="{{ $sbp->waktu_penindakan }}" required>
+                                                <input id="waktu_penindakan" type="time" class="form-control" name="waktu_penindakan" value="{{ old('waktu_penindakan', $sbp->waktu_penindakan) }}" required>
                                             </div>
                                         </div>
                                     </div>
@@ -149,10 +141,10 @@
                                             <div class="input-group">
                                                 <span class="input-group-text"><i class="cil-building"></i></span>
                                                 <select id="kota" class="form-select" name="kota">
-                                                    <option value="Banda Aceh" {{ $sbp->kota_penindakan == 'Banda Aceh' ? 'selected' : '' }}>Banda Aceh</option>
-                                                    <option value="Aceh Besar" {{ $sbp->kota_penindakan == 'Aceh Besar' ? 'selected' : '' }}>Aceh Besar</option>
-                                                    <option value="Pidie" {{ $sbp->kota_penindakan == 'Pidie' ? 'selected' : '' }}>Pidie</option>
-                                                    <option value="Pidie Jaya" {{ $sbp->kota_penindakan == 'Pidie Jaya' ? 'selected' : '' }}>Pidie Jaya</option>
+                                                    <option value="Banda Aceh" {{ old('kota', $sbp->kota_penindakan) == 'Banda Aceh' ? 'selected' : '' }}>Banda Aceh</option>
+                                                    <option value="Aceh Besar" {{ old('kota', $sbp->kota_penindakan) == 'Aceh Besar' ? 'selected' : '' }}>Aceh Besar</option>
+                                                    <option value="Pidie" {{ old('kota', $sbp->kota_penindakan) == 'Pidie' ? 'selected' : '' }}>Pidie</option>
+                                                    <option value="Pidie Jaya" {{ old('kota', $sbp->kota_penindakan) == 'Pidie Jaya' ? 'selected' : '' }}>Pidie Jaya</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -160,16 +152,18 @@
                                             <label for="kecamatan" class="form-label">Kecamatan</label>
                                             <div class="input-group">
                                                 <span class="input-group-text"><i class="cil-map"></i></span>
-                                                <input id="kecamatan" type="text" class="form-control" name="kecamatan" value="{{ $sbp->kecamatan_penindakan }}" placeholder="Contoh: Jaya Baru">
+                                                <input id="kecamatan" type="text" class="form-control" name="kecamatan" value="{{ old('kecamatan', $sbp->kecamatan_penindakan) }}" placeholder="Contoh: Jaya Baru">
                                             </div>
                                         </div>
                                         <div class="col-md-6"></div>
                                     </div>
                                     <div class="col-12">
-                                        <label for="alasan_penindakan" class="form-label">Alasan Penindakan</label>
+                                        <label for="alasan_penindakan" class="form-label">Alasan Penindakan / Dugaan Pelanggaran</label>
                                         <div class="input-group">
-                                            <span class="input-group-text"><i class="cil-warning"></i></span>
-                                            <textarea id="alasan_penindakan" class="form-control" name="alasan_penindakan" rows="3" required>{{ $sbp->alasan_penindakan }}</textarea>
+                                            <button class="btn btn-outline-secondary" type="button" data-coreui-toggle="modal" data-coreui-target="#pelanggaranModal">
+                                                <i class="cil-list"></i> Pilih dari Daftar
+                                            </button>
+                                            <textarea id="alasan_penindakan" class="form-control" name="alasan_penindakan" rows="3" placeholder="Jelaskan secara singkat alasan penindakan atau dugaan pelanggaran." required>{{ old('alasan_penindakan', $sbp->alasan_penindakan) }}</textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -187,42 +181,26 @@
                                         <label for="jenis_barang" class="form-label">Jenis Barang</label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="cil-layers"></i></span>
-                                            <input id="jenis_barang" type="text" class="form-control" name="jenis_barang" value="{{ $sbp->jenis_barang }}" required>
+                                            <input id="jenis_barang" type="text" class="form-control" name="jenis_barang" value="{{ old('jenis_barang', $sbp->jenis_barang) }}" required>
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label for="jumlah_barang" class="form-label">Jumlah Barang</label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="cil-calculator"></i></span>
-                                                    <input id="jumlah_barang" type="number" class="form-control" name="jumlah_barang" value="{{ $sbp->jumlah_barang }}" required>
-                                                </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="jumlah_barang" class="form-label">Jumlah Barang</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="cil-calculator"></i></span>
+                                                <input id="jumlah_barang" type="number" class="form-control" name="jumlah_barang" value="{{ old('jumlah_barang', $sbp->jumlah_barang) }}" required>
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label for="jenis_satuan" class="form-label">Jenis Satuan</label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="cil-puzzle"></i></span>
-                                                    <select id="jenis_satuan" class="form-select" name="jenis_satuan" required>
-                                                        <option value="Pcs" {{ $sbp->jenis_satuan == 'Pcs' ? 'selected' : '' }}>Pcs</option>
-                                                        <option value="Pkg" {{ $sbp->jenis_satuan == 'Pkg' ? 'selected' : '' }}>Package</option>
-                                                        <option value="Unit" {{ $sbp->jenis_satuan == 'Unit' ? 'selected' : '' }}>Unit</option>
-                                                        <option value="Batang" {{ $sbp->jenis_satuan == 'Batang' ? 'selected' : '' }}>Batang</option>
-                                                        <option value="Botol" {{ $sbp->jenis_satuan == 'Botol' ? 'selected' : '' }}>Botol</option>
-                                                        <option value="Gram" {{ $sbp->jenis_satuan == 'Gram' ? 'selected' : '' }}>Gram</option>
-                                                        <option value="Kilogram" {{ $sbp->jenis_satuan == 'Kilogram' ? 'selected' : '' }}>Kilogram</option>
-                                                        <option value="Buah" {{ $sbp->jenis_satuan == 'Buah' ? 'selected' : '' }}>Buah</option>
-                                                        <option value="Bungkus" {{ $sbp->jenis_satuan == 'Bungkus' ? 'selected' : '' }}>Bungkus</option>
-                                                        <option value="Kotak" {{ $sbp->jenis_satuan == 'Kotak' ? 'selected' : '' }}>Kotak</option>
-                                                        <option value="Liter" {{ $sbp->jenis_satuan == 'Liter' ? 'selected' : '' }}>Liter</option>
-                                                        <option value="Mililiter" {{ $sbp->jenis_satuan == 'Mililiter' ? 'selected' : '' }}>Mililiter</option>
-                                                        <option value="Karton" {{ $sbp->jenis_satuan == 'Karton' ? 'selected' : '' }}>Karton</option>
-                                                        <option value="Set" {{ $sbp->jenis_satuan == 'Set' ? 'selected' : '' }}>Set</option>
-                                                        <option value="Pasang" {{ $sbp->jenis_satuan == 'Pasang' ? 'selected' : '' }}>Pasang</option>
-                                                    </select>
-                                                </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="jenis_satuan" class="form-label">Jenis Satuan</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="cil-puzzle"></i></span>
+                                                <select id="jenis_satuan" class="form-select" name="jenis_satuan" required>
+                                                    <option value="Pcs" {{ old('jenis_satuan', $sbp->jenis_satuan) == 'Pcs' ? 'selected' : '' }}>Pcs</option>
+                                                    <option value="Pkg" {{ old('jenis_satuan', $sbp->jenis_satuan) == 'Pkg' ? 'selected' : '' }}>Package</option>
+                                                    <option value="Unit" {{ old('jenis_satuan', $sbp->jenis_satuan) == 'Unit' ? 'selected' : '' }}>Unit</option>
+                                                </select>
                                             </div>
                                         </div>
                                     </div>
@@ -230,8 +208,14 @@
                                         <label for="uraian_barang" class="form-label">Uraian Barang</label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="cil-description"></i></span>
-                                            <textarea id="uraian_barang" class="form-control" name="uraian_barang" rows="3" required>{{ $sbp->uraian_barang }}</textarea>
+                                            <textarea id="uraian_barang" class="form-control" name="uraian_barang" rows="3" required>{{ old('uraian_barang', $sbp->uraian_barang) }}</textarea>
                                         </div>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="flag_bast" name="flag_bast" value="1" {{ old('flag_bast', $sbp->flag_bast) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="flag_bast">
+                                            Sertakan Berita Acara Serah Terima (BAST)
+                                        </label>
                                     </div>
                                 </div>
                             </div>
@@ -245,36 +229,43 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label for="id_petugas_1" class="form-label">Petugas 1</label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="cil-user-follow"></i></span>
-                                                    <select id="id_petugas_1" class="form-select" name="id_petugas_1" required>
-                                                        @foreach($petugasData as $petugas)
-                                                            <option value="{{ $petugas->id }}" {{ $sbp->id_petugas_1 == $petugas->id ? 'selected' : '' }}>{{ $petugas->nama }}</option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="id_petugas_1" class="form-label">Petugas 1</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="cil-user-follow"></i></span>
+                                                <select id="id_petugas_1" class="form-select" name="id_petugas_1" required>
+                                                    @foreach($petugasData as $petugas)
+                                                        <option value="{{ $petugas->id }}" {{ old('id_petugas_1', $sbp->id_petugas_1) == $petugas->id ? 'selected' : '' }}>{{ $petugas->nama }}</option>
+                                                    @endforeach
+                                                </select>
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label for="id_petugas_2" class="form-label">Petugas 2</label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="cil-user-follow"></i></span>
-                                                    <select id="id_petugas_2" class="form-select" name="id_petugas_2" required>
-                                                        @foreach($petugasData as $petugas)
-                                                            <option value="{{ $petugas->id }}" {{ $sbp->id_petugas_2 == $petugas->id ? 'selected' : '' }}>{{ $petugas->nama }}</option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="id_petugas_2" class="form-label">Petugas 2</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="cil-user-follow"></i></span>
+                                                <select id="id_petugas_2" class="form-select" name="id_petugas_2" required>
+                                                    @foreach($petugasData as $petugas)
+                                                        <option value="{{ $petugas->id }}" {{ old('id_petugas_2', $sbp->id_petugas_2) == $petugas->id ? 'selected' : '' }}>{{ $petugas->nama }}</option>
+                                                    @endforeach
+                                                </select>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
+                        {{-- Hidden BAST Fields --}}
+                        <input type="hidden" name="nomor_bast" id="hidden_nomor_bast" value="{{ old('nomor_bast', $sbp->bast->nomor_bast ?? '') }}">
+                        <input type="hidden" name="tanggal_bast" id="hidden_tanggal_bast" value="{{ old('tanggal_bast', $sbp->bast ? $sbp->bast->tanggal_bast->format('Y-m-d') : '') }}">
+                        <input type="hidden" name="jenis_dokumen" id="hidden_jenis_dokumen" value="{{ old('jenis_dokumen', $sbp->bast->jenis_dokumen ?? '') }}">
+                        <input type="hidden" name="tanggal_dokumen" id="hidden_tanggal_dokumen" value="{{ old('tanggal_dokumen', $sbp->bast ? ($sbp->bast->tanggal_dokumen ? $sbp->bast->tanggal_dokumen->format('Y-m-d') : '') : '') }}">
+                        <input type="hidden" name="petugas_eksternal" id="hidden_petugas_eksternal" value="{{ old('petugas_eksternal', $sbp->bast->petugas_eksternal ?? '') }}">
+                        <input type="hidden" name="nip_nrp_petugas_eksternal" id="hidden_nip_nrp_petugas_eksternal" value="{{ old('nip_nrp_petugas_eksternal', $sbp->bast->nip_nrp_petugas_eksternal ?? '') }}">
+                        <input type="hidden" name="instansi_eksternal" id="hidden_instansi_eksternal" value="{{ old('instansi_eksternal', $sbp->bast->instansi_eksternal ?? '') }}">
+                        <input type="hidden" name="dalam_rangka" id="hidden_dalam_rangka" value="{{ old('dalam_rangka', $sbp->bast->dalam_rangka ?? '') }}">
+
 
                         <div class="col-12 text-center">
                             <a href="{{ route('sbp.index') }}" class="btn btn-secondary btn-lg">
@@ -290,4 +281,88 @@
         </div>
     </div>
 </div>
+
+{{-- Include Modals --}}
+@include('input-sbp.partials._bast_modal')
+@include('input-sbp.partials._pelanggaran_modal')
+
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // BAST Modal Logic
+        const flagBastCheckbox = document.getElementById('flag_bast');
+        const saveBastButton = document.getElementById('saveBastButton');
+        const bastModalElement = document.getElementById('bastModal');
+        
+        if (bastModalElement && flagBastCheckbox && saveBastButton) {
+            const bastModal = coreui.Modal.getOrCreateInstance(bastModalElement);
+
+            function loadModalData() {
+                document.getElementById('modal_nomor_bast').value = document.getElementById('hidden_nomor_bast').value;
+                document.getElementById('modal_tanggal_bast').value = document.getElementById('hidden_tanggal_bast').value;
+                document.getElementById('modal_jenis_dokumen').value = document.getElementById('hidden_jenis_dokumen').value;
+                document.getElementById('modal_tanggal_dokumen').value = document.getElementById('hidden_tanggal_dokumen').value;
+                document.getElementById('modal_petugas_eksternal').value = document.getElementById('hidden_petugas_eksternal').value;
+                document.getElementById('modal_nip_nrp_petugas_eksternal').value = document.getElementById('hidden_nip_nrp_petugas_eksternal').value;
+                document.getElementById('modal_instansi_eksternal').value = document.getElementById('hidden_instansi_eksternal').value;
+                document.getElementById('modal_dalam_rangka').value = document.getElementById('hidden_dalam_rangka').value;
+            }
+
+            flagBastCheckbox.addEventListener('change', function () {
+                if (this.checked) {
+                    loadModalData();
+                    bastModal.show();
+                } else {
+                    // Clear hidden fields when unchecked
+                    document.getElementById('hidden_nomor_bast').value = '';
+                    document.getElementById('hidden_tanggal_bast').value = '';
+                    document.getElementById('hidden_jenis_dokumen').value = '';
+                    document.getElementById('hidden_tanggal_dokumen').value = '';
+                    document.getElementById('hidden_petugas_eksternal').value = '';
+                    document.getElementById('hidden_nip_nrp_petugas_eksternal').value = '';
+                    document.getElementById('hidden_instansi_eksternal').value = '';
+                    document.getElementById('hidden_dalam_rangka').value = '';
+                }
+            });
+
+            saveBastButton.addEventListener('click', function () {
+                document.getElementById('hidden_nomor_bast').value = document.getElementById('modal_nomor_bast').value;
+                document.getElementById('hidden_tanggal_bast').value = document.getElementById('modal_tanggal_bast').value;
+                document.getElementById('hidden_jenis_dokumen').value = document.getElementById('modal_jenis_dokumen').value;
+                document.getElementById('hidden_tanggal_dokumen').value = document.getElementById('modal_tanggal_dokumen').value;
+                document.getElementById('hidden_petugas_eksternal').value = document.getElementById('modal_petugas_eksternal').value;
+                document.getElementById('hidden_nip_nrp_petugas_eksternal').value = document.getElementById('modal_nip_nrp_petugas_eksternal').value;
+                document.getElementById('hidden_instansi_eksternal').value = document.getElementById('modal_instansi_eksternal').value;
+                document.getElementById('hidden_dalam_rangka').value = document.getElementById('modal_dalam_rangka').value;
+                
+                bastModal.hide();
+            });
+
+            bastModalElement.addEventListener('hidden.coreui.modal', function () {
+                const nomorBastHidden = document.getElementById('hidden_nomor_bast');
+                if (!nomorBastHidden.value) { 
+                    flagBastCheckbox.checked = false;
+                }
+            });
+        }
+
+        // Pelanggaran Modal Logic
+        const pelanggaranModalElement = document.getElementById('pelanggaranModal');
+        if (pelanggaranModalElement) {
+            const alasanTextarea = document.getElementById('alasan_penindakan');
+            const pelanggaranModal = coreui.Modal.getOrCreateInstance(pelanggaranModalElement);
+
+            pelanggaranModalElement.addEventListener('click', function(event) {
+                const button = event.target.closest('.btn-pilih-pelanggaran');
+                if (button) {
+                    const selectedPelanggaran = button.getAttribute('data-pelanggaran');
+                    alasanTextarea.value = 'Diduga melanggar ' + selectedPelanggaran + '.';
+                    pelanggaranModal.hide();
+                }
+            });
+        }
+    });
+</script>
+@endpush

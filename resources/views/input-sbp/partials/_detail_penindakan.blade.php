@@ -47,8 +47,10 @@
             <div class="col-12">
                 <label for="alasan_penindakan" class="form-label">Alasan Penindakan / Dugaan Pelanggaran</label>
                 <div class="input-group">
-                    <span class="input-group-text"><i class="cil-warning"></i></span>
-                    <textarea id="alasan_penindakan" class="form-control" name="alasan_penindakan" rows="3" placeholder="Jelaskan secara singkat alasan penindakan atau dugaan pelanggaran" required>{{ old('alasan_penindakan') }}</textarea>
+                    <button class="btn btn-outline-secondary" type="button" data-coreui-toggle="modal" data-coreui-target="#pelanggaranModal">
+                        <i class="cil-list"></i> Pilih dari Daftar
+                    </button>
+                    <textarea id="alasan_penindakan" class="form-control" name="alasan_penindakan" rows="3" placeholder="Jelaskan secara singkat alasan penindakan atau dugaan pelanggaran. Anda juga bisa memilih dari daftar." required>{{ old('alasan_penindakan') }}</textarea>
                 </div>
             </div>
         </div>
