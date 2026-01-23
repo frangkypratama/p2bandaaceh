@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $sbp->nomor_sbp }}</title>
     <style>
-        body { font-family: 'Times New Roman', Times, serif; font-size: 11pt; }
+        body { font-family: 'Arial', Times, serif; font-size: 11pt; }
         .page-break { page-break-after: always; }
     </style>
 </head>

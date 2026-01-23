@@ -39,7 +39,7 @@
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('ref-pelanggaran.index') }}">
                     <i class="nav-icon cil-book"></i>
-                    Ref. Pelanggaran
+                    Referensi Pelanggaran
                 </a>
             </li>
 
