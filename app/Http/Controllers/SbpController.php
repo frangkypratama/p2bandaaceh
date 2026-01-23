@@ -65,8 +65,8 @@ class SbpController extends Controller
             $request->validate([
                 'nomor_bast' => 'required|string|max:255|unique:bast,nomor_bast',
                 'tanggal_bast' => 'required|date',
-                'jenis_dokumen' => 'required|string|max:255',
-                'tanggal_dokumen' => 'required|date',
+                'jenis_dokumen' => 'nullable|string|max:255',
+                'tanggal_dokumen' => 'nullable|date',
                 'petugas_eksternal' => 'required|string|max:255',
                 'nip_nrp_petugas_eksternal' => 'required|string|max:255',
                 'instansi_eksternal' => 'required|string|max:255',
@@ -174,6 +174,7 @@ class SbpController extends Controller
             'kota' => 'nullable|string|max:255',
             'kecamatan' => 'nullable|string|max:255',
             'flag_bast' => 'nullable|boolean',
+            'delete_bast' => 'nullable|boolean',
         ]);
 
         if ($request->boolean('flag_bast')) {
@@ -220,7 +221,9 @@ class SbpController extends Controller
 
             $sbp->update($dataToUpdate);
 
-            if ($request->boolean('flag_bast')) {
+            if ($request->boolean('delete_bast') && $sbp->bast) {
+                $sbp->bast->delete();
+            } elseif ($request->boolean('flag_bast')) {
                 $bastData = $request->only([
                     'nomor_bast',
                     'tanggal_bast',
@@ -232,10 +235,6 @@ class SbpController extends Controller
                     'dalam_rangka',
                 ]);
                 $sbp->bast()->updateOrCreate(['sbp_id' => $sbp->id], $bastData);
-            } else {
-                if ($sbp->bast) {
-                    $sbp->bast->delete();
-                }
             }
         });
 

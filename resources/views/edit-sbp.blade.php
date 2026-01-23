@@ -29,7 +29,7 @@
                         </div>
                     @endif
 
-                    <form method="POST" action="{{ route('sbp.update', $sbp->id) }}" class="row g-3">
+                    <form method="POST" action="{{ route('sbp.update', $sbp->id) }}" class="row g-3" id="editSbpForm">
                         @csrf
                         @method('PUT')
 
@@ -190,7 +190,7 @@
                                             <div class="input-group">
                                                 <span class="input-group-text"><i class="cil-calculator"></i></span>
                                                 <input id="jumlah_barang" type="number" class="form-control" name="jumlah_barang" value="{{ old('jumlah_barang', $sbp->jumlah_barang) }}" required>
-                                            </div>
+                                        </div>
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label for="jenis_satuan" class="form-label">Jenis Satuan</label>
@@ -211,12 +211,8 @@
                                             <textarea id="uraian_barang" class="form-control" name="uraian_barang" rows="3" required>{{ old('uraian_barang', $sbp->uraian_barang) }}</textarea>
                                         </div>
                                     </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="flag_bast" name="flag_bast" value="1" {{ old('flag_bast', $sbp->flag_bast) ? 'checked' : '' }}>
-                                        <label class="form-check-label" for="flag_bast">
-                                            Sertakan Berita Acara Serah Terima (BAST)
-                                        </label>
-                                    </div>
+                                    <div id="bast-control-container">
+                                        {{-- This will be dynamically updated by JavaScript --}}\n                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -257,21 +253,22 @@
                         </div>
 
                         {{-- Hidden BAST Fields --}}
-                        <input type="hidden" name="nomor_bast" id="hidden_nomor_bast" value="{{ old('nomor_bast', $sbp->bast->nomor_bast ?? '') }}">
-                        <input type="hidden" name="tanggal_bast" id="hidden_tanggal_bast" value="{{ old('tanggal_bast', $sbp->bast ? $sbp->bast->tanggal_bast->format('Y-m-d') : '') }}">
-                        <input type="hidden" name="jenis_dokumen" id="hidden_jenis_dokumen" value="{{ old('jenis_dokumen', $sbp->bast->jenis_dokumen ?? '') }}">
-                        <input type="hidden" name="tanggal_dokumen" id="hidden_tanggal_dokumen" value="{{ old('tanggal_dokumen', $sbp->bast ? ($sbp->bast->tanggal_dokumen ? $sbp->bast->tanggal_dokumen->format('Y-m-d') : '') : '') }}">
-                        <input type="hidden" name="petugas_eksternal" id="hidden_petugas_eksternal" value="{{ old('petugas_eksternal', $sbp->bast->petugas_eksternal ?? '') }}">
-                        <input type="hidden" name="nip_nrp_petugas_eksternal" id="hidden_nip_nrp_petugas_eksternal" value="{{ old('nip_nrp_petugas_eksternal', $sbp->bast->nip_nrp_petugas_eksternal ?? '') }}">
-                        <input type="hidden" name="instansi_eksternal" id="hidden_instansi_eksternal" value="{{ old('instansi_eksternal', $sbp->bast->instansi_eksternal ?? '') }}">
-                        <input type="hidden" name="dalam_rangka" id="hidden_dalam_rangka" value="{{ old('dalam_rangka', $sbp->bast->dalam_rangka ?? '') }}">
-
+                        <input type="hidden" name="flag_bast" id="hidden_flag_bast" value="{{ old('flag_bast', $sbp->bast ? 1 : 0) }}">
+                        <input type="hidden" name="nomor_bast" id="hidden_nomor_bast" value="{{ old('nomor_bast', $sbp->bast?->nomor_bast ?? '') }}">
+                        <input type="hidden" name="tanggal_bast" id="hidden_tanggal_bast" value="{{ old('tanggal_bast', $sbp->bast?->tanggal_bast ? $sbp->bast?->tanggal_bast->format('Y-m-d') : '') }}">
+                        <input type="hidden" name="jenis_dokumen" id="hidden_jenis_dokumen" value="{{ old('jenis_dokumen', $sbp->bast?->jenis_dokumen ?? '') }}">
+                        <input type="hidden" name="tanggal_dokumen" id="hidden_tanggal_dokumen" value="{{ old('tanggal_dokumen', $sbp->bast?->tanggal_dokumen ? $sbp->bast?->tanggal_dokumen->format('Y-m-d') : '') }}">
+                        <input type="hidden" name="petugas_eksternal" id="hidden_petugas_eksternal" value="{{ old('petugas_eksternal', $sbp->bast?->petugas_eksternal ?? '') }}">
+                        <input type="hidden" name="nip_nrp_petugas_eksternal" id="hidden_nip_nrp_petugas_eksternal" value="{{ old('nip_nrp_petugas_eksternal', $sbp->bast?->nip_nrp_petugas_eksternal ?? '') }}">
+                        <input type="hidden" name="instansi_eksternal" id="hidden_instansi_eksternal" value="{{ old('instansi_eksternal', $sbp->bast?->instansi_eksternal ?? '') }}">
+                        <input type="hidden" name="dalam_rangka" id="hidden_dalam_rangka" value="{{ old('dalam_rangka', $sbp->bast?->dalam_rangka ?? '') }}">
+                        <input type="hidden" name="delete_bast" id="hidden_delete_bast" value="0">
 
                         <div class="col-12 text-center">
-                            <a href="{{ route('sbp.index') }}" class="btn btn-secondary btn-lg">
+                            <a href="{{ route('sbp.index') }}" class="btn btn-secondary btn">
                                 <i class="cil-arrow-circle-left"></i> Kembali
                             </a>
-                            <button type="submit" class="btn btn-primary btn-lg ms-2">
+                            <button type="submit" class="btn btn-primary btn ms-2">
                                 <i class="cil-sync"></i> Perbarui Data SBP
                             </button>
                         </div>
@@ -291,39 +288,46 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // BAST Modal Logic
-        const flagBastCheckbox = document.getElementById('flag_bast');
-        const saveBastButton = document.getElementById('saveBastButton');
+        // --- BAST Elements ---
         const bastModalElement = document.getElementById('bastModal');
-        
-        if (bastModalElement && flagBastCheckbox && saveBastButton) {
-            const bastModal = coreui.Modal.getOrCreateInstance(bastModalElement);
+        const saveBastButton = document.getElementById('saveBastButton');
+        const modalDeleteBastBtn = document.getElementById('modalDeleteBastBtn');
+        const bastControlContainer = document.getElementById('bast-control-container');
+        const form = document.getElementById('editSbpForm');
+        const flagBastHidden = document.getElementById('hidden_flag_bast');
 
-            function loadModalData() {
-                document.getElementById('modal_nomor_bast').value = document.getElementById('hidden_nomor_bast').value;
-                document.getElementById('modal_tanggal_bast').value = document.getElementById('hidden_tanggal_bast').value;
-                document.getElementById('modal_jenis_dokumen').value = document.getElementById('hidden_jenis_dokumen').value;
-                document.getElementById('modal_tanggal_dokumen').value = document.getElementById('hidden_tanggal_dokumen').value;
-                document.getElementById('modal_petugas_eksternal').value = document.getElementById('hidden_petugas_eksternal').value;
-                document.getElementById('modal_nip_nrp_petugas_eksternal').value = document.getElementById('hidden_nip_nrp_petugas_eksternal').value;
-                document.getElementById('modal_instansi_eksternal').value = document.getElementById('hidden_instansi_eksternal').value;
-                document.getElementById('modal_dalam_rangka').value = document.getElementById('hidden_dalam_rangka').value;
+        if (bastModalElement && saveBastButton && bastControlContainer) {
+            const bastModal = new coreui.Modal(bastModalElement);
+
+            const errors = @json($errors->keys());
+            const bastErrorKeys = [
+                'nomor_bast', 'tanggal_bast', 'jenis_dokumen', 'tanggal_dokumen',
+                'petugas_eksternal', 'nip_nrp_petugas_eksternal', 'instansi_eksternal', 'dalam_rangka'
+            ];
+            const hasBastErrors = bastErrorKeys.some(key => errors.includes(key));
+
+            // --- MAIN LOGIC ---
+            updateBastButtons();
+
+            if (hasBastErrors) {
+                bastModal.show();
             }
+            
+            // --- Event Listeners ---
+            bastControlContainer.addEventListener('click', function(event) {
+                const target = event.target.closest('button');
+                if (!target) return;
 
-            flagBastCheckbox.addEventListener('change', function () {
-                if (this.checked) {
-                    loadModalData();
+                if (target.id === 'createBastBtn' || target.id === 'viewBastBtn') {
+                    document.getElementById('modal_nomor_bast').value = document.getElementById('hidden_nomor_bast').value;
+                    document.getElementById('modal_tanggal_bast').value = document.getElementById('hidden_tanggal_bast').value;
+                    document.getElementById('modal_jenis_dokumen').value = document.getElementById('hidden_jenis_dokumen').value;
+                    document.getElementById('modal_tanggal_dokumen').value = document.getElementById('hidden_tanggal_dokumen').value;
+                    document.getElementById('modal_petugas_eksternal').value = document.getElementById('hidden_petugas_eksternal').value;
+                    document.getElementById('modal_nip_nrp_petugas_eksternal').value = document.getElementById('hidden_nip_nrp_petugas_eksternal').value;
+                    document.getElementById('modal_instansi_eksternal').value = document.getElementById('hidden_instansi_eksternal').value;
+                    document.getElementById('modal_dalam_rangka').value = document.getElementById('hidden_dalam_rangka').value;
                     bastModal.show();
-                } else {
-                    // Clear hidden fields when unchecked
-                    document.getElementById('hidden_nomor_bast').value = '';
-                    document.getElementById('hidden_tanggal_bast').value = '';
-                    document.getElementById('hidden_jenis_dokumen').value = '';
-                    document.getElementById('hidden_tanggal_dokumen').value = '';
-                    document.getElementById('hidden_petugas_eksternal').value = '';
-                    document.getElementById('hidden_nip_nrp_petugas_eksternal').value = '';
-                    document.getElementById('hidden_instansi_eksternal').value = '';
-                    document.getElementById('hidden_dalam_rangka').value = '';
                 }
             });
 
@@ -337,22 +341,60 @@
                 document.getElementById('hidden_instansi_eksternal').value = document.getElementById('modal_instansi_eksternal').value;
                 document.getElementById('hidden_dalam_rangka').value = document.getElementById('modal_dalam_rangka').value;
                 
+                flagBastHidden.value = '1';
+                document.getElementById('hidden_delete_bast').value = '0'; 
+
+                updateBastButtons();
                 bastModal.hide();
             });
 
-            bastModalElement.addEventListener('hidden.coreui.modal', function () {
-                const nomorBastHidden = document.getElementById('hidden_nomor_bast');
-                if (!nomorBastHidden.value) { 
-                    flagBastCheckbox.checked = false;
+            if(modalDeleteBastBtn) {
+                modalDeleteBastBtn.addEventListener('click', function() {
+                     if (confirm('Apakah Anda yakin ingin menghapus data BAST? Tindakan ini tidak dapat diurungkan.')) {
+                        document.getElementById('hidden_delete_bast').value = '1';
+                        flagBastHidden.value = '0';
+                        clearHiddenBastFields();
+                        updateBastButtons();
+                        bastModal.hide();
+                    }
+                });
+            }
+            
+            function clearHiddenBastFields() {
+                 document.getElementById('hidden_nomor_bast').value = '';
+                 document.getElementById('hidden_tanggal_bast').value = '';
+                 document.getElementById('hidden_jenis_dokumen').value = '';
+                 document.getElementById('hidden_tanggal_dokumen').value = '';
+                 document.getElementById('hidden_petugas_eksternal').value = '';
+                 document.getElementById('hidden_nip_nrp_petugas_eksternal').value = '';
+                 document.getElementById('hidden_instansi_eksternal').value = '';
+                 document.getElementById('hidden_dalam_rangka').value = '';
+            }
+            
+            function updateBastButtons() {
+                let hasBast = flagBastHidden.value === '1' && document.getElementById('hidden_delete_bast').value !== '1';
+                
+                if(hasBast) {
+                    bastControlContainer.innerHTML = `
+                        <button type="button" class="btn btn-primary" id="viewBastBtn">
+                            <i class="cil-share-boxed"></i> Lihat/Edit BAST
+                        </button>
+                    `;
+                } else {
+                    bastControlContainer.innerHTML = `
+                        <button type="button" class="btn btn-outline-primary" id="createBastBtn">
+                            <i class="cil-plus"></i> Buat BAST
+                        </button>
+                    `;
                 }
-            });
+            }
         }
 
-        // Pelanggaran Modal Logic
+        // Pelanggaran Modal Logic (unchanged)
         const pelanggaranModalElement = document.getElementById('pelanggaranModal');
         if (pelanggaranModalElement) {
             const alasanTextarea = document.getElementById('alasan_penindakan');
-            const pelanggaranModal = coreui.Modal.getOrCreateInstance(pelanggaranModalElement);
+            const pelanggaranModal = new coreui.Modal(pelanggaranModalElement);
 
             pelanggaranModalElement.addEventListener('click', function(event) {
                 const button = event.target.closest('.btn-pilih-pelanggaran');

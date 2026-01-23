@@ -50,7 +50,7 @@
                         <input type="hidden" name="dalam_rangka" id="hidden_dalam_rangka" value="{{ old('dalam_rangka') }}">
 
                         <div class="col-12 text-center">
-                            <button type="submit" class="btn btn-primary btn-lg">
+                            <button type="submit" class="btn btn-primary btn">
                                 <i class="cil-save"></i> Simpan Data SBP
                             </button>
                         </div>
@@ -76,7 +76,20 @@
         const bastModalElement = document.getElementById('bastModal');
         
         if (bastModalElement && flagBastCheckbox && saveBastButton) {
-            const bastModal = coreui.Modal.getOrCreateInstance(bastModalElement);
+            const bastModal = new coreui.Modal(bastModalElement);
+
+            // Helper function to check for BAST-related validation errors
+            const errors = @json($errors->keys());
+            const bastErrorKeys = [
+                'nomor_bast', 'tanggal_bast', 'jenis_dokumen', 'tanggal_dokumen',
+                'petugas_eksternal', 'nip_nrp_petugas_eksternal', 'instansi_eksternal', 'dalam_rangka'
+            ];
+            const hasBastErrors = bastErrorKeys.some(key => errors.includes(key));
+
+            // Show modal if there were BAST validation errors on the previous attempt
+            if (hasBastErrors) {
+                bastModal.show();
+            }
 
             function loadModalData() {
                 document.getElementById('modal_nomor_bast').value = document.getElementById('hidden_nomor_bast').value;
@@ -91,12 +104,13 @@
 
             flagBastCheckbox.addEventListener('change', function () {
                 if (this.checked) {
-                    loadModalData();
+                    loadModalData(); // Load existing data if any (e.g., from old input)
                     bastModal.show();
                 }
             });
 
             saveBastButton.addEventListener('click', function () {
+                // Save data from modal to hidden fields
                 document.getElementById('hidden_nomor_bast').value = document.getElementById('modal_nomor_bast').value;
                 document.getElementById('hidden_tanggal_bast').value = document.getElementById('modal_tanggal_bast').value;
                 document.getElementById('hidden_jenis_dokumen').value = document.getElementById('modal_jenis_dokumen').value;
@@ -106,19 +120,20 @@
                 document.getElementById('hidden_instansi_eksternal').value = document.getElementById('modal_instansi_eksternal').value;
                 document.getElementById('hidden_dalam_rangka').value = document.getElementById('modal_dalam_rangka').value;
                 
+                // Ensure checkbox remains checked
+                flagBastCheckbox.checked = true;
+
                 bastModal.hide();
             });
 
+            // When modal is closed without saving
             bastModalElement.addEventListener('hidden.coreui.modal', function () {
                 const nomorBastHidden = document.getElementById('hidden_nomor_bast');
+                // If BAST number is empty (modal was cancelled before filling), uncheck the box
                 if (!nomorBastHidden.value) { 
                     flagBastCheckbox.checked = false;
                 }
             });
-            
-            if (document.getElementById('hidden_nomor_bast').value) {
-                flagBastCheckbox.checked = true;
-            }
         }
 
         // Pelanggaran Modal Logic

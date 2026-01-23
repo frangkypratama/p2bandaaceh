@@ -1,8 +1,8 @@
-{{-- Informasi Barang Bukti --}}
+{{-- Informasi Barang Hasil Penindakan --}}
 <div class="col-md-12">
     <div class="card mb-4">
         <div class="card-header">
-            <h5 class="card-title mb-0">4. Informasi Barang Bukti</h5>
+            <h5 class="card-title mb-0">4. Informasi Barang Hasil Penindakan</h5>
         </div>
         <div class="card-body">
             <div class="row">
@@ -11,7 +11,7 @@
                         <label for="jenis_barang" class="form-label">Jenis Barang</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="cil-layers"></i></span>
-                            <input id="jenis_barang" type="text" class="form-control" name="jenis_barang" value="{{ old('jenis_barang') }}" placeholder="Contoh: Minuman Keras" required>
+                            <input id="jenis_barang" type="text" class="form-control" name="jenis_barang" value="{{ old('jenis_barang') }}" placeholder="Contoh: Hasil Tembakau" required>
                         </div>
                     </div>
                 </div>
@@ -57,7 +57,7 @@
                 <label for="uraian_barang" class="form-label">Uraian Barang</label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="cil-description"></i></span>
-                    <textarea id="uraian_barang" class="form-control" name="uraian_barang" rows="3" placeholder="Jelaskan secara detail mengenai barang bukti" required>{{ old('uraian_barang') }}</textarea>
+                    <textarea id="uraian_barang" class="form-control" name="uraian_barang" rows="3" placeholder="Jelaskan secara detail mengenai barang hasil penindakan" required>{{ old('uraian_barang') }}</textarea>
                 </div>
             </div>
             <div class="form-check mb-3">

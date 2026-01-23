@@ -23,6 +23,11 @@ class Bast extends Model
         'sbp_id',
     ];
 
+    protected $casts = [
+        'tanggal_bast' => 'date',
+        'tanggal_dokumen' => 'date',
+    ];
+
     public function sbp()
     {
         return $this->belongsTo(Sbp::class);
