@@ -16,7 +16,7 @@ class RefPelanggaranController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'jenis_pelanggaran' => 'required|string|unique:ref_pelanggaran,pelanggaran',
+            'pelanggaran' => 'required|string|unique:ref_pelanggaran,pelanggaran',
         ]);
 
         RefPelanggaran::create($request->all());
@@ -35,7 +35,7 @@ class RefPelanggaranController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'jenis_pelanggaran' => 'required|string|max:255|unique:ref_pelanggaran,pelanggaran,' . $id,
+            'pelanggaran' => 'required|string|max:255|unique:ref_pelanggaran,pelanggaran,' . $id,
         ]);
 
         $pelanggaran = RefPelanggaran::findOrFail($id);
