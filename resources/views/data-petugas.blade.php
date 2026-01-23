@@ -9,25 +9,6 @@
             <h4 class="mb-0">Data Petugas</h4>
         </div>
         <div class="card-body">
-            @if(session('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    {{ session('success') }}
-                    <button type="button" class="btn-close" data-coreui-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
-
-            @if ($errors->any())
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <strong>Error!</strong>
-                    <ul>
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                    <button type="button" class="btn-close" data-coreui-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
-
             <div class="mb-3">
                 <button type="button" class="btn btn-primary" data-coreui-toggle="modal" data-coreui-target="#tambahPetugasModal">
                     <i class="cil-plus"></i> Tambah Petugas
@@ -58,7 +39,11 @@
                                     <button type="button" class="btn btn-sm btn-primary" data-coreui-toggle="modal" data-coreui-target="#editModal-{{ $petugas->id }}" title="Edit Data">
                                         <i class="cil-pencil"></i>
                                     </button>
-                                    <button type="button" class="btn btn-sm btn-danger" data-coreui-toggle="modal" data-coreui-target="#hapusModal-{{ $petugas->id }}" title="Hapus Data">
+                                    <button type="button" class="btn btn-sm btn-danger" 
+                                            data-coreui-toggle="modal" 
+                                            data-coreui-target="#deleteConfirmationModal"
+                                            data-url="{{ route('petugas.destroy', $petugas->id) }}"
+                                            title="Hapus Data">
                                         <i class="cil-trash"></i>
                                     </button>
                                 </td>
@@ -109,28 +94,6 @@
                                 </div>
                             </div>
 
-                            <!-- Modal Hapus -->
-                            <div class="modal fade" id="hapusModal-{{ $petugas->id }}" tabindex="-1" aria-labelledby="hapusModalLabel-{{ $petugas->id }}" aria-hidden="true">
-                              <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content">
-                                  <div class="modal-header">
-                                    <h5 class="modal-title" id="hapusModalLabel-{{ $petugas->id }}">Konfirmasi Hapus</h5>
-                                    <button type="button" class="btn-close" data-coreui-dismiss="modal" aria-label="Close"></button>
-                                  </div>
-                                  <div class="modal-body">
-                                    Apakah Anda yakin ingin menghapus data petugas <strong>{{ $petugas->nama }}</strong>?
-                                  </div>
-                                  <div class="modal-footer">
-                                    <form action="{{ route('petugas.destroy', $petugas->id) }}" method="POST">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="button" class="btn btn-secondary" data-coreui-dismiss="modal">Batal</button>
-                                        <button type="submit" class="btn btn-danger">Hapus</button>
-                                    </form>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
                         @empty
                             <tr>
                                 <td colspan="6" class="text-center py-4">Belum ada data petugas. Silakan tambahkan.</td>

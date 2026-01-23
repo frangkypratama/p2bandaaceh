@@ -13,22 +13,6 @@
             </button>
         </div>
         <div class="card-body">
-            @if(session('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    {{ session('success') }}
-                    <button type="button" class="btn-close" data-coreui-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
-            @if($errors->any())
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <ul class="mb-0">
-                        @foreach($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                    <button type="button" class="btn-close" data-coreui-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
             <div class="table-responsive">
                 <table class="table table-striped table-hover">
                     <thead class="table-dark">
@@ -45,17 +29,17 @@
                                 <td>{{ $item->pelanggaran }}</td>
                                 <td class="text-center">
                                     {{-- Tombol untuk membuka modal edit data --}}
-                                    <button type="button" class="btn btn-sm btn-warning text-white" data-coreui-toggle="modal" data-coreui-target="#pelanggaranModal" data-id="{{ $item->id }}" data-jenis="{{ $item->pelanggaran }}" data-url="{{ route('ref-pelanggaran.update', $item->id) }}">
+                                    <button type="button" class="btn btn-sm btn-warning text-white" data-coreui-toggle="modal" data-coreui-target="#pelanggaranModal" data-id="{{ $item->id }}" data-jenis="{{ $item->pelanggaran }}" data-url="{{ route('ref-pelanggaran.update', $item->id) }}" title="Edit Data">
                                         <i class="cil-pencil"></i>
                                     </button>
-                                    {{-- Form untuk hapus data --}}
-                                    <form action="{{ route('ref-pelanggaran.destroy', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-danger text-white">
-                                            <i class="cil-trash"></i>
-                                        </button>
-                                    </form>
+                                    {{-- Tombol untuk hapus data --}}
+                                    <button type="button" class="btn btn-sm btn-danger text-white"
+                                            data-coreui-toggle="modal"
+                                            data-coreui-target="#deleteConfirmationModal"
+                                            data-url="{{ route('ref-pelanggaran.destroy', $item->id) }}"
+                                            title="Hapus Data">
+                                        <i class="cil-trash"></i>
+                                    </button>
                                 </td>
                             </tr>
                         @empty
@@ -117,7 +101,7 @@
             if (id) {
                 // Mode Edit
                 modalTitle.textContent = 'Edit Data Pelanggaran';
-                methodField.innerHTML = '@method('PUT')';
+                methodField.innerHTML = '@method("PUT")';
                 jenisInput.value = jenis;
             } else {
                 // Mode Tambah

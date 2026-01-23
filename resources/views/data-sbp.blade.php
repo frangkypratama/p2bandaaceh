@@ -9,12 +9,6 @@
             <h4 class="mb-0">Data Surat Bukti Penindakan (SBP)</h4>
         </div>
         <div class="card-body">
-            @if(session('success'))
-                <div class="alert alert-success" role="alert">
-                    {{ session('success') }}
-                </div>
-            @endif
-
             <div class="table-responsive">
                 <table class="table table-hover align-middle">
                     <thead>
@@ -45,35 +39,16 @@
                                         <a href="{{ route('sbp.edit', $sbp->id) }}" class="btn btn-sm btn-primary me-2" title="Edit Data">
                                             <i class="cil-pencil"></i>
                                         </a>
-                                        <button type="button" class="btn btn-sm btn-danger" data-coreui-toggle="modal" data-coreui-target="#hapusModal{{ $sbp->id }}" title="Hapus Data">
+                                        <button type="button" class="btn btn-sm btn-danger" 
+                                                data-coreui-toggle="modal" 
+                                                data-coreui-target="#deleteConfirmationModal"
+                                                data-url="{{ route('sbp.destroy', $sbp->id) }}"
+                                                title="Hapus Data">
                                             <i class="cil-trash"></i>
                                         </button>
                                     </div>
                                 </td>
                             </tr>
-
-                            <!-- Modal Hapus -->
-                            <div class="modal fade" id="hapusModal{{ $sbp->id }}" tabindex="-1" aria-labelledby="hapusModalLabel{{ $sbp->id }}" aria-hidden="true">
-                              <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content">
-                                  <div class="modal-header">
-                                    <h5 class="modal-title" id="hapusModalLabel{{ $sbp->id }}">Konfirmasi Hapus</h5>
-                                    <button type="button" class="btn-close" data-coreui-dismiss="modal" aria-label="Close"></button>
-                                  </div>
-                                  <div class="modal-body">
-                                    Apakah Anda yakin ingin menghapus Data SBP dengan nomor <strong>{{ $sbp->nomor_sbp }}</strong>?
-                                  </div>
-                                  <div class="modal-footer">
-                                    <form action="{{ route('sbp.destroy', $sbp->id) }}" method="POST">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="button" class="btn btn-secondary" data-coreui-dismiss="modal">Batal</button>
-                                        <button type="submit" class="btn btn-danger">Hapus</button>
-                                    </form>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
                         @empty
                             <tr>
                                 <td colspan="4" class="text-center py-4">Belum ada data SBP.</td>
