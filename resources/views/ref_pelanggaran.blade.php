@@ -84,7 +84,7 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="pelanggaran" class="form-label">Jenis Pelanggaran</label>
-                        <input type="text" class="form-control" id="pelanggaran" name="pelanggaran" required>
+                        <textarea type="text" class="form-control" id="pelanggaran" name="pelanggaran" required></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
