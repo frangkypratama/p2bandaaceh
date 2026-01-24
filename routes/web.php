@@ -38,6 +38,9 @@ Route::get('/data-sbp/pdf-ba-tegah/{id}', [SbpController::class, 'generatePdfBaT
 Route::get('/data-sbp/pdf-ba-segel/{id}', [SbpController::class, 'generatePdfBaSegel'])
     ->name('sbp.pdf.ba-segel');
 
+Route::get('/data-sbp/pdf-bast/{id}', [SbpController::class, 'generatePdfBast'])
+    ->name('sbp.pdf.bast');
+
 Route::get('/data-sbp/pdf-semua/{id}', [SbpController::class, 'generatePdfSemua'])
     ->name('sbp.pdf.semua');
 

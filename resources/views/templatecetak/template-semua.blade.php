@@ -10,14 +10,25 @@
     </style>
 </head>
 <body>
+    {{-- 1. Surat Bukti Penindakan --}}
     @include('templatecetak.template-sbp', ['sbp' => $sbp])
     <div class="page-break"></div>
-    @include('templatecetak.template-sbp', ['sbp' => $sbp])
-    <div class="page-break"></div>
+
+    {{-- 2. Berita Acara Pemeriksaan --}}
     @include('templatecetak.template-ba-riksa', ['sbp' => $sbp])
     <div class="page-break"></div>
+
+    {{-- 3. Berita Acara Penegahan --}}
     @include('templatecetak.template-ba-tegah', ['sbp' => $sbp])
     <div class="page-break"></div>
+
+    {{-- 4. Berita Acara Penyegelan --}}
     @include('templatecetak.template-ba-segel', ['sbp' => $sbp])
+
+    {{-- 5. Berita Acara Serah Terima (jika ada) --}}
+    @if ($sbp->bast)
+        <div class="page-break"></div>
+        @include('templatecetak.template-ba-serah-terima', ['sbp' => $sbp, 'bast' => $sbp->bast])
+    @endif
 </body>
 </html>

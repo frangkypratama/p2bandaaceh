@@ -28,6 +28,10 @@
                     <li><a class="dropdown-item" href="{{ route('sbp.pdf.ba-riksa', $sbp->id) }}" target="_blank">Cetak BA Pemeriksaan</a></li>
                     <li><a class="dropdown-item" href="{{ route('sbp.pdf.ba-tegah', $sbp->id) }}" target="_blank">Cetak BA Penegahan</a></li>
                     <li><a class="dropdown-item" href="{{ route('sbp.pdf.ba-segel', $sbp->id) }}" target="_blank">Cetak BA Penyegelan</a></li>
+                    @if ($sbp->bast)
+                    <li><a class="dropdown-item" href="{{ route('sbp.pdf.bast', $sbp->id) }}" target="_blank">Cetak BA Serah Terima</a></li>
+                    @endif
+                    <li><hr class="dropdown-divider"></li>
                     <li><a class="dropdown-item" href="{{ route('sbp.pdf.checklist', $sbp->id) }}" target="_blank">Checklist Kelengkapan</a></li>
                 </ul>
             </div>

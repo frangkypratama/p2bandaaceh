@@ -255,7 +255,7 @@ class SbpController extends Controller
      */
     public function cetakPreview($id)
     {
-        $sbp = Sbp::with(['petugas1', 'petugas2'])->findOrFail($id);
+        $sbp = Sbp::with(['petugas1', 'petugas2', 'bast'])->findOrFail($id);
         return view('preview-sbp', compact('sbp'));
     }
 
@@ -351,6 +351,28 @@ class SbpController extends Controller
             ->setPaper([0, 0, 595.28, 935.43], 'portrait');
 
         $filename = 'Checklist' . str_replace('/', '-', $sbp->nomor_sbp) . '.pdf';
+
+        return $pdf->stream($filename);
+    }
+    
+    /**
+     * Generate PDF BA Serah Terima (F4 FIX).
+     */
+    public function generatePdfBast($id)
+    {
+        $sbp = Sbp::with(['petugas1', 'bast'])->findOrFail($id);
+        $bast = $sbp->bast;
+
+        if (!$bast) {
+            // Handle jika tidak ada BAST, bisa redirect atau tampilkan error
+            return redirect()->back()->with('error', 'BAST tidak ditemukan untuk SBP ini.');
+        }
+
+        $pdf = Pdf::loadView('templatecetak.template-ba-serah-terima', compact('sbp', 'bast'))
+            // ===== F4 REAL SIZE (pt) =====
+            ->setPaper([0, 0, 595.28, 935.43], 'portrait');
+
+        $filename = str_replace('/', '-', $bast->nomor_bast) . '.pdf';
 
         return $pdf->stream($filename);
     }
