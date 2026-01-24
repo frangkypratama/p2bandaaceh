@@ -60,11 +60,23 @@
                     <textarea id="uraian_barang" class="form-control" name="uraian_barang" rows="3" placeholder="Jelaskan secara detail mengenai barang hasil penindakan" required>{{ old('uraian_barang') }}</textarea>
                 </div>
             </div>
-            <div class="form-check mb-3">
-                <input class="form-check-input" type="checkbox" name="flag_bast" id="flag_bast" value="1" {{ old('flag_bast') ? 'checked' : '' }}>
-                <label class="form-check-label" for="flag_bast">
-                    Apakah diserah terimakan ke Instansi Terkait?
-                </label>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" name="flag_bast" id="flag_bast" value="1" {{ old('flag_bast') ? 'checked' : '' }}>
+                        <label class="form-check-label" for="flag_bast">
+                            Apakah diserah terimakan ke Instansi Terkait?
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" name="flag_ba_musnah" id="flag_ba_musnah" value="1" {{ old('flag_ba_musnah') ? 'checked' : '' }}>
+                        <label class="form-check-label" for="flag_ba_musnah">
+                            Apakah barang dimusnahkan?
+                        </label>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
