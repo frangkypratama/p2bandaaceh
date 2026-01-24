@@ -346,7 +346,7 @@
             <tr>
                 <td class="num"></td>
                 <td class="sig-left">Pemilik/Kuasanya/Saksi*,</td>
-                <td class="sig-right">Pejabat yang melakukan penegahan,</td>
+                <td class="sig-right">Pejabat yang melakukan pemusnahan,</td>
             </tr>
             <tr>
                 <td class="num"></td>
