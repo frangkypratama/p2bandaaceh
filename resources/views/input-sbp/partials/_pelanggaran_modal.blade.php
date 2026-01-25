@@ -46,3 +46,24 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const pelanggaranModalElement = document.getElementById('pelanggaranModal');
+        if (pelanggaranModalElement) {
+            const alasanTextarea = document.getElementById('alasan_penindakan');
+            const pelanggaranModal = coreui.Modal.getOrCreateInstance(pelanggaranModalElement);
+
+            pelanggaranModalElement.addEventListener('click', function(event) {
+                const button = event.target.closest('.btn-pilih-pelanggaran');
+                if (button) {
+                    const selectedPelanggaran = button.getAttribute('data-pelanggaran');
+                    alasanTextarea.value = 'Diduga melanggar ' + selectedPelanggaran + '.';
+                    pelanggaranModal.hide();
+                }
+            });
+        }
+    });
+</script>
+@endpush
