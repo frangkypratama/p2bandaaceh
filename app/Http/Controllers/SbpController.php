@@ -59,6 +59,8 @@ class SbpController extends Controller
             'kota' => 'required|string|max:255',
             'kecamatan' => 'nullable|string|max:255',
             'flag_bast' => 'nullable|boolean',
+            'flag_ba_musnah' => 'nullable|boolean',
+            'nomor_ba_musnah' => 'nullable|string|max:255',
         ]);
 
         if ($request->boolean('flag_bast')) {
@@ -108,6 +110,8 @@ class SbpController extends Controller
             $dataToStore['nomor_ba_segel'] = $formattedBaSegel;
             $dataToStore['nomor_sbp_int'] = $nomor_sbp_int;
             $dataToStore['flag_bast'] = $request->boolean('flag_bast');
+            $dataToStore['flag_ba_musnah'] = $request->boolean('flag_ba_musnah');
+            $dataToStore['nomor_ba_musnah'] = $request->boolean('flag_ba_musnah') ? $validated['nomor_ba_musnah'] : null;
 
             $sbp = Sbp::create($dataToStore);
 
@@ -174,6 +178,8 @@ class SbpController extends Controller
             'kota' => 'nullable|string|max:255',
             'kecamatan' => 'nullable|string|max:255',
             'flag_bast' => 'nullable|boolean',
+            'flag_ba_musnah' => 'nullable|boolean',
+            'nomor_ba_musnah' => 'nullable|string|max:255',
             'delete_bast' => 'nullable|boolean',
         ]);
 
@@ -218,6 +224,8 @@ class SbpController extends Controller
             $dataToUpdate['nomor_ba_segel'] = $formattedBaSegel;
             $dataToUpdate['nomor_sbp_int'] = $nomor_sbp_int;
             $dataToUpdate['flag_bast'] = $request->boolean('flag_bast');
+            $dataToUpdate['flag_ba_musnah'] = $request->boolean('flag_ba_musnah');
+            $dataToUpdate['nomor_ba_musnah'] = $request->boolean('flag_ba_musnah') ? $validated['nomor_ba_musnah'] : null;
 
             $sbp->update($dataToUpdate);
 
@@ -387,6 +395,24 @@ class SbpController extends Controller
             ->setPaper([0, 0, 595.28, 935.43], 'portrait');
 
         $filename = str_replace('/', '-', $bast->nomor_bast) . '.pdf';
+
+        return $pdf->stream($filename);
+    }
+
+    /**
+     * Generate PDF BA Musnah (F4 FIX).
+     */
+    public function cetakBaMusnah(Sbp $sbp)
+    {
+        if (!$sbp->flag_ba_musnah || !$sbp->nomor_ba_musnah) {
+            return redirect()->back()->with('error', 'Dokumen BA Musnah tidak tersedia untuk SBP ini.');
+        }
+
+        $pdf = Pdf::loadView('templatecetak.template-ba-musnah', compact('sbp'))
+            // F4 REAL SIZE (pt)
+            ->setPaper([0, 0, 595.28, 935.43], 'portrait');
+
+        $filename = str_replace('/', '-', $sbp->nomor_ba_musnah) . '.pdf';
 
         return $pdf->stream($filename);
     }

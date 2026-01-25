@@ -30,5 +30,11 @@
         <div class="page-break"></div>
         @include('templatecetak.template-ba-serah-terima', ['sbp' => $sbp, 'bast' => $sbp->bast])
     @endif
+
+    {{-- 6. Berita Acara Pemusnahan (jika ada) --}}
+    @if ($sbp->flag_ba_musnah && $sbp->nomor_ba_musnah)
+        <div class="page-break"></div>
+        @include('templatecetak.template-ba-musnah', ['sbp' => $sbp])
+    @endif
 </body>
 </html>

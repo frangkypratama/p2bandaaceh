@@ -47,6 +47,9 @@ Route::get('/data-sbp/pdf-semua/{id}', [SbpController::class, 'generatePdfSemua'
 Route::get('/data-sbp/pdf-checklist/{id}', [SbpController::class, 'generatePdfChecklist'])
     ->name('sbp.pdf.checklist');
 
+Route::get('/sbp/{sbp}/pdf/ba-musnah', [SbpController::class, 'cetakBaMusnah'])
+    ->name('sbp.cetak.ba-musnah');
+
 // CRUD SBP
 Route::get('/input-sbp', [SbpController::class, 'create'])->name('sbp.create');
 Route::post('/input-sbp', [SbpController::class, 'store'])->name('sbp.store');

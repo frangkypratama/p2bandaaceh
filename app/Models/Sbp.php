@@ -43,6 +43,8 @@ class Sbp extends Model
         'kota_penindakan',
         'kecamatan_penindakan',
         'flag_bast',
+        'flag_ba_musnah',
+        'nomor_ba_musnah',
     ];
 
     /**
@@ -54,6 +56,7 @@ class Sbp extends Model
         'tanggal_sbp' => 'date',
         'tanggal_surat_perintah' => 'date',
         'flag_bast' => 'boolean',
+        'flag_ba_musnah' => 'boolean',
     ];
 
     /**

@@ -42,6 +42,7 @@
                         {{-- Include Modals --}}
                         @include('input-sbp.partials._bast_modal')
                         @include('input-sbp.partials._pelanggaran_modal')
+                        @include('input-sbp.partials._ba_musnah_modal')
 
                         <div class="col-12 text-center">
                             <button type="submit" class="btn btn-primary btn">

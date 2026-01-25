@@ -31,6 +31,9 @@
                     @if ($sbp->bast)
                     <li><a class="dropdown-item" href="{{ route('sbp.pdf.bast', $sbp->id) }}" target="_blank">Cetak BA Serah Terima</a></li>
                     @endif
+                    @if ($sbp->flag_ba_musnah && $sbp->nomor_ba_musnah)
+                    <li><a class="dropdown-item" href="{{ route('sbp.cetak.ba-musnah', $sbp->id) }}" target="_blank">Cetak BA Musnah</a></li>
+                    @endif
                     <li><hr class="dropdown-divider"></li>
                     <li><a class="dropdown-item" href="{{ route('sbp.pdf.checklist', $sbp->id) }}" target="_blank">Checklist Kelengkapan</a></li>
                 </ul>
