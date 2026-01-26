@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             PetugasSeeder::class,
             SbpSeeder::class,
             RefPelanggaranSeeder::class,
+            RefSatuanSeeder::class, // Added this line
         ]);
     }
 }

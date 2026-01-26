@@ -51,6 +51,13 @@
                 </a>
             </li>
 
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('ref-satuan.index') }}">
+                    <i class="nav-icon cil-tags"></i>
+                    Referensi Satuan
+                </a>
+            </li>
+
             <li class="nav-title">
                 <h2 class="fs-6 text-uppercase">System</h2>
             </li>

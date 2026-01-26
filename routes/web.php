@@ -7,6 +7,7 @@ use App\Http\Controllers\DatabaseController;
 use App\Http\Controllers\PangkatGolonganController;
 use App\Http\Controllers\BastController;
 use App\Http\Controllers\RefPelanggaranController;
+use App\Http\Controllers\RefSatuanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -87,6 +88,13 @@ Route::resource('bast', BastController::class);
 |--------------------------------------------------------------------------
 */
 Route::resource('ref-pelanggaran', RefPelanggaranController::class);
+
+/*
+|--------------------------------------------------------------------------
+| Referensi Satuan
+|--------------------------------------------------------------------------
+*/
+Route::resource('ref-satuan', RefSatuanController::class);
 
 
 /*
