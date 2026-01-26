@@ -35,7 +35,7 @@ class RefPelanggaranController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'pelanggaran' => 'required|string|max:255|unique:ref_pelanggaran,pelanggaran,' . $id,
+            'pelanggaran' => 'required|string|unique:ref_pelanggaran,pelanggaran,' . $id,
         ]);
 
         $pelanggaran = RefPelanggaran::findOrFail($id);
