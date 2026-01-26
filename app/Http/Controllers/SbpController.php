@@ -6,6 +6,7 @@ use App\Models\Sbp;
 use App\Models\Petugas;
 use App\Models\Bast;
 use App\Models\RefPelanggaran;
+use App\Models\RefSatuan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -31,7 +32,8 @@ class SbpController extends Controller
     {
         $petugasData = Petugas::orderBy('nama', 'asc')->get();
         $refPelanggaranData = RefPelanggaran::all();
-        return view('input-sbp', compact('petugasData', 'refPelanggaranData'));
+        $refSatuanData = RefSatuan::orderBy('nama_satuan', 'asc')->get();
+        return view('input-sbp', compact('petugasData', 'refPelanggaranData', 'refSatuanData'));
     }
 
     /**
@@ -52,7 +54,7 @@ class SbpController extends Controller
             'alasan_penindakan' => 'required|string',
             'jenis_barang' => 'required|string|max:255',
             'jumlah_barang' => 'required|integer',
-            'jenis_satuan' => 'required|string|max:255',
+            'jenis_satuan' => 'required|string|exists:ref_satuan,nama_satuan',
             'uraian_barang' => 'required|string',
             'id_petugas_1' => 'required|integer|exists:petugas,id',
             'id_petugas_2' => 'required|integer|exists:petugas,id|different:id_petugas_1',
@@ -149,8 +151,9 @@ class SbpController extends Controller
 
         $petugasData = Petugas::orderBy('nama', 'asc')->get();
         $refPelanggaranData = RefPelanggaran::all();
+        $refSatuanData = RefSatuan::orderBy('nama_satuan', 'asc')->get();
 
-        return view('edit-sbp', compact('sbp', 'petugasData', 'refPelanggaranData'));
+        return view('edit-sbp', compact('sbp', 'petugasData', 'refPelanggaranData', 'refSatuanData'));
     }
 
     /**
@@ -171,7 +174,7 @@ class SbpController extends Controller
             'alasan_penindakan' => 'required|string',
             'jenis_barang' => 'required|string|max:255',
             'jumlah_barang' => 'required|integer',
-            'jenis_satuan' => 'required|string|max:255',
+            'jenis_satuan' => 'required|string|exists:ref_satuan,nama_satuan',
             'uraian_barang' => 'required|string',
             'id_petugas_1' => 'required|integer|exists:petugas,id',
             'id_petugas_2' => 'required|integer|exists:petugas,id|different:id_petugas_1',

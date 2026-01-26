@@ -33,21 +33,9 @@
                             <span class="input-group-text"><i class="cil-puzzle"></i></span>
                             <select id="jenis_satuan" class="form-select" name="jenis_satuan" required>
                                 <option selected disabled value="">Pilih Satuan...</option>
-                                <option value="Pcs" {{ old('jenis_satuan') == 'Pcs' ? 'selected' : '' }}>Pcs</option>
-                                <option value="Pkg" {{ old('jenis_satuan') == 'Pkg' ? 'selected' : '' }}>Package</option>
-                                <option value="Unit" {{ old('jenis_satuan') == 'Unit' ? 'selected' : '' }}>Unit</option>
-                                <option value="Batang" {{ old('jenis_satuan') == 'Batang' ? 'selected' : '' }}>Batang</option>
-                                <option value="Botol" {{ old('jenis_satuan') == 'Botol' ? 'selected' : '' }}>Botol</option>
-                                <option value="Gram" {{ old('jenis_satuan') == 'Gram' ? 'selected' : '' }}>Gram</option>
-                                <option value="Kilogram" {{ old('jenis_satuan') == 'Kilogram' ? 'selected' : '' }}>Kilogram</option>
-                                <option value="Buah" {{ old('jenis_satuan') == 'Buah' ? 'selected' : '' }}>Buah</option>
-                                <option value="Bungkus" {{ old('jenis_satuan') == 'Bungkus' ? 'selected' : '' }}>Bungkus</option>
-                                <option value="Kotak" {{ old('jenis_satuan') == 'Kotak' ? 'selected' : '' }}>Kotak</option>
-                                <option value="Liter" {{ old('jenis_satuan') == 'Liter' ? 'selected' : '' }}>Liter</option>
-                                <option value="Mililiter" {{ old('jenis_satuan') == 'Mililiter' ? 'selected' : '' }}>Mililiter</option>
-                                <option value="Karton" {{ old('jenis_satuan') == 'Karton' ? 'selected' : '' }}>Karton</option>
-                                <option value="Set" {{ old('jenis_satuan') == 'Set' ? 'selected' : '' }}>Set</option>
-                                <option value="Pasang" {{ old('jenis_satuan') == 'Pasang' ? 'selected' : '' }}>Pasang</option>
+                                @foreach($refSatuanData as $satuan)
+                                    <option value="{{ $satuan->nama_satuan }}" {{ old('jenis_satuan') == $satuan->nama_satuan ? 'selected' : '' }}>{{ $satuan->nama_satuan }}</option>
+                                @endforeach
                             </select>
                         </div>
                     </div>

@@ -197,9 +197,10 @@
                                             <div class="input-group">
                                                 <span class="input-group-text"><i class="cil-puzzle"></i></span>
                                                 <select id="jenis_satuan" class="form-select" name="jenis_satuan" required>
-                                                    <option value="Pcs" {{ old('jenis_satuan', $sbp->jenis_satuan) == 'Pcs' ? 'selected' : '' }}>Pcs</option>
-                                                    <option value="Pkg" {{ old('jenis_satuan', $sbp->jenis_satuan) == 'Pkg' ? 'selected' : '' }}>Package</option>
-                                                    <option value="Unit" {{ old('jenis_satuan', $sbp->jenis_satuan) == 'Unit' ? 'selected' : '' }}>Unit</option>
+                                                    <option selected disabled value="">Pilih Satuan...</option>
+                                                    @foreach($refSatuanData as $satuan)
+                                                        <option value="{{ $satuan->nama_satuan }}" {{ old('jenis_satuan', $sbp->jenis_satuan) == $satuan->nama_satuan ? 'selected' : '' }}>{{ $satuan->nama_satuan }}</option>
+                                                    @endforeach
                                                 </select>
                                             </div>
                                         </div>
