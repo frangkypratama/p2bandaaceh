@@ -212,8 +212,20 @@
                                             <textarea id="uraian_barang" class="form-control" name="uraian_barang" rows="3" required>{{ old('uraian_barang', $sbp->uraian_barang) }}</textarea>
                                         </div>
                                     </div>
-                                    <div id="bast-control-container">
-                                        {{-- This will be dynamically updated by JavaScript --}}\n                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">BAST</label>
+                                            <div id="bast-control-container">
+                                                {{-- This will be dynamically updated by JavaScript --}}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">BA Musnah</label>
+                                            <div id="ba-musnah-control-container">
+                                                {{-- This will be dynamically updated by JavaScript --}}
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -265,6 +277,11 @@
                         <input type="hidden" name="dalam_rangka" id="hidden_dalam_rangka" value="{{ old('dalam_rangka', $sbp->bast?->dalam_rangka ?? '') }}">
                         <input type="hidden" name="delete_bast" id="hidden_delete_bast" value="0">
 
+                        {{-- Hidden BA Musnah Fields --}}
+                        <input type="hidden" name="flag_ba_musnah" id="hidden_flag_ba_musnah" value="{{ old('flag_ba_musnah', $sbp->flag_ba_musnah ?? 0) }}">
+                        <input type="hidden" name="nomor_ba_musnah" id="hidden_nomor_ba_musnah" value="{{ old('nomor_ba_musnah', $sbp->nomor_ba_musnah ?? '') }}">
+                        <input type="hidden" name="delete_ba_musnah" id="hidden_delete_ba_musnah" value="0">
+
                         <div class="col-12 text-center">
                             <a href="{{ route('sbp.index') }}" class="btn btn-secondary btn">
                                 <i class="cil-arrow-circle-left"></i> Kembali
@@ -282,6 +299,7 @@
 
 {{-- Include Modals --}}
 @include('input-sbp.partials._bast_modal')
+@include('input-sbp.partials._ba_musnah_modal')
 @include('input-sbp.partials._pelanggaran_modal')
 
 @endsection
@@ -294,9 +312,18 @@
         const saveBastButton = document.getElementById('saveBastButton');
         const modalDeleteBastBtn = document.getElementById('modalDeleteBastBtn');
         const bastControlContainer = document.getElementById('bast-control-container');
-        const form = document.getElementById('editSbpForm');
         const flagBastHidden = document.getElementById('hidden_flag_bast');
 
+        // --- BA Musnah Elements ---
+        const baMusnahModalElement = document.getElementById('baMusnahModal');
+        const saveBaMusnahButton = document.getElementById('saveBaMusnahButton');
+        const modalDeleteBaMusnahBtn = document.getElementById('modalDeleteBaMusnahBtn');
+        const baMusnahControlContainer = document.getElementById('ba-musnah-control-container');
+        const flagBaMusnahHidden = document.getElementById('hidden_flag_ba_musnah');
+
+        const form = document.getElementById('editSbpForm');
+
+        // --- BAST Logic ---
         if (bastModalElement && saveBastButton && bastControlContainer) {
             const bastModal = new coreui.Modal(bastModalElement);
 
@@ -307,14 +334,12 @@
             ];
             const hasBastErrors = bastErrorKeys.some(key => errors.includes(key));
 
-            // --- MAIN LOGIC ---
             updateBastButtons();
 
             if (hasBastErrors) {
                 bastModal.show();
             }
             
-            // --- Event Listeners ---
             bastControlContainer.addEventListener('click', function(event) {
                 const target = event.target.closest('button');
                 if (!target) return;
@@ -351,7 +376,7 @@
 
             if(modalDeleteBastBtn) {
                 modalDeleteBastBtn.addEventListener('click', function() {
-                     if (confirm('Apakah Anda yakin ingin menghapus data BAST? Tindakan ini tidak dapat diurungkan.')) {
+                    if (confirm('Apakah Anda yakin ingin menghapus data BAST? Tindakan ini tidak dapat diurungkan.')) {
                         document.getElementById('hidden_delete_bast').value = '1';
                         flagBastHidden.value = '0';
                         clearHiddenBastFields();
@@ -362,14 +387,14 @@
             }
             
             function clearHiddenBastFields() {
-                 document.getElementById('hidden_nomor_bast').value = '';
-                 document.getElementById('hidden_tanggal_bast').value = '';
-                 document.getElementById('hidden_jenis_dokumen').value = '';
-                 document.getElementById('hidden_tanggal_dokumen').value = '';
-                 document.getElementById('hidden_petugas_eksternal').value = '';
-                 document.getElementById('hidden_nip_nrp_petugas_eksternal').value = '';
-                 document.getElementById('hidden_instansi_eksternal').value = '';
-                 document.getElementById('hidden_dalam_rangka').value = '';
+                document.getElementById('hidden_nomor_bast').value = '';
+                document.getElementById('hidden_tanggal_bast').value = '';
+                document.getElementById('hidden_jenis_dokumen').value = '';
+                document.getElementById('hidden_tanggal_dokumen').value = '';
+                document.getElementById('hidden_petugas_eksternal').value = '';
+                document.getElementById('hidden_nip_nrp_petugas_eksternal').value = '';
+                document.getElementById('hidden_instansi_eksternal').value = '';
+                document.getElementById('hidden_dalam_rangka').value = '';
             }
             
             function updateBastButtons() {
@@ -377,13 +402,13 @@
                 
                 if(hasBast) {
                     bastControlContainer.innerHTML = `
-                        <button type="button" class="btn btn-primary" id="viewBastBtn">
+                        <button type="button" class="btn btn-primary w-100" id="viewBastBtn">
                             <i class="cil-share-boxed"></i> Lihat/Edit BAST
                         </button>
                     `;
                 } else {
                     bastControlContainer.innerHTML = `
-                        <button type="button" class="btn btn-outline-primary" id="createBastBtn">
+                        <button type="button" class="btn btn-outline-primary w-100" id="createBastBtn">
                             <i class="cil-plus"></i> Buat BAST
                         </button>
                     `;
@@ -391,7 +416,76 @@
             }
         }
 
-        // Pelanggaran Modal Logic (unchanged)
+        // --- BA Musnah Logic ---
+        if (baMusnahModalElement && saveBaMusnahButton && baMusnahControlContainer) {
+            const baMusnahModal = new coreui.Modal(baMusnahModalElement);
+
+            const errors = @json($errors->keys());
+            const baMusnahErrorKeys = ['nomor_ba_musnah'];
+            const hasBaMusnahErrors = baMusnahErrorKeys.some(key => errors.includes(key));
+
+            updateBaMusnahButtons();
+
+            if (hasBaMusnahErrors) {
+                baMusnahModal.show();
+            }
+            
+            baMusnahControlContainer.addEventListener('click', function(event) {
+                const target = event.target.closest('button');
+                if (!target) return;
+
+                if (target.id === 'createBaMusnahBtn' || target.id === 'viewBaMusnahBtn') {
+                    document.getElementById('modal_nomor_ba_musnah').value = document.getElementById('hidden_nomor_ba_musnah').value;
+                    baMusnahModal.show();
+                }
+            });
+
+            saveBaMusnahButton.addEventListener('click', function () {
+                document.getElementById('hidden_nomor_ba_musnah').value = document.getElementById('modal_nomor_ba_musnah').value;
+                
+                flagBaMusnahHidden.value = '1';
+                document.getElementById('hidden_delete_ba_musnah').value = '0'; 
+
+                updateBaMusnahButtons();
+                baMusnahModal.hide();
+            });
+
+            if(modalDeleteBaMusnahBtn) {
+                modalDeleteBaMusnahBtn.addEventListener('click', function() {
+                    if (confirm('Apakah Anda yakin ingin menghapus data BA Musnah? Tindakan ini tidak dapat diurungkan.')) {
+                        document.getElementById('hidden_delete_ba_musnah').value = '1';
+                        flagBaMusnahHidden.value = '0';
+                        clearHiddenBaMusnahFields();
+                        updateBaMusnahButtons();
+                        baMusnahModal.hide();
+                    }
+                });
+            }
+            
+            function clearHiddenBaMusnahFields() {
+                document.getElementById('hidden_nomor_ba_musnah').value = '';
+            }
+            
+            function updateBaMusnahButtons() {
+                let hasBaMusnah = flagBaMusnahHidden.value === '1' && document.getElementById('hidden_delete_ba_musnah').value !== '1';
+                
+                if(hasBaMusnah) {
+                    baMusnahControlContainer.innerHTML = `
+                        <button type="button" class="btn btn-success w-100" id="viewBaMusnahBtn">
+                            <i class="cil-share-boxed"></i> Lihat/Edit BA Musnah
+                        </button>
+                    `;
+                } else {
+                    baMusnahControlContainer.innerHTML = `
+                        <button type="button" class="btn btn-outline-success w-100" id="createBaMusnahBtn">
+                            <i class="cil-plus"></i> Buat BA Musnah
+                        </button>
+                    `;
+                }
+            }
+        }
+
+        // --- Pelanggaran Modal Logic ---
         const pelanggaranModalElement = document.getElementById('pelanggaranModal');
         if (pelanggaranModalElement) {
             const alasanTextarea = document.getElementById('alasan_penindakan');
