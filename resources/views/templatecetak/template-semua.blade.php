@@ -14,6 +14,9 @@
     @include('templatecetak.template-sbp', ['sbp' => $sbp])
     <div class="page-break"></div>
 
+    @include('templatecetak.template-sbp', ['sbp' => $sbp])
+    <div class="page-break"></div>
+
     {{-- 2. Berita Acara Pemeriksaan --}}
     @include('templatecetak.template-ba-riksa', ['sbp' => $sbp])
     <div class="page-break"></div>
