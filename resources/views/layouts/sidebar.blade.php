@@ -68,15 +68,6 @@
                 </a>
             </li>
 
-            <li class="nav-title">
-                <h2 class="fs-6 text-uppercase">Theme</h2>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url('/colors') }}">
-                    <i class="nav-icon cil-palette"></i> Colors
-                </a>
-            </li>
         </ul>
     </nav>
 </aside>
