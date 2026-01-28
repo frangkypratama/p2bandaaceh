@@ -46,3 +46,45 @@
         </div>
     </div>
 </div>
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    // HANYA PRIN
+    const input = document.getElementById('nomor_surat_perintah');
+    if (!input) return;
+
+    const PREFIX = 'PRIN-';
+
+    function lockPrefix() {
+        if (!input.value.startsWith(PREFIX)) {
+            input.value = PREFIX;
+        }
+
+        if (input.selectionStart < PREFIX.length) {
+            input.setSelectionRange(PREFIX.length, PREFIX.length);
+        }
+    }
+
+    // set awal
+    input.value = input.value && input.value.startsWith(PREFIX)
+        ? input.value
+        : PREFIX;
+
+    // cegah hapus PRIN-
+    input.addEventListener('keydown', function (e) {
+        if (
+            (e.key === 'Backspace' || e.key === 'Delete') &&
+            input.selectionStart <= PREFIX.length
+        ) {
+            e.preventDefault();
+        }
+    });
+
+    input.addEventListener('input', lockPrefix);
+    input.addEventListener('focus', lockPrefix);
+    input.addEventListener('click', lockPrefix);
+
+});
+</script>
+@endpush
