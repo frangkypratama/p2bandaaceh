@@ -21,8 +21,7 @@
                         <tr>
                             <th>Nama Petugas</th>
                             <th>NIP</th>
-                            <th>Pangkat</th>
-                            <th>Golongan</th>
+                            <th>Pangkat/Golongan</th>
                             <th>Jabatan</th>
                             <th class="text-center">Aksi</th>
                         </tr>
@@ -32,8 +31,7 @@
                             <tr>
                                 <td>{{ $petugas->nama }}</td>
                                 <td>{{ $petugas->nip }}</td>
-                                <td>{{ $petugas->pangkat ?? '-' }}</td>
-                                <td>{{ $petugas->golongan ?? '-' }}</td>
+                                <td>{{ $petugas->pangkat ?? '-' }} / {{ $petugas->golongan ?? '-' }}</td>
                                 <td>{{ $petugas->jabatan ?? '-' }}</td>
                                 <td class="text-center">
                                     <button type="button" class="btn btn-sm btn-primary" data-coreui-toggle="modal" data-coreui-target="#editModal-{{ $petugas->id }}" title="Edit Data">

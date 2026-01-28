@@ -16,6 +16,7 @@
                             <th>Nomor SBP</th>
                             <th>Tanggal SBP</th>
                             <th>Pelaku</th>
+                            <th>Identitas</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -30,6 +31,9 @@
                                 </td>
                                 <td>
                                     <div>{{ $sbp->nama_pelaku }}</div>
+                                </td>
+                                <td>
+                                    <div>{{ $sbp->jenis_identitas }} / {{ $sbp->nomor_identitas }}</div>
                                 </td>
                                 <td>
                                     <div class="d-flex align-items-center">
