@@ -4,19 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Helpers\TerbilangHelper;
 
 class Sbp extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'sbp';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'nomor_sbp',
         'nomor_ba_riksa',
@@ -47,11 +43,6 @@ class Sbp extends Model
         'nomor_ba_musnah',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
         'tanggal_sbp' => 'date',
         'tanggal_surat_perintah' => 'date',
@@ -60,34 +51,43 @@ class Sbp extends Model
     ];
 
     /**
-     * Get the petugas 1 that owns the SBP.
+     * The "booted" method of the model.
+     *
+     * @return void
      */
+    protected static function booted()
+    {
+        static::deleting(function ($sbp) {
+            if ($sbp->isForceDeleting()) {
+                // Jika force delete, hapus permanen BAST juga
+                $sbp->bast()->forceDelete();
+            } else {
+                // Jika soft delete, soft delete BAST juga
+                $sbp->bast()->delete();
+            }
+        });
+
+        static::restoring(function ($sbp) {
+            // Saat SBP di-restore, restore juga BAST terkait
+            $sbp->bast()->restore();
+        });
+    }
+
     public function petugas1()
     {
         return $this->belongsTo(Petugas::class, 'id_petugas_1');
     }
 
-    /**
-     * Get the petugas 2 that owns the SBP.
-     */
     public function petugas2()
     {
         return $this->belongsTo(Petugas::class, 'id_petugas_2');
     }
 
-    /**
-     * Get the spelled out date of the SBP.
-     *
-     * @return string
-     */
     public function getTanggalSbpTerbilangAttribute()
     {
         return TerbilangHelper::tanggal($this->tanggal_sbp);
     }
 
-    /**
-     * Get the BAST associated with the SBP.
-     */
     public function bast()
     {
         return $this->hasOne(Bast::class);

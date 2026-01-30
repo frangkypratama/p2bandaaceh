@@ -17,7 +17,7 @@
                 <table class="table table-striped table-hover">
                     <thead class="table-dark">
                         <tr>
-                            <th scope="col" class="text-center" style="width: 5%;">#</th>
+                            <th scope="col" class="text-center" style="width: 5%;">No</th>
                             <th scope="col">Jenis Pelanggaran</th>
                             <th scope="col" class="text-center" style="width: 15%;">Aksi</th>
                         </tr>

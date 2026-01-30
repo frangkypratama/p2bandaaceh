@@ -10,6 +10,7 @@ use App\Models\RefSatuan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class SbpController extends Controller
@@ -90,7 +91,7 @@ class SbpController extends Controller
         // ===== VALIDASI UNIK (STRING FINAL) =====
         $request->merge(['nomor_sbp_final' => $formattedSbp]);
         $request->validate([
-            'nomor_sbp_final' => 'unique:sbp,nomor_sbp'
+            'nomor_sbp_final' => Rule::unique('sbp', 'nomor_sbp')->whereNull('deleted_at')
         ], [
             'nomor_sbp_final.unique' => 'Nomor SBP dengan tahun tersebut sudah ada.'
         ]);
@@ -209,7 +210,9 @@ class SbpController extends Controller
 
         $request->merge(['nomor_sbp_final' => $formattedSbp]);
         $request->validate([
-            'nomor_sbp_final' => 'unique:sbp,nomor_sbp,' . $sbp->id
+            'nomor_sbp_final' => Rule::unique('sbp', 'nomor_sbp')->whereNull('deleted_at')->ignore($sbp->id)
+        ], [
+            'nomor_sbp_final.unique' => 'Nomor SBP dengan tahun tersebut sudah ada.'
         ]);
 
         DB::transaction(function () use ($sbp, $validated, $request, $nomor_sbp_int, $tahun_sbp, $formattedSbp, $formattedBaRiksa, $formattedBaTegah, $formattedBaSegel) {
@@ -257,22 +260,9 @@ class SbpController extends Controller
      */
     public function destroy(Sbp $sbp)
     {
-        // Menggunakan transaksi untuk memastikan integritas data
-        DB::transaction(function () use ($sbp) {
-            // Memuat relasi BAST secara eksplisit
-            $sbp->load('bast');
-            
-            // Jika ada BAST terkait, hapus terlebih dahulu
-            if ($sbp->bast) {
-                $sbp->bast->delete();
-            }
+        $sbp->delete();
     
-            // Hapus record SBP itu sendiri
-            $sbp->delete();
-        });
-    
-        // Redirect kembali dengan pesan sukses. Front-end akan me-reload halaman.
-        return redirect()->back()->with('success', 'Data SBP dan dokumen terkait berhasil dihapus.');
+        return redirect()->route('sbp.index')->with('success', 'Data SBP dan dokumen terkait berhasil dihapus.');
     }
 
     /**

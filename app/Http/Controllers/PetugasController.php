@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Petugas;
 use App\Models\PangkatGolongan;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class PetugasController extends Controller
 {
@@ -25,7 +26,12 @@ class PetugasController extends Controller
     {
         $request->validate([
             'nama' => 'required|string|max:255',
-            'nip' => 'required|string|max:20|unique:petugas',
+            'nip' => [
+                'required',
+                'string',
+                'max:20',
+                Rule::unique('petugas')->whereNull('deleted_at'),
+            ],
             'pangkat_golongan_id' => 'nullable|exists:pangkat_golongan,id',
             'jabatan' => 'nullable|string|max:255',
         ]);
@@ -50,7 +56,12 @@ class PetugasController extends Controller
     {
         $request->validate([
             'nama' => 'required|string|max:255',
-            'nip' => 'required|string|max:20|unique:petugas,nip,'.$petugas->id,
+            'nip' => [
+                'required',
+                'string',
+                'max:20',
+                Rule::unique('petugas')->ignore($petugas->id)->whereNull('deleted_at'),
+            ],
             'pangkat_golongan_id' => 'nullable|exists:pangkat_golongan,id',
             'jabatan' => 'nullable|string|max:255',
         ]);
