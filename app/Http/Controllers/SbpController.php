@@ -419,4 +419,13 @@ class SbpController extends Controller
 
         return $pdf->stream($filename);
     }
+
+    /**
+     * Return SBP data as JSON for API calls.
+     */
+    public function showApi($id)
+    {
+        $sbp = Sbp::findOrFail($id);
+        return response()->json($sbp);
+    }
 }

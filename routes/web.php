@@ -8,6 +8,7 @@ use App\Http\Controllers\PangkatGolonganController;
 use App\Http\Controllers\BastController;
 use App\Http\Controllers\RefPelanggaranController;
 use App\Http\Controllers\RefSatuanController;
+use App\Http\Controllers\LptController;
 
 /*
 |--------------------------------------------------------------------------
@@ -95,6 +96,15 @@ Route::resource('ref-pelanggaran', RefPelanggaranController::class);
 |--------------------------------------------------------------------------
 */
 Route::resource('ref-satuan', RefSatuanController::class);
+
+
+/*
+|--------------------------------------------------------------------------
+| LPT
+|--------------------------------------------------------------------------
+*/
+Route::resource('lpt', LptController::class)->except(['show']);
+Route::get('/api/sbp/{id}', [SbpController::class, 'showApi'])->name('sbp.api.show');
 
 
 /*

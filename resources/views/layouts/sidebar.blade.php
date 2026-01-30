@@ -33,6 +33,13 @@
                 </a>
             </li>
 
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('lpt.index') }}">
+                    <i class="nav-icon cil-description"></i>
+                    Data LPT
+                </a>
+            </li>
+
             <li class="nav-title">
                 <h2 class="fs-6 text-uppercase">Referensi</h2>
             </li>
