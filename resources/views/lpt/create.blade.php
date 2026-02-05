@@ -14,8 +14,7 @@
             <div class="col-md-10">
                 <div class="card">
                     <div class="card-header">
-                        <i class="cil-plus me-2"></i>
-                        <strong>Tambah Laporan Pemeriksaan Teknis (LPT)</strong>
+                        <strong>Tambah Laporan Pemeriksaan Tugas (LPT)</strong>
                     </div>
                     <div class="card-body">
                         <form action="{{ route('lpt.store') }}" method="POST">

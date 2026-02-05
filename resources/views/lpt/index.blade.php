@@ -13,8 +13,7 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <i class="cil-file-earmark-text me-2"></i>
-                        <strong>Data Laporan Pemeriksaan Teknis (LPT)</strong>
+                        <strong>Data Laporan Pemeriksaan Tugas (LPT)</strong>
                     </div>
                     <div class="card-body">
                         @if(session('success'))
