@@ -1,20 +1,12 @@
 @extends('layouts.app')
 
-@section('breadcrumb')
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dasbor</a></li>
-        <li class="breadcrumb-item"><a href="{{ route('lpt.index') }}">Data LPT</a></li>
-        <li class="breadcrumb-item active">Tambah LPT</li>
-    </ol>
-@endsection
-
 @section('content')
     <div class="container-lg">
         <div class="row justify-content-center">
             <div class="col-md-10">
                 <div class="card">
                     <div class="card-header">
-                        <strong>Tambah Laporan Pelaksanaan Tugas (LPT)</strong>
+                        <strong>Buat Laporan Pelaksanaan Tugas (LPT)</strong>
                     </div>
                     <div class="card-body">
                         <form action="{{ route('lpt.store') }}" method="POST">

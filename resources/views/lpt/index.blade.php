@@ -1,12 +1,5 @@
 @extends('layouts.app')
 
-@section('breadcrumb')
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dasbor</a></li>
-        <li class="breadcrumb-item active">Data LPT</li>
-    </ol>
-@endsection
-
 @section('content')
     <div class="container-lg">
         <div class="row justify-content-center">
@@ -26,7 +19,7 @@
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <a href="{{ route('lpt.create') }}" class="btn btn-primary">
                                 <i class="cil-plus me-2"></i>
-                                Tambah LPT
+                                Buat LPT
                             </a>
                         </div>
 

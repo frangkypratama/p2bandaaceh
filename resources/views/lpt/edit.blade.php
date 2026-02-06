@@ -1,13 +1,5 @@
 @extends('layouts.app')
 
-@section('breadcrumb')
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dasbor</a></li>
-        <li class="breadcrumb-item"><a href="{{ route('lpt.index') }}">Data LPT</a></li>
-        <li class="breadcrumb-item active">Edit LPT</li>
-    </ol>
-@endsection
-
 @section('content')
     <div class="container-lg">
         <div class="row justify-content-center">
