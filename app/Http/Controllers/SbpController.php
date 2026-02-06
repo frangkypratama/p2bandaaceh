@@ -258,12 +258,28 @@ class SbpController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Sbp $sbp)
-    {
-        $sbp->delete();
-    
-        return redirect()->route('sbp.index')->with('success', 'Data SBP dan dokumen terkait berhasil dihapus.');
-    }
+
+     public function destroy(Sbp $sbp)
+     {
+         // Menggunakan transaksi untuk memastikan integritas data
+         DB::transaction(function () use ($sbp) {
+             // Memuat relasi BAST secara eksplisit
+             $sbp->load('bast');
+             
+             // Jika ada BAST terkait, hapus terlebih dahulu
+             if ($sbp->bast) {
+                 $sbp->bast->delete();
+             }
+     
+             // Hapus record SBP itu sendiri
+             $sbp->delete();
+         });
+         $sbp->delete();
+ 
+         // Redirect kembali dengan pesan sukses. Front-end akan me-reload halaman.
+         return redirect()->back()->with('success', 'Data SBP dan dokumen terkait berhasil dihapus.');
+         return redirect()->route('sbp.index')->with('success', 'Data SBP dan dokumen terkait berhasil dihapus.');
+     }
 
     /**
      * Preview cetak SBP (iframe).
