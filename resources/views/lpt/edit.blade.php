@@ -14,7 +14,7 @@
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-header">
-                        <strong>Edit Laporan Pemeriksaan Tugas (LPT)</strong>
+                        <strong>Edit Laporan Pelaksanaan Tugas (LPT)</strong>
                     </div>
                     <div class="card-body">
                         <form action="{{ route('lpt.update', $lpt->id) }}" method="POST">

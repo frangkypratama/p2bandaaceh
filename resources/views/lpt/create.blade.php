@@ -14,7 +14,7 @@
             <div class="col-md-10">
                 <div class="card">
                     <div class="card-header">
-                        <strong>Tambah Laporan Pemeriksaan Tugas (LPT)</strong>
+                        <strong>Tambah Laporan Pelaksanaan Tugas (LPT)</strong>
                     </div>
                     <div class="card-body">
                         <form action="{{ route('lpt.store') }}" method="POST">

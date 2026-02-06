@@ -13,7 +13,7 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <strong>Data Laporan Pemeriksaan Tugas (LPT)</strong>
+                        <strong>Data Laporan Pelaksanaan Tugas (LPT)</strong>
                     </div>
                     <div class="card-body">
                         @if(session('success'))
