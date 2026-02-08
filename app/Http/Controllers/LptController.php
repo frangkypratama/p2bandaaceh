@@ -20,10 +20,11 @@ class LptController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
+        $jenis = $request->query('jenis');
         $sbp = Sbp::orderBy('tanggal_sbp', 'desc')->get();
-        return view('lpt.create', compact('sbp'));
+        return view('lpt.create', compact('sbp', 'jenis'));
     }
 
     /**

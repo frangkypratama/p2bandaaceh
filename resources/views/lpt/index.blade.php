@@ -17,10 +17,11 @@
                         @endif
 
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            <a href="{{ route('lpt.create') }}" class="btn btn-primary">
+                            <!-- Button trigger modal -->
+                            <button type="button" class="btn btn-primary" data-coreui-toggle="modal" data-coreui-target="#lptModal">
                                 <i class="cil-plus me-2"></i>
                                 Buat LPT
-                            </a>
+                            </button>
                         </div>
 
                         <div class="table-responsive">
@@ -68,6 +69,31 @@
                         <div class="d-flex justify-content-center">
                             {{ $lpt->links() }}
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="lptModal" tabindex="-1" aria-labelledby="lptModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="lptModalLabel">Pilih Jenis LPT</h5>
+                    <button type="button" class="btn-close" data-coreui-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="list-group">
+                        <a href="{{ route('lpt.create', ['jenis' => 'bandara']) }}" class="list-group-item list-group-item-action">
+                            <i class="cil-flight-takeoff me-2"></i>LPT Penindakan Bandara
+                        </a>
+                        <a href="{{ route('lpt.create', ['jenis' => 'opsar']) }}" class="list-group-item list-group-item-action">
+                            <i class="cil-bullhorn me-2"></i>LPT Operasi Pasar
+                        </a>
+                        <a href="{{ route('lpt.create', ['jenis' => 'cukai']) }}" class="list-group-item list-group-item-action">
+                            <i class="cil-storage me-2"></i>LPT Penindakan Cukai
+                        </a>
                     </div>
                 </div>
             </div>
