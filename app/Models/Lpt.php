@@ -28,4 +28,9 @@ class Lpt extends Model
     {
         return $this->belongsTo(Sbp::class);
     }
+
+    public function photos()
+    {
+        return $this->hasMany(LptPhoto::class);
+    }
 }

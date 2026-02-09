@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Lpt;
 use App\Models\Sbp;
+use App\Models\LptPhoto;
 use Illuminate\Http\Request;
 
 class LptController extends Controller
@@ -37,7 +38,7 @@ class LptController extends Controller
     {
         $lpt = Lpt::with('sbp')
                     ->orderBy('tanggal_lpt', 'desc')
-                    ->orderByRaw('CAST(nomor_lpt AS UNSIGNED) DESC')
+                    ->orderByRaw('CAST(nomor_lpt AS UNSIGNED) ASC')
                     ->paginate(10);
         $jenis_lpt_options = $this->getJenisLptOptions();
         return view('lpt.index', compact('lpt', 'jenis_lpt_options'));
@@ -66,9 +67,20 @@ class LptController extends Controller
             'tanggal_lpt' => 'required|date',
             'jenis_lpt'   => 'required|in:' . implode(',', array_keys($jenis_lpt_options)),
             'sbp_id'      => 'required|exists:sbp,id',
+            'photos.*'    => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ]);
 
-        Lpt::create($request->all());
+        $lpt = Lpt::create($request->all());
+
+        if ($request->hasFile('photos')) {
+            foreach ($request->file('photos') as $photo) {
+                $path = $photo->store('lpt-photos', 'public');
+                LptPhoto::create([
+                    'lpt_id' => $lpt->id,
+                    'file_path' => $path
+                ]);
+            }
+        }
 
         return redirect()->route('lpt.index')
                         ->with('success','LPT created successfully.');

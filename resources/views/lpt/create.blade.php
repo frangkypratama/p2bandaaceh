@@ -9,7 +9,7 @@
                         <strong>Buat Laporan Pelaksanaan Tugas (LPT)</strong>
                     </div>
                     <div class="card-body">
-                        <form action="{{ route('lpt.store') }}" method="POST">
+                        <form action="{{ route('lpt.store') }}" method="POST" enctype="multipart/form-data">
                             @csrf
 
                             {{-- Jenis LPT --}}
@@ -69,6 +69,17 @@
                                 </div>
                                 <input type="hidden" name="sbp_id" id="sbp_id">
                                 @error('sbp_id')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            {{-- Photo Upload --}}
+                            <div class="form-group mb-3">
+                                <label for="photos" class="form-label">Upload Foto</label>
+                                <div class="input-group">
+                                    <input type="file" class="form-control @error('photos.*') is-invalid @enderror" id="photos" name="photos[]" multiple>
+                                </div>
+                                @error('photos.*')
                                     <div class="invalid-feedback d-block">{{ $message }}</div>
                                 @enderror
                             </div>
