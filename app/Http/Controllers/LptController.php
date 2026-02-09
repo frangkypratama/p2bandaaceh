@@ -9,12 +9,38 @@ use Illuminate\Http\Request;
 class LptController extends Controller
 {
     /**
+     * Define the source of truth for LPT types and their properties.
+     * @return array
+     */
+    private function getJenisLptOptions(): array
+    {
+        return [
+            'bandara' => [
+                'name' => 'LPT Penindakan Bandara',
+                'icon' => 'cil-flight-takeoff',
+            ],
+            'opsar'   => [
+                'name' => 'LPT Operasi Pasar',
+                'icon' => 'cil-bullhorn',
+            ],
+            'cukai'   => [
+                'name' => 'LPT Penindakan Cukai',
+                'icon' => 'cil-storage',
+            ],
+        ];
+    }
+
+    /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $lpt = Lpt::with('sbp')->orderBy('tanggal_lpt', 'desc')->paginate(10);
-        return view('lpt.index', compact('lpt'));
+        $lpt = Lpt::with('sbp')
+                    ->orderBy('tanggal_lpt', 'desc')
+                    ->orderByRaw('CAST(nomor_lpt AS UNSIGNED) DESC')
+                    ->paginate(10);
+        $jenis_lpt_options = $this->getJenisLptOptions();
+        return view('lpt.index', compact('lpt', 'jenis_lpt_options'));
     }
 
     /**
@@ -24,7 +50,9 @@ class LptController extends Controller
     {
         $jenis = $request->query('jenis');
         $sbp = Sbp::orderBy('tanggal_sbp', 'desc')->get();
-        return view('lpt.create', compact('sbp', 'jenis'));
+        $jenis_lpt_options = $this->getJenisLptOptions();
+
+        return view('lpt.create', compact('sbp', 'jenis', 'jenis_lpt_options'));
     }
 
     /**
@@ -32,11 +60,12 @@ class LptController extends Controller
      */
     public function store(Request $request)
     {
+        $jenis_lpt_options = $this->getJenisLptOptions();
         $request->validate([
-            'nomor_lpt' => 'required',
+            'nomor_lpt'   => 'required',
             'tanggal_lpt' => 'required|date',
-            'jenis_lpt' => 'required',
-            'sbp_id' => 'required|exists:sbp,id',
+            'jenis_lpt'   => 'required|in:' . implode(',', array_keys($jenis_lpt_options)),
+            'sbp_id'      => 'required|exists:sbp,id',
         ]);
 
         Lpt::create($request->all());
@@ -51,7 +80,8 @@ class LptController extends Controller
     public function edit(Lpt $lpt)
     {
         $sbp = Sbp::orderBy('tanggal_sbp', 'desc')->get();
-        return view('lpt.edit',compact('lpt', 'sbp'));
+        $jenis_lpt_options = $this->getJenisLptOptions();
+        return view('lpt.edit', compact('lpt', 'sbp', 'jenis_lpt_options'));
     }
 
     /**
@@ -59,10 +89,11 @@ class LptController extends Controller
      */
     public function update(Request $request, Lpt $lpt)
     {
+        $jenis_lpt_options = $this->getJenisLptOptions();
         $request->validate([
             'nomor_lpt' => 'required',
             'tanggal_lpt' => 'required|date',
-            'jenis_lpt' => 'required',
+            'jenis_lpt'   => 'required|in:' . implode(',', array_keys($jenis_lpt_options)),
             'sbp_id' => 'required|exists:sbp,id',
         ]);
 

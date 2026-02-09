@@ -9,13 +9,6 @@
                         <strong>Data Laporan Pelaksanaan Tugas (LPT)</strong>
                     </div>
                     <div class="card-body">
-                        @if(session('success'))
-                            <div class="alert alert-success" role="alert">
-                                <i class="cil-check-circle me-2"></i>
-                                {{ session('success') }}
-                            </div>
-                        @endif
-
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <!-- Button trigger modal -->
                             <button type="button" class="btn btn-primary" data-coreui-toggle="modal" data-coreui-target="#lptModal">
@@ -43,18 +36,17 @@
                                             <td>
                                                 <span class="badge bg-info text-white">{{ $item->sbp?->nomor_sbp ?? 'N/A' }}</span>
                                             </td>
-                                            <td>{{ $item->jenis_lpt }}</td>
+                                            <td>{{ $jenis_lpt_options[$item->jenis_lpt]['name'] ?? 'N/A' }}</td>
                                             <td>
                                                 <a href="{{ route('lpt.edit', $item->id) }}" class="btn btn-sm btn-warning text-white">
                                                     <i class="cil-pencil"></i>
                                                 </a>
-                                                <form action="{{ route('lpt.destroy', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?');">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-danger">
-                                                        <i class="cil-trash"></i>
-                                                    </button>
-                                                </form>
+                                                <button class="btn btn-sm btn-danger" 
+                                                        data-coreui-toggle="modal" 
+                                                        data-coreui-target="#deleteConfirmationModal"
+                                                        data-url="{{ route('lpt.destroy', $item->id) }}">
+                                                    <i class="cil-trash"></i>
+                                                </button>
                                             </td>
                                         </tr>
                                     @empty
@@ -85,15 +77,11 @@
                 </div>
                 <div class="modal-body">
                     <div class="list-group">
-                        <a href="{{ route('lpt.create', ['jenis' => 'bandara']) }}" class="list-group-item list-group-item-action">
-                            <i class="cil-flight-takeoff me-2"></i>LPT Penindakan Bandara
-                        </a>
-                        <a href="{{ route('lpt.create', ['jenis' => 'opsar']) }}" class="list-group-item list-group-item-action">
-                            <i class="cil-bullhorn me-2"></i>LPT Operasi Pasar
-                        </a>
-                        <a href="{{ route('lpt.create', ['jenis' => 'cukai']) }}" class="list-group-item list-group-item-action">
-                            <i class="cil-storage me-2"></i>LPT Penindakan Cukai
-                        </a>
+                        @foreach($jenis_lpt_options as $key => $options)
+                            <a href="{{ route('lpt.create', ['jenis' => $key]) }}" class="list-group-item list-group-item-action">
+                                <i class="{{ $options['icon'] }} me-2"></i>{{ $options['name'] }}
+                            </a>
+                        @endforeach
                     </div>
                 </div>
             </div>

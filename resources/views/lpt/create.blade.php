@@ -12,6 +12,27 @@
                         <form action="{{ route('lpt.store') }}" method="POST">
                             @csrf
 
+                            {{-- Jenis LPT --}}
+                            <div class="form-group mb-3">
+                                <label for="jenis_lpt" class="form-label">Jenis LPT</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="cil-tag"></i></span>
+                                    <select class="form-select @error('jenis_lpt') is-invalid @enderror" id="jenis_lpt" name="jenis_lpt" required {{ $jenis ? 'disabled' : '' }}>
+                                        <option value="" disabled {{ !$jenis ? 'selected' : '' }}>Pilih Jenis LPT...</option>
+                                        @foreach($jenis_lpt_options as $pilihan_jenis_lpt => $options)
+                                            <option value="{{ $pilihan_jenis_lpt }}" {{ old('jenis_lpt', $jenis) == $pilihan_jenis_lpt ? 'selected' : '' }}>{{ $options['name'] }}</option>
+                                        @endforeach
+                                    </select>
+                                    @if($jenis)
+                                        <input type="hidden" name="jenis_lpt" value="{{ $jenis }}" />
+                                    @endif
+                                </div>
+                                @error('jenis_lpt')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            {{-- Penomoran LPT --}}
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group mb-3">
@@ -52,17 +73,6 @@
                                 @enderror
                             </div>
 
-                            <div class="form-group mb-3">
-                                <label for="jenis_lpt" class="form-label">Jenis LPT</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="cil-tag"></i></span>
-                                    <input type="text" class="form-control @error('jenis_lpt') is-invalid @enderror" id="jenis_lpt" name="jenis_lpt" value="{{ old('jenis_lpt') }}" required>
-                                </div>
-                                @error('jenis_lpt')
-                                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                                @enderror
-                            </div>
-
                             <div class="form-group mt-4">
                                 <button type="submit" class="btn btn-primary">
                                     <i class="cil-save me-2"></i>Simpan
@@ -79,48 +89,48 @@
     </div>
 
     <!-- Modal SBP -->
-<div class="modal fade" id="sbpModal" tabindex="-1" aria-labelledby="sbpModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="sbpModalLabel">Pilih SBP</h5>
-                <button type="button" class="btn-close" data-coreui-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="table-responsive">
-                    <table class="table table-striped table-hover" id="sbp">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Nomor SBP</th>
-                                <th>Tanggal SBP</th>
-                                <th>Nama Pelaku</th>
-                                <th>Jenis Barang</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($sbp as $item)
+    <div class="modal fade" id="sbpModal" tabindex="-1" aria-labelledby="sbpModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="sbpModalLabel">Pilih SBP</h5>
+                    <button type="button" class="btn-close" data-coreui-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover" id="sbp">
+                            <thead>
                                 <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $item->nomor_sbp }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($item->tanggal_sbp)->format('d-m-Y') }}</td>
-                                    <td>{{ $item->nama_pelaku }}</td>
-                                    <td>{{ $item->jenis_barang }}</td>
-                                    <td>
-                                        <button type="button" class="btn btn-sm btn-primary pilih-sbp-btn" data-id="{{ $item->id }}">
-                                            Pilih
-                                        </button>
-                                    </td>
+                                    <th>No</th>
+                                    <th>Nomor SBP</th>
+                                    <th>Tanggal SBP</th>
+                                    <th>Nama Pelaku</th>
+                                    <th>Jenis Barang</th>
+                                    <th>Aksi</th>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @foreach($sbp as $item)
+                                    <tr>
+                                        <td>{{ $loop->iteration }}</td>
+                                        <td>{{ $item->nomor_sbp }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($item->tanggal_sbp)->format('d-m-Y') }}</td>
+                                        <td>{{ $item->nama_pelaku }}</td>
+                                        <td>{{ $item->jenis_barang }}</td>
+                                        <td>
+                                            <button type="button" class="btn btn-sm btn-primary pilih-sbp-btn" data-id="{{ $item->id }}">
+                                                Pilih
+                                            </button>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 @endsection
 
 @push('scripts')
