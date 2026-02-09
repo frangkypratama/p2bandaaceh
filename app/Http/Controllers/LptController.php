@@ -6,6 +6,8 @@ use App\Models\Lpt;
 use App\Models\Sbp;
 use App\Models\LptPhoto;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class LptController extends Controller
 {
@@ -62,28 +64,59 @@ class LptController extends Controller
     public function store(Request $request)
     {
         $jenis_lpt_options = $this->getJenisLptOptions();
-        $request->validate([
+        $validatedData = $request->validate([
             'nomor_lpt'   => 'required',
             'tanggal_lpt' => 'required|date',
             'jenis_lpt'   => 'required|in:' . implode(',', array_keys($jenis_lpt_options)),
             'sbp_id'      => 'required|exists:sbp,id',
-            'photos.*'    => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+            'photos.*'    => 'image|mimes:jpeg,png,jpg,gif,svg|max:10240'
         ]);
 
-        $lpt = Lpt::create($request->all());
+        try {
+            DB::transaction(function () use ($request, $validatedData) {
+                // Create LPT record from validated data, excluding photos
+                $lpt = Lpt::create($validatedData);
 
-        if ($request->hasFile('photos')) {
-            foreach ($request->file('photos') as $photo) {
-                $path = $photo->store('lpt-photos', 'public');
-                LptPhoto::create([
-                    'lpt_id' => $lpt->id,
-                    'file_path' => $path
-                ]);
-            }
+                // Handle photo uploads
+                if ($request->hasFile('photos')) {
+                    foreach ($request->file('photos') as $photo) {
+                        $path = $photo->store('lpt-photos', 'public');
+                        LptPhoto::create([
+                            'lpt_id' => $lpt->id,
+                            'file_path' => $path
+                        ]);
+                    }
+                }
+            });
+
+            return redirect()->route('lpt.index')
+                            ->with('success','LPT created successfully.');
+        } catch (\Exception $e) {
+            // Log the error for debugging
+            logger()->error('Failed to create LPT: ' . $e->getMessage());
+
+            // Redirect back with an error message
+            return redirect()->back()
+                            ->with('error', 'Gagal membuat LPT. Silakan coba lagi.')
+                            ->withInput();
         }
+    }
+    
+    /**
+     * Display a preview of the specified resource.
+     */
+    public function preview($id)
+    {
+        $lpt = Lpt::with(['sbp', 'photos'])->findOrFail($id);
+        $jenis_lpt_options = $this->getJenisLptOptions();
 
-        return redirect()->route('lpt.index')
-                        ->with('success','LPT created successfully.');
+        $pdf = Pdf::loadView('templatecetak.template-lpt', compact('lpt', 'jenis_lpt_options'))
+            // ===== F4 REAL SIZE (pt) =====
+            ->setPaper([0, 0, 595.28, 935.43], 'portrait');
+
+        $filename = str_replace('/', '-', $lpt->nomor_lpt) . '.pdf';
+
+        return $pdf->stream($filename);
     }
 
     /**

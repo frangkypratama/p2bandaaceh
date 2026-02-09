@@ -74,7 +74,7 @@
         /* ===== CONTENT ===== */
         .content-table td {
             padding: 2px 2px;
-            line-height: 1.5;
+            line-height: 1;
         }
 
         .num {
@@ -132,14 +132,16 @@
             width: 50%;
         }
 
-        .name {
-            margin-top: 60px;
-        }
-
         .electronic-sign {
             color: #d0cece;
             font-size: 9pt;
-            margin-top: 40px;
+            margin-top: 60px;
+            margin-bottom: 2px;
+        }
+
+        .name {
+            margin-top: 0;
+            margin-bottom: 20px;
         }
     </style>
 </head>
@@ -175,7 +177,7 @@
             <tr>
                 <td class="num"></td>
                 <td colspan="2" class="value">
-                    {{ $lpt->nomor_surat_perintah ?? '-' }} tanggal {{ optional($lpt->tanggal_surat_perintah)->translatedFormat('d F Y') ?? '-' }}
+                    Surat Perintah Nomor: {{ $lpt->sbp->nomor_surat_perintah ?? '-' }} tanggal {{ optional($lpt->sbp->tanggal_surat_perintah)->translatedFormat('d F Y') ?? '-' }}
                 </td>
             </tr>
 
@@ -191,7 +193,7 @@
             <tr>
                 <td class="num"></td>
                 <td colspan="2" class="value">
-                    {{ optional($lpt->tanggal_pelaksanaan)->translatedFormat('d F Y') ?? '-' }}
+                    {{ optional($lpt->sbp->tanggal_sbp)->translatedFormat('d F Y') }} pukul {{ optional(new \Carbon\Carbon($lpt->sbp->waktu_penindakan))->format('H:i') }} WIB
                 </td>
             </tr>
 
@@ -207,7 +209,7 @@
             <tr>
                 <td class="num"></td>
                 <td colspan="2" class="value">
-                    {{ $lpt->wilayah_tugas ?? '-' }}
+                    {{ $lpt->sbp->lokasi_penindakan ?? '-' }}
                 </td>
             </tr>
 
@@ -224,14 +226,11 @@
                 <td class="num"></td>
                 <td colspan="2" class="value">
                     <ol>
-                        @if(isset($lpt->petugas1))
-                        <li>{{ $lpt->petugas1->nama ?? '-' }}</li>
+                        @if(isset($lpt->sbp->petugas1))
+                        <li>{{ $lpt->sbp->petugas1->nama ?? '-' }}</li>
                         @endif
-                        @if(isset($lpt->petugas2))
-                        <li>{{ $lpt->petugas2->nama ?? '-' }}</li>
-                        @endif
-                        @if(isset($lpt->petugas3))
-                        <li>{{ $lpt->petugas3->nama ?? '-' }}</li>
+                        @if(isset($lpt->sbp->petugas2))
+                        <li>{{ $lpt->sbp->petugas2->nama ?? '-' }}</li>
                         @endif
                     </ol>
                 </td>
@@ -255,13 +254,12 @@
                             <li>{{ $uraian }}</li>
                             @endforeach
                         @else
-                        <li>Telah dilaksanakan kegiatan penindakan terhadap {{ $lpt->uraian_barang ?? '-' }} yang dibawa oleh {{ $lpt->nama_pelaku ?? '-' }};</li>
-                        <li>Barang tersebut dibawa oleh Penumpang bernama {{ $lpt->nama_pelaku ?? '-' }} dengan nomor {{ $lpt->jenis_identitas ?? 'Paspor' }} {{ $lpt->nomor_identitas ?? '-' }} yang berasal dari {{ $lpt->asal ?? '-' }} menuju {{ $lpt->tujuan ?? '-' }};</li>
-                        <li>Yang bersangkutan tidak memberitahukan barang bawaannya dan mengaku barang tersebut {{ $lpt->tujuan_barang ?? '-' }};</li>
-                        <li>Berdasarkan hasil keputusan pemeriksa barang, terhadap barang tersebut diduga masuk kategori larangan dan pembatasan;</li>
-                        <li>Kemudian atas barang tersebut dilakukan penindakan ({{ $lpt->nomor_sbp ?? '-' }}) berikut dengan salinannya diberikan kepada ybs;</li>
-                        <li>Selanjutnya Barang Hasil Penindakan tersebut dibawa ke KPPBC TMP C Banda Aceh untuk ditindaklanjuti;</li>
-                        <li>Pelaksana Tugas mengambil dokumentasi terlampir;</li>
+                        <li>Telah dilaksanakan kegiatan penindakan terhadap barang berupa <strong>{{ $lpt->sbp->uraian_barang ?? 'N/A' }}</strong> yang dibawa oleh Sdr. <strong>{{ $lpt->sbp->nama_pelaku ?? 'N/A' }}</strong>.</li>
+                        <li>Penumpang tersebut memiliki identitas berupa {{ $lpt->sbp->jenis_identitas ?? 'N/A' }} dengan nomor {{ $lpt->sbp->nomor_identitas ?? 'N/A' }}.</li>
+                        <li>Penindakan dilakukan pada lokasi {{ $lpt->sbp->lokasi_penindakan ?? 'N/A' }} dengan alasan: {{ ($lpt->sbp->alasan_penindakan) ?? 'N/A' }}.</li>
+                        <li>Atas barang tersebut diterbitkan Surat Bukti Penindakan (SBP) dengan nomor <strong>{{ $lpt->sbp->nomor_sbp ?? 'N/A' }}</strong> tanggal <strong>{{ $lpt->sbp->tanggal_sbp->translatedFormat('d F Y') }}</strong> dan salinannya telah diserahkan kepada yang bersangkutan.</li>
+                        <li>Barang Hasil Penindakan (BHP) selanjutnya dibawa ke KPPBC TMP C Banda Aceh untuk proses lebih lanjut.</li>
+                        <li>Dokumentasi kegiatan terlampir.</li>
                         @endif
                     </ol>
                 </td>
@@ -295,7 +293,7 @@
             <tr>
                 <td class="num"></td>
                 <td colspan="2" class="value">
-                    {{ $lpt->kesimpulan ?? '-' }}
+                    {{ $lpt->kesimpulan ?? 'Telah dilakukan penindakan sesuai dengan ketentuan yang berlaku.' }}
                 </td>
             </tr>
 
@@ -305,7 +303,7 @@
             </tr>
             <tr>
                 <td colspan="3" class="full-width">
-                    Demikian laporan dibuat dengan sebenarnya untuk mendapat keputusan lebih lanjut
+                    Demikian laporan dibuat dengan sebenarnya untuk mendapat keputusan lebih lanjut.
                 </td>
             </tr>
         </tbody>
@@ -315,19 +313,32 @@
         <tbody>
             <tr>
                 <td class="sig-left">&nbsp;</td>
-                <td class="sig-right">{{ $lpt->kota ?? 'Banda Aceh' }}, {{ optional($lpt->tanggal_lpt)->translatedFormat('d F Y') ?? '-' }}</td>
+                <td class="sig-right">{{ $lpt->sbp->kota_penindakan ?? 'Banda Aceh' }}, {{ optional($lpt->tanggal_lpt)->translatedFormat('d F Y') ?? '-' }}</td>
             </tr>
             <tr>
                 <td class="sig-left">&nbsp;</td>
                 <td class="sig-right">Pelaksana Tugas</td>
             </tr>
+            
+            @if(isset($lpt->sbp->petugas1))
             <tr>
                 <td class="sig-left">&nbsp;</td>
                 <td class="sig-right">
                     <div class="electronic-sign">Ditandatangani secara elektronik</div>
-                    <div class="name">{{ optional($lpt->petugas1)->nama ?? '-' }}<br>NIP {{ optional($lpt->petugas1)->nip_formatted ?? '-' }}</div>
+                    <div class="name">{{ optional($lpt->sbp->petugas1)->nama ?? '-' }}<br>NIP {{ optional($lpt->sbp->petugas1)->nip_formatted ?? '-' }}</div>
                 </td>
             </tr>
+            @endif
+
+            @if(isset($lpt->sbp->petugas2))
+            <tr>
+                <td class="sig-left">&nbsp;</td>
+                <td class="sig-right">
+                    <div class="electronic-sign">Ditandatangani secara elektronik</div>
+                    <div class="name">{{ optional($lpt->sbp->petugas2)->nama ?? '-' }}<br>NIP {{ optional($lpt->sbp->petugas2)->nip_formatted ?? '-' }}</div>
+                </td>
+            </tr>
+            @endif
         </tbody>
     </table>
 

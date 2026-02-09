@@ -104,6 +104,7 @@ Route::resource('ref-satuan', RefSatuanController::class);
 |--------------------------------------------------------------------------
 */
 Route::resource('lpt', LptController::class)->except(['show']);
+Route::get('/lpt/{id}/preview', [LptController::class, 'preview'])->name('lpt.preview');
 Route::get('/api/sbp/{id}', [SbpController::class, 'showApi'])->name('sbp.api.show');
 
 

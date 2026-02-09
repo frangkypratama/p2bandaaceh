@@ -38,6 +38,10 @@
                                             </td>
                                             <td>{{ $jenis_lpt_options[$item->jenis_lpt]['name'] ?? 'N/A' }}</td>
                                             <td>
+                                                <button type="button" class="btn btn-sm btn-info text-white preview-btn" 
+                                                        data-url="{{ route('lpt.preview', $item->id) }}">
+                                                    <i class="cil-magnifying-glass"></i>
+                                                </button>
                                                 <a href="{{ route('lpt.edit', $item->id) }}" class="btn btn-sm btn-warning text-white">
                                                     <i class="cil-pencil"></i>
                                                 </a>
@@ -67,7 +71,7 @@
         </div>
     </div>
 
-    <!-- Modal -->
+    <!-- Create LPT Modal -->
     <div class="modal fade" id="lptModal" tabindex="-1" aria-labelledby="lptModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -87,4 +91,37 @@
             </div>
         </div>
     </div>
+
+    <!-- Preview Modal -->
+    <div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="previewModalLabel">Preview LPT</h5>
+                    <button type="button" class="btn-close" data-coreui-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <iframe id="preview-iframe" src="" style="width:100%; height:75vh;" frameborder="0"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const previewButtons = document.querySelectorAll('.preview-btn');
+        const previewModal = new coreui.Modal(document.getElementById('previewModal'));
+        const iframe = document.getElementById('preview-iframe');
+
+        previewButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const url = this.dataset.url;
+                iframe.src = url;
+                previewModal.show();
+            });
+        });
+    });
+</script>
+@endpush

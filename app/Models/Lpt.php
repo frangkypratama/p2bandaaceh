@@ -24,6 +24,15 @@ class Lpt extends Model
         'sbp_id',
     ];
 
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'tanggal_lpt' => 'date',
+    ];
+
     public function sbp()
     {
         return $this->belongsTo(Sbp::class);
