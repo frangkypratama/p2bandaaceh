@@ -66,7 +66,7 @@
         }
 
         .title h3 {
-            font-size: 12pt;
+            font-size: 11pt;
             text-decoration: underline;
             margin-bottom: 4px;
         }
@@ -172,7 +172,7 @@
             <!-- I. DASAR -->
             <tr>
                 <td class="num">I.</td>
-                <td colspan="2" class="section-title">DASAR</td>
+                <td colspan="2" class="value">DASAR</td>
             </tr>
             <tr>
                 <td class="num"></td>
@@ -188,7 +188,7 @@
             </tr>
             <tr>
                 <td class="num">II.</td>
-                <td colspan="2" class="section-title">WAKTU PELAKSANAAN TUGAS</td>
+                <td colspan="2" class="value">WAKTU PELAKSANAAN TUGAS</td>
             </tr>
             <tr>
                 <td class="num"></td>
@@ -204,7 +204,7 @@
             </tr>
             <tr>
                 <td class="num">III.</td>
-                <td colspan="2" class="section-title">WILAYAH TUGAS</td>
+                <td colspan="2" class="value">WILAYAH TUGAS</td>
             </tr>
             <tr>
                 <td class="num"></td>
@@ -220,7 +220,7 @@
             </tr>
             <tr>
                 <td class="num">IV.</td>
-                <td colspan="2" class="section-title">PELAKSANA TUGAS</td>
+                <td colspan="2" class="value">PELAKSANA TUGAS</td>
             </tr>
             <tr>
                 <td class="num"></td>
@@ -243,7 +243,7 @@
             </tr>
             <tr>
                 <td class="num">V.</td>
-                <td colspan="2" class="section-title">URAIAN PELAKSANAAN TUGAS</td>
+                <td colspan="2" class="value">URAIAN PELAKSANAAN TUGAS</td>
             </tr>
             <tr>
                 <td class="num"></td>
@@ -256,7 +256,7 @@
                         @else
                         <li>Telah dilaksanakan kegiatan penindakan terhadap barang berupa <strong>{{ $lpt->sbp->uraian_barang ?? 'N/A' }}</strong> yang dibawa oleh Sdr. <strong>{{ $lpt->sbp->nama_pelaku ?? 'N/A' }}</strong>.</li>
                         <li>Penumpang tersebut memiliki identitas berupa {{ $lpt->sbp->jenis_identitas ?? 'N/A' }} dengan nomor {{ $lpt->sbp->nomor_identitas ?? 'N/A' }}.</li>
-                        <li>Penindakan dilakukan pada lokasi {{ $lpt->sbp->lokasi_penindakan ?? 'N/A' }} dengan alasan: {{ ($lpt->sbp->alasan_penindakan) ?? 'N/A' }}.</li>
+                        <li>Penindakan dilakukan pada lokasi {{ $lpt->sbp->lokasi_penindakan ?? 'N/A' }} dengan alasan {{ ($lpt->sbp->alasan_penindakan) ?? 'N/A' }}.</li>
                         <li>Atas barang tersebut diterbitkan Surat Bukti Penindakan (SBP) dengan nomor <strong>{{ $lpt->sbp->nomor_sbp ?? 'N/A' }}</strong> tanggal <strong>{{ $lpt->sbp->tanggal_sbp->translatedFormat('d F Y') }}</strong> dan salinannya telah diserahkan kepada yang bersangkutan.</li>
                         <li>Barang Hasil Penindakan (BHP) selanjutnya dibawa ke KPPBC TMP C Banda Aceh untuk proses lebih lanjut.</li>
                         <li>Dokumentasi kegiatan terlampir.</li>
@@ -272,7 +272,7 @@
             </tr>
             <tr>
                 <td class="num">VI.</td>
-                <td colspan="2" class="section-title">TINDAK LANJUT</td>
+                <td colspan="2" class="value">TINDAK LANJUT</td>
             </tr>
             <tr>
                 <td class="num"></td>
@@ -288,7 +288,7 @@
             </tr>
             <tr>
                 <td class="num">VII.</td>
-                <td colspan="2" class="section-title">KESIMPULAN</td>
+                <td colspan="2" class="value">KESIMPULAN</td>
             </tr>
             <tr>
                 <td class="num"></td>

@@ -69,13 +69,16 @@ class LptController extends Controller
             'tanggal_lpt' => 'required|date',
             'jenis_lpt'   => 'required|in:' . implode(',', array_keys($jenis_lpt_options)),
             'sbp_id'      => 'required|exists:sbp,id',
+            'photos'      => 'nullable|array',
             'photos.*'    => 'image|mimes:jpeg,png,jpg,gif,svg|max:10240'
         ]);
 
         try {
             DB::transaction(function () use ($request, $validatedData) {
-                // Create LPT record from validated data, excluding photos
-                $lpt = Lpt::create($validatedData);
+                // Create LPT record, excluding photos from the initial data
+                $lptData = $validatedData;
+                unset($lptData['photos']); // Unset photos before creating LPT
+                $lpt = Lpt::create($lptData);
 
                 // Handle photo uploads
                 if ($request->hasFile('photos')) {
@@ -90,7 +93,7 @@ class LptController extends Controller
             });
 
             return redirect()->route('lpt.index')
-                            ->with('success','LPT created successfully.');
+                            ->with('success','LPT berhasil dibuat.');
         } catch (\Exception $e) {
             // Log the error for debugging
             logger()->error('Failed to create LPT: ' . $e->getMessage());
@@ -135,17 +138,46 @@ class LptController extends Controller
     public function update(Request $request, Lpt $lpt)
     {
         $jenis_lpt_options = $this->getJenisLptOptions();
-        $request->validate([
-            'nomor_lpt' => 'required',
+        $validatedData = $request->validate([
+            'nomor_lpt'   => 'required',
             'tanggal_lpt' => 'required|date',
             'jenis_lpt'   => 'required|in:' . implode(',', array_keys($jenis_lpt_options)),
-            'sbp_id' => 'required|exists:sbp,id',
+            'sbp_id'      => 'required|exists:sbp,id',
+            'photos'      => 'nullable|array',
+            'photos.*'    => 'image|mimes:jpeg,png,jpg,gif,svg|max:10240',
         ]);
 
-        $lpt->update($request->all());
+        try {
+            DB::transaction(function () use ($request, $lpt, $validatedData) {
+                // Update LPT record, excluding photos
+                $lptData = $validatedData;
+                unset($lptData['photos']);
+                $lpt->update($lptData);
 
-        return redirect()->route('lpt.index')
-                        ->with('success','LPT updated successfully');
+                // Handle new photo uploads
+                if ($request->hasFile('photos')) {
+                    foreach ($request->file('photos') as $photo) {
+                        $path = $photo->store('lpt-photos', 'public');
+                        LptPhoto::create([
+                            'lpt_id'    => $lpt->id,
+                            'file_path' => $path,
+                        ]);
+                    }
+                }
+            });
+            
+            return redirect()->route('lpt.index')
+                            ->with('success','LPT berhasil diupdate');
+
+        } catch (\Exception $e) {
+            // Log the error for debugging
+            logger()->error('LPT gagal diupdate: ' . $e->getMessage());
+
+            // Redirect back with an error message
+            return redirect()->back()
+                            ->with('error', 'Gagal memperbarui LPT. Silakan coba lagi.')
+                            ->withInput();
+        }
     }
 
     /**
@@ -156,6 +188,6 @@ class LptController extends Controller
         $lpt->delete();
 
         return redirect()->route('lpt.index')
-                        ->with('success','LPT deleted successfully');
+                        ->with('success','LPT berhasil dihapus');
     }
 }
