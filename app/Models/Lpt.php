@@ -19,6 +19,7 @@ class Lpt extends Model
 
     protected $fillable = [
         'nomor_lpt',
+        'nomor_lpt_int',
         'tanggal_lpt',
         'jenis_lpt',
         'sbp_id',

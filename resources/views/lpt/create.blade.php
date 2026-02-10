@@ -36,12 +36,12 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group mb-3">
-                                        <label for="nomor_lpt" class="form-label">Nomor LPT</label>
+                                        <label for="nomor_lpt_int" class="form-label">Nomor LPT</label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="cil-notes"></i></span>
-                                            <input type="text" class="form-control @error('nomor_lpt') is-invalid @enderror" id="nomor_lpt" name="nomor_lpt" value="{{ old('nomor_lpt') }}" required>
+                                            <input type="number" class="form-control @error('nomor_lpt_int') is-invalid @enderror" id="nomor_lpt_int" name="nomor_lpt_int" value="{{ old('nomor_lpt_int') }}" placeholder="Hanya isi dengan angka" required>
                                         </div>
-                                        @error('nomor_lpt')
+                                        @error('nomor_lpt_int')
                                             <div class="invalid-feedback d-block">{{ $message }}</div>
                                         @enderror
                                     </div>

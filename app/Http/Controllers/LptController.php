@@ -7,6 +7,8 @@ use App\Models\Sbp;
 use App\Models\LptPhoto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
+use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class LptController extends Controller
@@ -40,7 +42,7 @@ class LptController extends Controller
     {
         $lpt = Lpt::with('sbp')
                     ->orderBy('tanggal_lpt', 'desc')
-                    ->orderByRaw('CAST(nomor_lpt AS UNSIGNED) ASC')
+                    ->orderBy('nomor_lpt_int', 'desc')
                     ->paginate(10);
         $jenis_lpt_options = $this->getJenisLptOptions();
         return view('lpt.index', compact('lpt', 'jenis_lpt_options'));
@@ -65,22 +67,25 @@ class LptController extends Controller
     {
         $jenis_lpt_options = $this->getJenisLptOptions();
         $validatedData = $request->validate([
-            'nomor_lpt'   => 'required',
-            'tanggal_lpt' => 'required|date',
-            'jenis_lpt'   => 'required|in:' . implode(',', array_keys($jenis_lpt_options)),
-            'sbp_id'      => 'required|exists:sbp,id',
-            'photos'      => 'nullable|array',
-            'photos.*'    => 'image|mimes:jpeg,png,jpg,gif,svg|max:10240'
+            'nomor_lpt_int' => 'required|integer|unique:lpt,nomor_lpt_int',
+            'tanggal_lpt'   => 'required|date',
+            'jenis_lpt'     => 'required|in:' . implode(',', array_keys($jenis_lpt_options)),
+            'sbp_id'        => 'required|exists:sbp,id',
+            'photos'        => 'nullable|array',
+            'photos.*'      => 'image|mimes:jpeg,png,jpg,gif,svg|max:10240'
         ]);
 
         try {
             DB::transaction(function () use ($request, $validatedData) {
-                // Create LPT record, excluding photos from the initial data
                 $lptData = $validatedData;
-                unset($lptData['photos']); // Unset photos before creating LPT
+
+                // Generate nomor_lpt string
+                $year = Carbon::parse($validatedData['tanggal_lpt'])->year;
+                $lptData['nomor_lpt'] = 'LPT-' . $validatedData['nomor_lpt_int'] . '/KBC.0102/' . $year;
+
+                unset($lptData['photos']);
                 $lpt = Lpt::create($lptData);
 
-                // Handle photo uploads
                 if ($request->hasFile('photos')) {
                     foreach ($request->file('photos') as $photo) {
                         $path = $photo->store('lpt-photos', 'public');
@@ -92,19 +97,13 @@ class LptController extends Controller
                 }
             });
 
-            return redirect()->route('lpt.index')
-                            ->with('success','LPT berhasil dibuat.');
+            return redirect()->route('lpt.index')->with('success','LPT berhasil dibuat.');
         } catch (\Exception $e) {
-            // Log the error for debugging
             logger()->error('Failed to create LPT: ' . $e->getMessage());
-
-            // Redirect back with an error message
-            return redirect()->back()
-                            ->with('error', 'Gagal membuat LPT. Silakan coba lagi.')
-                            ->withInput();
+            return redirect()->back()->with('error', 'Gagal membuat LPT. Silakan coba lagi.')->withInput();
         }
     }
-    
+
     /**
      * Display a preview of the specified resource.
      */
@@ -114,7 +113,6 @@ class LptController extends Controller
         $jenis_lpt_options = $this->getJenisLptOptions();
 
         $pdf = Pdf::loadView('templatecetak.template-lpt', compact('lpt', 'jenis_lpt_options'))
-            // ===== F4 REAL SIZE (pt) =====
             ->setPaper([0, 0, 595.28, 935.43], 'portrait');
 
         $filename = str_replace('/', '-', $lpt->nomor_lpt) . '.pdf';
@@ -139,22 +137,25 @@ class LptController extends Controller
     {
         $jenis_lpt_options = $this->getJenisLptOptions();
         $validatedData = $request->validate([
-            'nomor_lpt'   => 'required',
-            'tanggal_lpt' => 'required|date',
-            'jenis_lpt'   => 'required|in:' . implode(',', array_keys($jenis_lpt_options)),
-            'sbp_id'      => 'required|exists:sbp,id',
-            'photos'      => 'nullable|array',
-            'photos.*'    => 'image|mimes:jpeg,png,jpg,gif,svg|max:10240',
+            'nomor_lpt_int' => ['required', 'integer', Rule::unique('lpt')->ignore($lpt->id)],
+            'tanggal_lpt'   => 'required|date',
+            'jenis_lpt'     => 'required|in:' . implode(',', array_keys($jenis_lpt_options)),
+            'sbp_id'        => 'required|exists:sbp,id',
+            'photos'        => 'nullable|array',
+            'photos.*'      => 'image|mimes:jpeg,png,jpg,gif,svg|max:10240',
         ]);
 
         try {
             DB::transaction(function () use ($request, $lpt, $validatedData) {
-                // Update LPT record, excluding photos
                 $lptData = $validatedData;
+
+                // Re-generate nomor_lpt string
+                $year = Carbon::parse($validatedData['tanggal_lpt'])->year;
+                $lptData['nomor_lpt'] = 'LPT-' . $validatedData['nomor_lpt_int'] . '/KBC.0102/' . $year;
+
                 unset($lptData['photos']);
                 $lpt->update($lptData);
 
-                // Handle new photo uploads
                 if ($request->hasFile('photos')) {
                     foreach ($request->file('photos') as $photo) {
                         $path = $photo->store('lpt-photos', 'public');
@@ -166,17 +167,10 @@ class LptController extends Controller
                 }
             });
             
-            return redirect()->route('lpt.index')
-                            ->with('success','LPT berhasil diupdate');
-
+            return redirect()->route('lpt.index')->with('success','LPT berhasil diupdate');
         } catch (\Exception $e) {
-            // Log the error for debugging
             logger()->error('LPT gagal diupdate: ' . $e->getMessage());
-
-            // Redirect back with an error message
-            return redirect()->back()
-                            ->with('error', 'Gagal memperbarui LPT. Silakan coba lagi.')
-                            ->withInput();
+            return redirect()->back()->with('error', 'Gagal memperbarui LPT. Silakan coba lagi.')->withInput();
         }
     }
 
