@@ -8,6 +8,7 @@ use App\Http\Controllers\PangkatGolonganController;
 use App\Http\Controllers\BastController;
 use App\Http\Controllers\RefPelanggaranController;
 use App\Http\Controllers\RefSatuanController;
+use App\Http\Controllers\SuratPerintahController;
 
 /*
 |--------------------------------------------------------------------------
@@ -95,6 +96,13 @@ Route::resource('ref-pelanggaran', RefPelanggaranController::class);
 |--------------------------------------------------------------------------
 */
 Route::resource('ref-satuan', RefSatuanController::class);
+
+/*
+|--------------------------------------------------------------------------
+| Surat Perintah
+|--------------------------------------------------------------------------
+*/
+Route::resource('surat-perintah', SuratPerintahController::class)->except(['create', 'edit', 'show']);
 
 
 /*

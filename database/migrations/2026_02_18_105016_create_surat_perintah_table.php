@@ -11,8 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('sbp', function (Blueprint $table) {
-            $table->dropUnique(['nomor_sbp']);
+        Schema::create('surat_perintah', function (Blueprint $table) {
+            $table->id();
+            $table->string('nomor_prin');
+            $table->date('tanggal_prin');
+            $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -21,8 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('sbp', function (Blueprint $table) {
-            $table->unique('nomor_sbp');
-        });
+        Schema::dropIfExists('surat_perintah');
     }
 };

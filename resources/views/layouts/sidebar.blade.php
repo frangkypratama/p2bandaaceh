@@ -58,6 +58,13 @@
                 </a>
             </li>
 
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('surat-perintah.index') }}">
+                    <i class="nav-icon cil-description"></i>
+                    Referensi Surat Perintah
+                </a>
+            </li>
+
             <li class="nav-title">
                 <h2 class="fs-6 text-uppercase">System</h2>
             </li>
