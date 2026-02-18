@@ -67,7 +67,7 @@ class LptController extends Controller
     {
         $jenis_lpt_options = $this->getJenisLptOptions();
         $validatedData = $request->validate([
-            'nomor_lpt_int' => 'required|integer|unique:lpt,nomor_lpt_int',
+            'nomor_lpt_int' => 'required|integer|unique:lpt,deleted_at,nomor_lpt_int',
             'tanggal_lpt'   => 'required|date',
             'jenis_lpt'     => 'required|in:' . implode(',', array_keys($jenis_lpt_options)),
             'sbp_id'        => 'required|exists:sbp,id',

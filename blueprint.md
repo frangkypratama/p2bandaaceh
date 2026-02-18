@@ -36,22 +36,21 @@ Aplikasi ini adalah aplikasi web berbasis Laravel untuk mengelola Surat Bukti Pe
     *   Mencetak Berita Acara Pemeriksaan.
     *   Mencetak Berita Acara Penegahan.
     *   Mencetak Berita Acara Penyegelan.
+    *   Mencetak Laporan Pelaksanaan Tugas (LPT).
 *   **Pratinjau Dokumen:** Menampilkan pratinjau PDF dari semua dokumen yang dapat dicetak langsung di browser.
 
 ## Rencana Perubahan Saat Ini
 
 ### Permintaan
 
-"untuk preview dokumen, gunakan satu preview saya dimana akan mencetak satu pdf yang berisi, sbp, ba riksa, ba tegah, ba segel, dan buat satu tombol cetak sekaligus"
+"hasilnya gambar tidak ditemukan"
 
-### Rencana
+### Rencana Perbaikan
 
-1.  **Buat Rute Baru:** Tambahkan rute `GET /sbp/{id}/pdf/semua` di `routes/web.php`.
-2.  **Buat Template Gabungan:** Buat file view baru di `resources/views/templatecetak/template-semua.blade.php` yang akan menyertakan (include) template untuk SBP, BA Riksa, BA Tegah, dan BA Segel. Ini akan memastikan semua dokumen dirender dalam satu halaman HTML.
-3.  **Perbarui SbpController:** Tambahkan metode `cetakSemua` ke `SbpController.php`. Metode ini akan memuat data SBP dan merender `template-semua.blade.php` menjadi satu PDF.
-4.  **Perbarui `preview-sbp.blade.php`:**
-    *   Hapus empat `<iframe>` yang ada.
-    *   Hapus tombol-tombol cetak yang terpisah dan dropdown.
-    *   Tambahkan satu `<iframe>` yang sumbernya menunjuk ke rute baru `/sbp/{id}/pdf/semua`.
-    *   Tambahkan satu tombol "Cetak Semua Dokumen" yang juga mengarah ke rute `/sbp/{id}/pdf/semua`.
-
+1.  **Identifikasi Masalah:** Kesalahan "Gambar tidak ditemukan" disebabkan oleh penggunaan `public_path()` yang menghasilkan path yang salah untuk library PDF generator. Library tersebut membutuhkan path absolut pada sistem file server, bukan path yang relatif terhadap direktori `public`.
+2.  **Perbaiki Path Gambar:** Memodifikasi `resources/views/templatecetak/template-lpt.blade.php`.
+    *   Mengganti `public_path('storage/' . $photo->path)` dengan `storage_path('app/public/' . $photo->path)`.
+    *   `storage_path('app/public/')` memberikan path absolut yang benar yang dibutuhkan oleh PDF generator untuk menemukan dan menyematkan gambar.
+3.  **Sederhanakan Logika:** Menghapus pengecekan `Storage::disk('public')->exists()` yang tidak perlu untuk menyederhanakan kode. Jika gambar tidak ada, ikon gambar rusak akan ditampilkan, memberikan petunjuk yang lebih jelas tentang masalah data atau file.
+4.  **Perbaiki Tata Letak:** Menambahkan `<div class="page-break"></div>` sebelum tabel foto untuk memastikan dokumentasi foto selalu dimulai di halaman baru, meningkatkan keterbacaan dokumen.
+5.  **Perbarui Blueprint:** Memperbarui `blueprint.md` untuk mencatat tindakan perbaikan yang telah dilakukan.
