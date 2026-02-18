@@ -29,7 +29,12 @@
                         <label for="nomor_surat_perintah" class="form-label">Nomor Surat Perintah</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="cil-file"></i></span>
-                            <input id="nomor_surat_perintah" type="text" class="form-control" name="nomor_surat_perintah" value="{{ old('nomor_surat_perintah') }}" placeholder="Contoh: PRIN-1/KBC.0102/2025" required>
+                            <select id="nomor_surat_perintah" class="form-select" name="nomor_surat_perintah" required>
+                                <option value="" disabled selected>Pilih Nomor Surat Perintah</option>
+                                @foreach($suratPerintahData as $sp)
+                                    <option value="{{ $sp->nomor_prin }}" data-tanggal="{{ $sp->tanggal_prin }}">{{ $sp->nomor_prin }}</option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -38,7 +43,7 @@
                         <label for="tanggal_surat_perintah" class="form-label">Tanggal Surat Perintah</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="cil-calendar"></i></span>
-                            <input id="tanggal_surat_perintah" type="date" class="form-control" name="tanggal_surat_perintah" value="{{ old('tanggal_surat_perintah') }}" required>
+                            <input id="tanggal_surat_perintah" type="date" class="form-control" name="tanggal_surat_perintah" value="{{ old('tanggal_surat_perintah') }}" required readonly>
                         </div>
                     </div>
                 </div>
@@ -46,45 +51,18 @@
         </div>
     </div>
 </div>
+
 @push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function () {
+        const nomorSuratPerintah = document.getElementById('nomor_surat_perintah');
+        const tanggalSuratPerintah = document.getElementById('tanggal_surat_perintah');
 
-    // HANYA PRIN
-    const input = document.getElementById('nomor_surat_perintah');
-    if (!input) return;
-
-    const PREFIX = 'PRIN-';
-
-    function lockPrefix() {
-        if (!input.value.startsWith(PREFIX)) {
-            input.value = PREFIX;
-        }
-
-        if (input.selectionStart < PREFIX.length) {
-            input.setSelectionRange(PREFIX.length, PREFIX.length);
-        }
-    }
-
-    // set awal
-    input.value = input.value && input.value.startsWith(PREFIX)
-        ? input.value
-        : PREFIX;
-
-    // cegah hapus PRIN-
-    input.addEventListener('keydown', function (e) {
-        if (
-            (e.key === 'Backspace' || e.key === 'Delete') &&
-            input.selectionStart <= PREFIX.length
-        ) {
-            e.preventDefault();
-        }
+        nomorSuratPerintah.addEventListener('change', function () {
+            const selectedOption = this.options[this.selectedIndex];
+            const tanggal = selectedOption.getAttribute('data-tanggal');
+            tanggalSuratPerintah.value = tanggal;
+        });
     });
-
-    input.addEventListener('input', lockPrefix);
-    input.addEventListener('focus', lockPrefix);
-    input.addEventListener('click', lockPrefix);
-
-});
 </script>
 @endpush

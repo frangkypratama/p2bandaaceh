@@ -7,17 +7,12 @@
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="card-title mb-0"><strong>Data Surat Perintah</strong></h5>
-            {{-- Tombol untuk membuka modal tambah data --}}
-            <button type="button" class="btn btn-primary" data-coreui-toggle="modal" data-coreui-target="#suratPerintahModal" data-url="{{ route('surat-perintah.store') }}">
-                <i class="cil-plus"></i> Tambah Data
-            </button>
         </div>
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-striped table-hover">
                     <thead class="table-dark">
                         <tr>
-                            <th scope="col" class="text-center" style="width: 5%;">No</th>
                             <th scope="col">Nomor Surat Perintah</th>
                             <th scope="col">Tanggal Surat Perintah</th>
                             <th scope="col" class="text-center" style="width: 15%;">Aksi</th>
@@ -26,17 +21,12 @@
                     <tbody>
                         @forelse($suratPerintah as $item)
                             <tr>
-                                <th scope="row" class="text-center">{{ $loop->iteration }}</th>
                                 <td>{{ $item->nomor_prin }}</td>
                                 <td>{{ $item->tanggal_prin }}</td>
                                 <td class="text-center">
                                     {{-- Tombol untuk membuka modal edit data --}}
                                     <button type="button" class="btn btn-sm btn-warning text-white" data-coreui-toggle="modal" data-coreui-target="#suratPerintahModal" data-id="{{ $item->id }}" data-nomor_prin="{{ $item->nomor_prin }}" data-tanggal_prin="{{ $item->tanggal_prin }}" data-url="{{ route('surat-perintah.update', $item->id) }}" title="Edit Data">
                                         <i class="cil-pencil"></i>
-                                    </button>
-                                    {{-- Tombol untuk hapus data --}}
-                                    <button type="button" class="btn btn-sm btn-danger text-white" data-coreui-toggle="modal" data-coreui-target="#deleteConfirmationModal" data-url="{{ route('surat-perintah.destroy', $item->id) }}" title="Hapus Data">
-                                        <i class="cil-trash"></i>
                                     </button>
                                 </td>
                             </tr>

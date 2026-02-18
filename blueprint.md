@@ -25,33 +25,38 @@ Aplikasi ini adalah aplikasi web berbasis Laravel untuk mengelola Surat Bukti Pe
 *   **Dashboard:** Halaman utama setelah login, menampilkan ringkasan data.
 *   **Manajemen SBP:**
     *   Membuat SBP baru dengan formulir input yang valid.
+    *   **Dropdown Surat Perintah:** Saat membuat SBP, pengguna dapat memilih Nomor Surat Perintah dari dropdown yang terisi otomatis. Tanggal Surat Perintah juga akan terisi secara otomatis.
     *   Melihat daftar SBP yang ada dengan paginasi.
     *   Mengedit data SBP yang sudah ada.
-    *   Mencetak SBP dalam format PDF.
+    *   Mencetak SBP dan dokumen terkait dalam format PDF.
 *   **Manajemen Petugas:**
     *   Membuat, membaca, memperbarui, dan menghapus (CRUD) data petugas.
 *   **Manajemen Pangkat/Golongan:**
     *   CRUD untuk data pangkat/golongan.
-*   **Cetak Dokumen Terkait:**
-    *   Mencetak Berita Acara Pemeriksaan.
-    *   Mencetak Berita Acara Penegahan.
-    *   Mencetak Berita Acara Penyegelan.
-*   **Pratinjau Dokumen:** Menampilkan pratinjau PDF dari semua dokumen yang dapat dicetak langsung di browser.
+*   **Manajemen Surat Perintah:**
+    *   CRUD untuk data Surat Perintah (Nomor & Tanggal).
+*   **Pratinjau Dokumen:** Menampilkan pratinjau PDF dari semua dokumen yang dapat dicetak langsung di browser dalam satu tampilan.
+*   **Cetak Semua Dokumen:** Terdapat satu tombol untuk mencetak semua dokumen terkait SBP (SBP, BA Riksa, BA Tegah, BA Segel) menjadi satu file PDF.
 
 ## Rencana Perubahan Saat Ini
 
 ### Permintaan
 
-"untuk preview dokumen, gunakan satu preview saya dimana akan mencetak satu pdf yang berisi, sbp, ba riksa, ba tegah, ba segel, dan buat satu tombol cetak sekaligus"
+"lihat input-sbp.blade, ambil data nomor prin dan tanggal prin dari tb surat_perintah"
 
-### Rencana
+### Rencana Implementasi
 
-1.  **Buat Rute Baru:** Tambahkan rute `GET /sbp/{id}/pdf/semua` di `routes/web.php`.
-2.  **Buat Template Gabungan:** Buat file view baru di `resources/views/templatecetak/template-semua.blade.php` yang akan menyertakan (include) template untuk SBP, BA Riksa, BA Tegah, dan BA Segel. Ini akan memastikan semua dokumen dirender dalam satu halaman HTML.
-3.  **Perbarui SbpController:** Tambahkan metode `cetakSemua` ke `SbpController.php`. Metode ini akan memuat data SBP dan merender `template-semua.blade.php` menjadi satu PDF.
-4.  **Perbarui `preview-sbp.blade.php`:**
-    *   Hapus empat `<iframe>` yang ada.
-    *   Hapus tombol-tombol cetak yang terpisah dan dropdown.
-    *   Tambahkan satu `<iframe>` yang sumbernya menunjuk ke rute baru `/sbp/{id}/pdf/semua`.
-    *   Tambahkan satu tombol "Cetak Semua Dokumen" yang juga mengarah ke rute `/sbp/{id}/pdf/semua`.
+1.  **Perbarui `SbpController`:**
+    *   Mengimpor model `App\Models\SuratPerintah`.
+    *   Dalam metode `create`, mengambil semua data dari tabel `surat_perintah` dan mengurutkannya berdasarkan tanggal terbaru.
+    *   Meneruskan data `$suratPerintahData` ke view `input-sbp`.
+2.  **Perbarui `_penomoran.blade.php`:**
+    *   Mengubah input teks "Nomor Surat Perintah" menjadi elemen `<select>` (dropdown).
+    *   Mengisi dropdown tersebut dengan `nomor_prin` dari variabel `$suratPerintahData`.
+    *   Menyimpan `tanggal_prin` yang sesuai di dalam atribut `data-tanggal` untuk setiap opsi dropdown.
+    *   Mengatur input "Tanggal Surat Perintah" menjadi `readonly` untuk mencegah input manual oleh pengguna.
+3.  **Tambahkan Fungsionalitas JavaScript:**
+    *   Menambahkan event listener pada dropdown "Nomor Surat Perintah".
+    *   Ketika pengguna memilih sebuah nomor surat, script akan mengambil nilai dari atribut `data-tanggal` pada opsi yang dipilih.
+    *   Secara otomatis mengisi nilai tanggal tersebut ke dalam input "Tanggal Surat Perintah".
 

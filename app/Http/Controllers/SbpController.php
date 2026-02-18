@@ -7,6 +7,7 @@ use App\Models\Petugas;
 use App\Models\Bast;
 use App\Models\RefPelanggaran;
 use App\Models\RefSatuan;
+use App\Models\SuratPerintah;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -34,7 +35,8 @@ class SbpController extends Controller
         $petugasData = Petugas::orderBy('nama', 'asc')->get();
         $refPelanggaranData = RefPelanggaran::all();
         $refSatuanData = RefSatuan::orderBy('nama_satuan', 'asc')->get();
-        return view('input-sbp', compact('petugasData', 'refPelanggaranData', 'refSatuanData'));
+        $suratPerintahData = SuratPerintah::orderBy('tanggal_prin', 'desc')->get();
+        return view('input-sbp', compact('petugasData', 'refPelanggaranData', 'refSatuanData', 'suratPerintahData'));
     }
 
     /**
