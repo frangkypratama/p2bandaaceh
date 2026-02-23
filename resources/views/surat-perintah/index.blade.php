@@ -7,6 +7,10 @@
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="card-title mb-0"><strong>Data Surat Perintah</strong></h5>
+            {{-- Tombol untuk membuka modal tambah data --}}
+            <button type="button" class="btn btn-primary" data-coreui-toggle="modal" data-coreui-target="#suratPerintahModal" data-url="{{ route('surat-perintah.store') }}">
+                <i class="cil-plus"></i> Tambah Data
+            </button>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -28,11 +32,19 @@
                                     <button type="button" class="btn btn-sm btn-warning text-white" data-coreui-toggle="modal" data-coreui-target="#suratPerintahModal" data-id="{{ $item->id }}" data-nomor_prin="{{ $item->nomor_prin }}" data-tanggal_prin="{{ $item->tanggal_prin }}" data-url="{{ route('surat-perintah.update', $item->id) }}" title="Edit Data">
                                         <i class="cil-pencil"></i>
                                     </button>
+                                    {{-- Tombol untuk hapus data --}}
+                                    <button type="button" class="btn btn-sm btn-danger text-white"
+                                            data-coreui-toggle="modal"
+                                            data-coreui-target="#deleteConfirmationModal"
+                                            data-url="{{ route('surat-perintah.destroy', $item->id) }}"
+                                            title="Hapus Data">
+                                        <i class="cil-trash"></i>
+                                    </button>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="text-center">Tidak ada data.</td>
+                                <td colspan="3" class="text-center">Tidak ada data.</td>
                             </tr>
                         @endforelse
                     </tbody>
