@@ -1,4 +1,3 @@
-{{-- Penomoran --}}
 <div class="col-md-12">
     <div class="card mb-4">
         <div class="card-header">
@@ -11,7 +10,11 @@
                         <label for="nomor_sbp" class="form-label">Nomor SBP</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="cil-notes"></i></span>
-                            <input id="nomor_sbp" type="number" class="form-control" name="nomor_sbp" value="{{ old('nomor_sbp') }}" placeholder="Masukkan hanya angka" required>
+                            <input id="nomor_sbp" type="number" class="form-control @error('nomor_sbp_final') is-invalid @enderror" name="nomor_sbp" 
+                                   value="{{ old('nomor_sbp', $sbp->nomor_sbp_int ?? '') }}" placeholder="Masukkan hanya angka" required>
+                            @error('nomor_sbp_final')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
                 </div>
@@ -20,7 +23,8 @@
                         <label for="tanggal_sbp" class="form-label">Tanggal SBP</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="cil-calendar"></i></span>
-                            <input id="tanggal_sbp" type="date" class="form-control" name="tanggal_sbp" value="{{ old('tanggal_sbp') }}" required>
+                            <input id="tanggal_sbp" type="date" class="form-control" name="tanggal_sbp" 
+                                   value="{{ old('tanggal_sbp', isset($sbp) ? $sbp->tanggal_sbp->format('Y-m-d') : '') }}" required>
                         </div>
                     </div>
                 </div>
@@ -29,12 +33,13 @@
                         <label for="nomor_surat_perintah" class="form-label">Nomor Surat Perintah</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="cil-file"></i></span>
-                            <select id="nomor_surat_perintah" class="form-select" name="nomor_surat_perintah" required>
-                                <option value="" disabled selected>Pilih Nomor Surat Perintah</option>
+                            <input class="form-control" list="datalistOptions" id="nomor_surat_perintah" name="nomor_surat_perintah" placeholder="Ketik untuk mencari..."
+                                   value="{{ old('nomor_surat_perintah', $sbp->nomor_surat_perintah ?? 'PRIN-') }}" required>
+                            <datalist id="datalistOptions">
                                 @foreach($suratPerintahData as $sp)
-                                    <option value="{{ $sp->nomor_prin }}" data-tanggal="{{ $sp->tanggal_prin }}">{{ $sp->nomor_prin }}</option>
+                                    <option value="{{ $sp->nomor_prin }}">
                                 @endforeach
-                            </select>
+                            </datalist>
                         </div>
                     </div>
                 </div>
@@ -43,7 +48,8 @@
                         <label for="tanggal_surat_perintah" class="form-label">Tanggal Surat Perintah</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="cil-calendar"></i></span>
-                            <input id="tanggal_surat_perintah" type="date" class="form-control" name="tanggal_surat_perintah" value="{{ old('tanggal_surat_perintah') }}" required readonly>
+                            <input id="tanggal_surat_perintah" type="date" class="form-control" name="tanggal_surat_perintah" 
+                                   value="{{ old('tanggal_surat_perintah', isset($sbp) ? $sbp->tanggal_surat_perintah->format('Y-m-d') : '') }}" required readonly>
                         </div>
                     </div>
                 </div>
@@ -52,17 +58,59 @@
     </div>
 </div>
 
-@push('scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const nomorSuratPerintah = document.getElementById('nomor_surat_perintah');
-        const tanggalSuratPerintah = document.getElementById('tanggal_surat_perintah');
+@once
+    @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const suratPerintahData = @json($suratPerintahData);
+            const nomorSuratInput = document.getElementById('nomor_surat_perintah');
+            const tanggalSuratInput = document.getElementById('tanggal_surat_perintah');
+            const prefix = 'PRIN-';
 
-        nomorSuratPerintah.addEventListener('change', function () {
-            const selectedOption = this.options[this.selectedIndex];
-            const tanggal = selectedOption.getAttribute('data-tanggal');
-            tanggalSuratPerintah.value = tanggal;
+            function autofillTanggal() {
+                const nomorDipilih = nomorSuratInput.value;
+                const dataCocok = suratPerintahData.find(surat => surat.nomor_prin === nomorDipilih);
+
+                if (dataCocok) {
+                    tanggalSuratInput.value = dataCocok.tanggal_prin;
+                } else {
+                    tanggalSuratInput.value = '';
+                }
+            }
+
+            function enforcePrefix() {
+                if (!nomorSuratInput.value.startsWith(prefix)) {
+                    nomorSuratInput.value = prefix;
+                }
+            }
+
+            // Mencegah penghapusan prefix
+            nomorSuratInput.addEventListener('keydown', function(e) {
+                const { value, selectionStart } = e.target;
+                if ((e.key === 'Backspace' && selectionStart <= prefix.length) || 
+                    (e.key === 'Delete' && selectionStart < prefix.length)) {
+                    e.preventDefault();
+                }
+            });
+
+            // Event listener untuk input utama
+            nomorSuratInput.addEventListener('input', function() {
+                enforcePrefix();
+                autofillTanggal();
+            });
+
+            // Memastikan prefix ada saat fokus
+            nomorSuratInput.addEventListener('focus', function() {
+                if (nomorSuratInput.value === '') {
+                    nomorSuratInput.value = prefix;
+                }
+            });
+
+            // Panggil saat halaman dimuat untuk menangani data yang ada
+            if (nomorSuratInput.value) {
+                autofillTanggal();
+            }
         });
-    });
-</script>
-@endpush
+    </script>
+    @endpush
+@endonce

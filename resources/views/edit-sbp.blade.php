@@ -33,46 +33,8 @@
                         @csrf
                         @method('PUT')
 
-                        {{-- Penomoran --}}
-                        <div class="col-md-12">
-                            <div class="card mb-4">
-                                <div class="card-header">
-                                    <h5 class="card-title mb-0">1. Penomoran & Referensi</h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label for="nomor_sbp" class="form-label">Nomor SBP</label>
-                                            <div class="input-group">
-                                                <span class="input-group-text"><i class="cil-notes"></i></span>
-                                                <input id="nomor_sbp" type="number" class="form-control @error('nomor_sbp_final') is-invalid @enderror" name="nomor_sbp" value="{{ old('nomor_sbp', $sbp->nomor_sbp_int) }}" required>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label for="tanggal_sbp" class="form-label">Tanggal SBP</label>
-                                            <div class="input-group">
-                                                <span class="input-group-text"><i class="cil-calendar"></i></span>
-                                                <input id="tanggal_sbp" type="date" class="form-control" name="tanggal_sbp" value="{{ old('tanggal_sbp', $sbp->tanggal_sbp->format('Y-m-d')) }}" required>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label for="nomor_surat_perintah" class="form-label">Nomor Surat Perintah</label>
-                                            <div class="input-group">
-                                                <span class="input-group-text"><i class="cil-file"></i></span>
-                                                <input id="nomor_surat_perintah" type="text" class="form-control" name="nomor_surat_perintah" value="{{ old('nomor_surat_perintah', $sbp->nomor_surat_perintah) }}" required>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label for="tanggal_surat_perintah" class="form-label">Tanggal Surat Perintah</label>
-                                            <div class="input-group">
-                                                <span class="input-group-text"><i class="cil-calendar"></i></span>
-                                                <input id="tanggal_surat_perintah" type="date" class="form-control" name="tanggal_surat_perintah" value="{{ old('tanggal_surat_perintah', $sbp->tanggal_surat_perintah->format('Y-m-d')) }}" required>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        {{-- Menggunakan Partial untuk Form Penomoran yang konsisten --}}
+                        @include('input-sbp.partials._penomoran')
 
                         {{-- Data Identitas --}}
                         <div class="col-md-12">

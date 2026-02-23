@@ -155,8 +155,9 @@ class SbpController extends Controller
         $petugasData = Petugas::orderBy('nama', 'asc')->get();
         $refPelanggaranData = RefPelanggaran::all();
         $refSatuanData = RefSatuan::orderBy('nama_satuan', 'asc')->get();
+        $suratPerintahData = SuratPerintah::orderBy('tanggal_prin', 'desc')->get(); // <-- DATA DITAMBAHKAN DI SINI
 
-        return view('edit-sbp', compact('sbp', 'petugasData', 'refPelanggaranData', 'refSatuanData'));
+        return view('edit-sbp', compact('sbp', 'petugasData', 'refPelanggaranData', 'refSatuanData', 'suratPerintahData')); // <-- DAN DI SINI
     }
 
     /**
