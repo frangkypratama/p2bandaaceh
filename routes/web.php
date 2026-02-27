@@ -9,6 +9,8 @@ use App\Http\Controllers\BastController;
 use App\Http\Controllers\RefPelanggaranController;
 use App\Http\Controllers\RefSatuanController;
 use App\Http\Controllers\SuratPerintahController;
+use App\Http\Controllers\BariksaBadanController;
+use App\Http\Controllers\PemeriksaanBadanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -103,6 +105,20 @@ Route::resource('ref-satuan', RefSatuanController::class);
 |--------------------------------------------------------------------------
 */
 Route::resource('surat-perintah', SuratPerintahController::class)->except(['create', 'edit', 'show']);
+
+/*
+|--------------------------------------------------------------------------
+| Bariksa Badan
+|--------------------------------------------------------------------------
+*/
+Route::resource('bariksa-badan', BariksaBadanController::class);
+
+/*
+|--------------------------------------------------------------------------
+| Pemeriksaan Badan
+|--------------------------------------------------------------------------
+*/
+Route::resource('pemeriksaan-badan', PemeriksaanBadanController::class);
 
 
 /*

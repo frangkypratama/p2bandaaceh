@@ -16,6 +16,17 @@
             </li>
 
             <li class="nav-title">
+                <h2 class="fs-6 text-uppercase">Pemeriksaan</h2>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('pemeriksaan-badan.index') }}">
+                    <i class="nav-icon cil-user-follow"></i>
+                    Pemeriksaan Badan
+                </a>
+            </li>
+
+            <li class="nav-title">
                 <h2 class="fs-6 text-uppercase">Penindakan</h2>
             </li>
 
