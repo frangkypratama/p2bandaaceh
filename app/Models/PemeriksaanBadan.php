@@ -5,39 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-/**
- * App\Models\PemeriksaanBadan
- *
- * @property int $id
- * @property string $no_ba_riksa
- * @property \Illuminate\Support\Carbon $tgl_ba_riksa
- * @property string $nama
- * @property string $jenis_identitas
- * @property string $no_identitas
- * @property string $tempat_lahir
- * @property \Illuminate\Support\Carbon $tanggal_lahir
- * @property string $jenis_kelamin
- * @property string $kewarganegaraan
- * @property string $alamat_pada_identitas
- * @property string $alamat_tinggal
- * @property string $datang_dari
- * @property string $tujuan_ke
- * @property string $lokasi_pemeriksaan
- * @property string $jenis_pemeriksaan
- * @property string $hasil_pemeriksaan
- * @property string|null $rekan_perjalanan
- * @property string|null $nama_sarkut
- * @property string|null $no_register
- * @property string|null $jenis_dokumen_barang
- * @property string|null $nomor_dokumen_barang
- * @property \Illuminate\Support\Carbon|null $tgl_dokumen_barang
- * @property int $id_petugas_1
- * @property int|null $id_petugas_2
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read Petugas $petugas1
- * @property-read Petugas|null $petugas2
- */
 class PemeriksaanBadan extends Model
 {
     use HasFactory;
@@ -57,6 +24,8 @@ class PemeriksaanBadan extends Model
     protected $fillable = [
         'no_ba_riksa',
         'tgl_ba_riksa',
+        'no_surat_perintah',
+        'tgl_surat_perintah',
         'nama',
         'jenis_identitas',
         'no_identitas',
@@ -88,6 +57,7 @@ class PemeriksaanBadan extends Model
      */
     protected $casts = [
         'tgl_ba_riksa' => 'datetime',
+        'tgl_surat_perintah' => 'datetime',
         'tanggal_lahir' => 'datetime',
         'tgl_dokumen_barang' => 'datetime',
     ];

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\PemeriksaanBadan;
 use App\Models\Petugas;
+use App\Models\SuratPerintah;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Collection;
@@ -68,7 +69,8 @@ class PemeriksaanBadanController extends Controller
     {
         $petugasData = Petugas::all();
         $nationalities = $this->getNationalities();
-        return view('pemeriksaan-badan.create', compact('petugasData', 'nationalities'));
+        $suratPerintahData = SuratPerintah::all();
+        return view('pemeriksaan-badan.create', compact('petugasData', 'nationalities', 'suratPerintahData'));
     }
 
     /**
@@ -82,6 +84,8 @@ class PemeriksaanBadanController extends Controller
         $validatedData = $request->validate([
             'no_ba_riksa' => 'required|string|max:255|unique:pemeriksaan_badan,no_ba_riksa',
             'tgl_ba_riksa' => 'required|date',
+            'no_surat_perintah' => 'nullable|string|max:255',
+            'tgl_surat_perintah' => 'nullable|date',
             'nama' => 'required|string|max:255',
             'jenis_identitas' => 'required|string|max:255',
             'no_identitas' => 'required|string|max:255',
@@ -135,7 +139,8 @@ class PemeriksaanBadanController extends Controller
         $pemeriksaanBadan = PemeriksaanBadan::findOrFail($id);
         $petugasData = Petugas::all();
         $nationalities = $this->getNationalities();
-        return view('pemeriksaan-badan.edit', compact('pemeriksaanBadan', 'petugasData', 'nationalities'));
+        $suratPerintahData = SuratPerintah::all();
+        return view('pemeriksaan-badan.edit', compact('pemeriksaanBadan', 'petugasData', 'nationalities', 'suratPerintahData'));
     }
 
     /**
@@ -157,6 +162,8 @@ class PemeriksaanBadanController extends Controller
                 Rule::unique('pemeriksaan_badan')->ignore($pemeriksaanBadan->id),
             ],
             'tgl_ba_riksa' => 'required|date',
+            'no_surat_perintah' => 'nullable|string|max:255',
+            'tgl_surat_perintah' => 'nullable|date',
             'nama' => 'required|string|max:255',
             'jenis_identitas' => 'required|string|max:255',
             'no_identitas' => 'required|string|max:255',

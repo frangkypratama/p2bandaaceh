@@ -4,7 +4,7 @@
 <div class="container-lg">
     <div class="card mb-4">
         <div class="card-header">
-            <h5 class="card-title mb-0">Tambah Pemeriksaan Badan</h5>
+            <h5 class="card-title mb-0">Input Pemeriksaan Badan</h5>
         </div>
         <div class="card-body">
             <form action="{{ route('pemeriksaan-badan.store') }}" method="POST" id="createPemeriksaanForm">
@@ -27,6 +27,31 @@
                             <div class="input-group">
                                 <span class="input-group-text"><i class="cil-calendar"></i></span>
                                 <input type="date" class="form-control" id="tgl_ba_riksa" name="tgl_ba_riksa" value="{{ old('tgl_ba_riksa') }}" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="no_surat_perintah" class="form-label">Nomor Surat Perintah</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="cil-file"></i></span>
+                                <input class="form-control" list="datalistOptions" id="no_surat_perintah" name="no_surat_perintah" placeholder="Ketik untuk mencari..." value="{{ old('no_surat_perintah', 'PRIN-') }}" required>
+                                <datalist id="datalistOptions">
+                                    @foreach($suratPerintahData as $sp)
+                                        <option value="{{ $sp->nomor_prin }}">
+                                    @endforeach
+                                </datalist>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="tgl_surat_perintah" class="form-label">Tanggal Surat Perintah</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="cil-calendar"></i></span>
+                                <input type="date" class="form-control" id="tgl_surat_perintah" name="tgl_surat_perintah" value="{{ old('tgl_surat_perintah') }}" readonly>
                             </div>
                         </div>
                     </div>
@@ -279,6 +304,7 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        // --- Script untuk Nomor BA Riksa ---
         const tglInput = document.getElementById('tgl_ba_riksa');
         const form = document.getElementById('createPemeriksaanForm');
         const noBaRiksaNomorInput = document.getElementById('no_ba_riksa_nomor');
@@ -295,6 +321,52 @@
                 noBaRiksaHiddenInput.value = ''; 
             }
         });
+
+        // --- Script untuk Surat Perintah ---
+        const suratPerintahData = @json($suratPerintahData);
+        const nomorSuratInput = document.getElementById('no_surat_perintah');
+        const tanggalSuratInput = document.getElementById('tgl_surat_perintah');
+        const prefix = 'PRIN-';
+
+        function autofillTanggal() {
+            const nomorDipilih = nomorSuratInput.value;
+            const dataCocok = suratPerintahData.find(surat => surat.nomor_prin === nomorDipilih);
+
+            if (dataCocok) {
+                tanggalSuratInput.value = dataCocok.tanggal_prin.split('T')[0];
+            } else {
+                tanggalSuratInput.value = '';
+            }
+        }
+
+        function enforcePrefix() {
+            if (!nomorSuratInput.value.startsWith(prefix)) {
+                nomorSuratInput.value = prefix;
+            }
+        }
+
+        nomorSuratInput.addEventListener('keydown', function(e) {
+            const { value, selectionStart } = e.target;
+            if ((e.key === 'Backspace' && selectionStart <= prefix.length) || 
+                (e.key === 'Delete' && selectionStart < prefix.length)) {
+                e.preventDefault();
+            }
+        });
+
+        nomorSuratInput.addEventListener('input', function() {
+            enforcePrefix();
+            autofillTanggal();
+        });
+
+        nomorSuratInput.addEventListener('focus', function() {
+            if (nomorSuratInput.value === '') {
+                nomorSuratInput.value = prefix;
+            }
+        });
+
+        if (nomorSuratInput.value) {
+            autofillTanggal();
+        }
     });
 </script>
 @endpush
