@@ -7,18 +7,19 @@
             <h5 class="card-title mb-0">Edit Pemeriksaan Badan</h5>
         </div>
         <div class="card-body">
-            <form action="{{ route('pemeriksaan-badan.update', $pemeriksaanBadan->id) }}" method="POST">
+            <form action="{{ route('pemeriksaan-badan.update', $pemeriksaanBadan->id) }}" method="POST" id="editPemeriksaanForm">
                 @csrf
                 @method('PUT')
                 <h5 class="mb-3">Penomoran</h5>
                 <div class="row">
                     <div class="col-md-6">
                         <div class="mb-3">
-                            <label for="no_ba_riksa" class="form-label">Nomor BA Riksa Badan</label>
+                            <label for="no_ba_riksa_nomor" class="form-label">Nomor BA Riksa Badan</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="cil-notes"></i></span>
-                                <input type="text" class="form-control" id="no_ba_riksa" name="no_ba_riksa" value="{{ old('no_ba_riksa', $pemeriksaanBadan->no_ba_riksa) }}">
+                                <input type="text" class="form-control" id="no_ba_riksa_nomor" placeholder="Masukkan hanya angka" required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                             </div>
+                            <input type="hidden" name="no_ba_riksa" id="no_ba_riksa" value="{{ old('no_ba_riksa', $pemeriksaanBadan->no_ba_riksa) }}">
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -26,7 +27,7 @@
                             <label for="tgl_ba_riksa" class="form-label">Tanggal BA Riksa Badan</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="cil-calendar"></i></span>
-                                <input type="date" class="form-control" id="tgl_ba_riksa" name="tgl_ba_riksa" value="{{ old('tgl_ba_riksa', $pemeriksaanBadan->tgl_ba_riksa->format('Y-m-d')) }}">
+                                <input type="date" class="form-control" id="tgl_ba_riksa" name="tgl_ba_riksa" value="{{ old('tgl_ba_riksa', $pemeriksaanBadan->tgl_ba_riksa->format('Y-m-d')) }}" required>
                             </div>
                         </div>
                     </div>
@@ -48,6 +49,7 @@
                             <div class="input-group">
                                 <span class="input-group-text"><i class="cil-credit-card"></i></span>
                                 <select class="form-select" id="jenis_identitas" name="jenis_identitas">
+                                    <option value="" disabled>Pilih...</option>
                                     <option value="Paspor" {{ old('jenis_identitas', $pemeriksaanBadan->jenis_identitas) == 'Paspor' ? 'selected' : '' }}>Paspor</option>
                                     <option value="Kartu Tanda Penduduk" {{ old('jenis_identitas', $pemeriksaanBadan->jenis_identitas) == 'Kartu Tanda Penduduk' ? 'selected' : '' }}>Kartu Tanda Penduduk</option>
                                     <option value="KITAS" {{ old('jenis_identitas', $pemeriksaanBadan->jenis_identitas) == 'KITAS' ? 'selected' : '' }}>KITAS</option>
@@ -93,6 +95,7 @@
                             <div class="input-group">
                                 <span class="input-group-text"><i class="cil-wc"></i></span>
                                 <select class="form-select" id="jenis_kelamin" name="jenis_kelamin">
+                                    <option value="" disabled>Pilih...</option>
                                     <option value="Laki-laki" {{ old('jenis_kelamin', $pemeriksaanBadan->jenis_kelamin) == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
                                     <option value="Perempuan" {{ old('jenis_kelamin', $pemeriksaanBadan->jenis_kelamin) == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
                                 </select>
@@ -104,7 +107,14 @@
                             <label for="kewarganegaraan" class="form-label">Kewarganegaraan</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="cil-globe-alt"></i></span>
-                                <input type="text" class="form-control" id="kewarganegaraan" name="kewarganegaraan" value="{{ old('kewarganegaraan', $pemeriksaanBadan->kewarganegaraan) }}">
+                                <select class="form-select" id="kewarganegaraan" name="kewarganegaraan">
+                                    <option value="" disabled>Pilih Kewarganegaraan...</option>
+                                    @foreach ($nationalities as $nationality)
+                                        <option value="{{ $nationality }}" {{ old('kewarganegaraan', $pemeriksaanBadan->kewarganegaraan) == $nationality ? 'selected' : '' }}>
+                                            {{ $nationality }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -162,6 +172,7 @@
                             <div class="input-group">
                                 <span class="input-group-text"><i class="cil-list"></i></span>
                                 <select class="form-select" id="jenis_pemeriksaan" name="jenis_pemeriksaan">
+                                    <option value="" disabled>Pilih...</option>
                                     <option value="Membuka Pakaian" {{ old('jenis_pemeriksaan', $pemeriksaanBadan->jenis_pemeriksaan) == 'Membuka Pakaian' ? 'selected' : '' }}>Membuka Pakaian</option>
                                     <option value="Tidak Membuka Pakaian" {{ old('jenis_pemeriksaan', $pemeriksaanBadan->jenis_pemeriksaan) == 'Tidak Membuka Pakaian' ? 'selected' : '' }}>Tidak Membuka Pakaian</option>
                                     <option value="Medis" {{ old('jenis_pemeriksaan', $pemeriksaanBadan->jenis_pemeriksaan) == 'Medis' ? 'selected' : '' }}>Medis</option>
@@ -232,7 +243,7 @@
                             <div class="input-group">
                                 <span class="input-group-text"><i class="cil-user"></i></span>
                                 <select id="id_petugas_1" class="form-select" name="id_petugas_1" required>
-                                    <option value="">Pilih Petugas 1...</option>
+                                    <option value="" disabled>Pilih Petugas 1</option>
                                     @foreach($petugasData as $petugas)
                                         <option value="{{ $petugas->id }}" {{ old('id_petugas_1', $pemeriksaanBadan->id_petugas_1) == $petugas->id ? 'selected' : '' }}>{{ $petugas->nama }}</option>
                                     @endforeach
@@ -246,7 +257,7 @@
                             <div class="input-group">
                                 <span class="input-group-text"><i class="cil-user"></i></span>
                                  <select id="id_petugas_2" class="form-select" name="id_petugas_2">
-                                    <option value="">Pilih Petugas 2 (Opsional)...</option>
+                                    <option value="" disabled>Pilih Petugas 2</option>
                                     @foreach($petugasData as $petugas)
                                         <option value="{{ $petugas->id }}" {{ old('id_petugas_2', $pemeriksaanBadan->id_petugas_2) == $petugas->id ? 'selected' : '' }}>{{ $petugas->nama }}</option>
                                     @endforeach
@@ -265,3 +276,38 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const tglInput = document.getElementById('tgl_ba_riksa');
+        const form = document.getElementById('editPemeriksaanForm');
+        const noBaRiksaNomorInput = document.getElementById('no_ba_riksa_nomor');
+        const noBaRiksaHiddenInput = document.getElementById('no_ba_riksa');
+
+        // Function to extract number from the full BA Riksa string
+        function extractBaNumber(fullString) {
+            const match = fullString.match(/BA-(\d+)\/BADAN/);
+            return match ? match[1] : '';
+        }
+
+        // Pre-fill the number input on page load
+        const initialBaValue = noBaRiksaHiddenInput.value;
+        if (initialBaValue) {
+            noBaRiksaNomorInput.value = extractBaNumber(initialBaValue);
+        }
+
+        form.addEventListener('submit', function(e) {
+            const nomor = noBaRiksaNomorInput.value;
+            const date = new Date(tglInput.value);
+            const year = date.getFullYear();
+            
+            if (nomor && !isNaN(year)) {
+                noBaRiksaHiddenInput.value = `BA-${nomor}/BADAN/KBC.010202/${year}`;
+            } else {
+                noBaRiksaHiddenInput.value = ''; 
+            }
+        });
+    });
+</script>
+@endpush
