@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Helpers\TerbilangHelper;
 
 class PemeriksaanBadan extends Model
 {
@@ -76,5 +77,18 @@ class PemeriksaanBadan extends Model
     public function petugas2()
     {
         return $this->belongsTo(Petugas::class, 'id_petugas_2');
+    }
+
+    /**
+     * Get the full examination date in a worded format.
+     *
+     * @return string
+     */
+    public function getTanggalBaRiksaTerbilangAttribute()
+    {
+        if ($this->tgl_ba_riksa) {
+            return TerbilangHelper::tanggal($this->tgl_ba_riksa);
+        }
+        return 'Pada hari - tanggal - bulan - tahun -';
     }
 }

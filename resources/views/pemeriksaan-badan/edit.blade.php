@@ -327,7 +327,7 @@
             const year = date.getFullYear();
             
             if (nomor && !isNaN(year)) {
-                noBaRiksaHiddenInput.value = `BA-${nomor}/BADAN/KBC.010202/${year}`;
+                noBaRiksaHiddenInput.value = `BA-${nomor}/Badan/KBC.010202/${year}`;
             } else {
                 noBaRiksaHiddenInput.value = ''; 
             }

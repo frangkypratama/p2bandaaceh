@@ -3,32 +3,30 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>{{ $sbp->nomor_ba_riksa ?? '-' }}</title>
+    <title>{{ $pemeriksaanBadan->no_ba_riksa ?? '-' }}</title>
     <style>
+        /* ===== PAGE ===== */
         @page {
             size: 215mm 330mm;
             margin: 15mm;
         }
 
+        /* ===== BASE ===== */
         body {
             font-family: Arial, Helvetica, sans-serif;
             font-size: 11pt;
-            line-height: 1;
+            line-height: 1.2;
             color: #000;
         }
 
-        p {
-            margin: 0;
-        }
+        p { margin: 0; }
 
         table {
             width: 100%;
             border-collapse: collapse;
         }
 
-        td {
-            vertical-align: top;
-        }
+        td { vertical-align: top; }
 
         /* ===== HEADER ===== */
         .header-table td {
@@ -36,126 +34,56 @@
             padding-bottom: 8px;
         }
 
-        .logo {
-            width: 90px;
-        }
+        .logo { width: 90px; }
 
-        .header-text {
-            text-align: center;
-        }
+        .header-text { text-align: center; }
+        .header-text h1 { font-size: 13pt; margin: 0; }
+        .header-text h2 { font-size: 11pt; margin: 0; }
+        .header-text p  { font-size: 8pt; margin-top: 4px; line-height: 1.1; }
 
-        .header-text h1 {
-            font-size: 13pt;
-            margin: 0;
+        /* ===== TITLE ===== */
+        .title { text-align: center; margin: 12px 0; }
+        .title h3 {
+            font-size: 12pt;
+            text-decoration: underline;
+            margin: 0 0 4px 0;
         }
-
-        .header-text h2 {
+        .title p {
             font-size: 11pt;
             margin: 0;
         }
 
-        .header-text p {
-            font-size: 8pt;
-            margin-top: 4px;
-        }
+        /* ===== CONTENT TABLE ===== */
+        .content-table { margin-top: 12px; }
+        .content-table td { padding: 2px; line-height: 1.2; }
 
-        /* ===== TITLE ===== */
-        .title {
-            text-align: center;
-            margin: 12px 0;
-        }
-
-        .title h3 {
-            font-size: 12pt;
-            text-decoration: underline;
-            margin-bottom: 4px;
-        }
-
-        /* ===== CONTENT ===== */
-        .content-table td {
-            padding: 2px 2px;
-            line-height: 1;
-        }
-
-        .num {
-            width: 20px;
-        }
-
-        .label {
-            width: 180px;
-        }
-
-        .colon {
-            width: 10px;
-        }
-
-        .value {
-            text-align: justify;
-            word-wrap: break-word;
-        }
-
-        .indent {
-            width: 20px;
-        }
-
-        .section-title {
-            font-weight: bold;
-            padding-top: 8px;
-        }
+        .label  { width: 220px; }
+        .colon  { width: 10px; }
+        .value  { text-align: justify; word-wrap: break-word; }
 
         .full-width {
             text-align: justify;
-            line-height: 1;
-            padding: 4px 2px;
-        }
-
-        /* ===== NO NUM CLASS ===== */
-        .label-compact {
-            width: 180px;
-            padding-left: 5px;
-        }
-
-        .colon-compact {
-            width: 10px;
-        }
-
-        .value-compact {
-            text-align: justify;
-            word-wrap: break-word;
+            line-height: 1.2;
+            padding: 8px 0;
         }
 
         /* ===== SIGNATURE ===== */
-        .signature {
-            margin-top: 0px;
-        }
-
-        .signature td {
-            padding: 2px;
-        }
-
-        .signature .num {
-            width: 20px;
-        }
-
-        .signature .sig-left {
-            width: 50%;
-        }
-
-        .signature .sig-right {
-            width: 50%;
-        }
-
-        .name {
-            margin-top: 60px;
-        }
+        .signature { margin-top: 20px; }
+        .signature td    { padding: 2px; }
+        .signature .num  { width: 20px; }
+        .signature .sig-left  { width: 50%; }
+        .signature .sig-right { width: 50%; }
+        .name { margin-top: 60px; }
+        .nip  { margin: 0; }
     </style>
 </head>
 
 <body>
+    <!-- HEADER -->
     <table class="header-table">
         <tbody>
             <tr>
-                <td class="logo"><img src="{{public_path('assets/img/logo-kemenkeu.png')}}" width="87"></td>
+                <td class="logo"><img src="{{ public_path('assets/img/logo-kemenkeu.png') }}" width="87"></td>
                 <td class="header-text">
                     <h1>KEMENTERIAN KEUANGAN REPUBLIK INDONESIA</h1>
                     <h2>DIREKTORAT JENDERAL BEA DAN CUKAI</h2>
@@ -167,230 +95,148 @@
         </tbody>
     </table>
 
+    <!-- TITLE -->
     <div class="title">
-        <h3>BERITA ACARA PEMERIKSAAN</h3>
-        <p>Nomor : {{ $sbp->nomor_ba_riksa ?? '-' }}</p>
+        <h3>BERITA ACARA PEMERIKSAAN BADAN</h3>
+        <p>Nomor : {{ $pemeriksaanBadan->no_ba_riksa ?? '-' }}</p>
     </div>
 
+    <!-- INTRO -->
+    <p class="full-width">
+        Pada hari ini {{ optional($pemeriksaanBadan->tgl_ba_riksa)->translatedFormat('l') ?? '-' }} tanggal {{ $pemeriksaanBadan->tanggal_ba_riksa_terbilang }}, berdasarkan Surat Perintah Kepala KPPBC Tipe Madya Pabean C Banda Aceh Nomor {{ $pemeriksaanBadan->no_surat_perintah ?? '-' }} tanggal {{ optional($pemeriksaanBadan->tgl_surat_perintah)->translatedFormat('d F Y') ?? '-' }}. Kami yang bertanda tangan di bawah ini telah melakukan pemeriksaan terhadap:
+    </p>
+
+    <!-- CONTENT -->
     <table class="content-table">
         <tbody>
-            <!-- INTRO TEXT -->
+            <!-- DATA DIRI -->
             <tr>
-                <td colspan="4" class="full-width">
-                    Pada hari ini {{ optional($sbp->tanggal_sbp)->translatedFormat('l') ?? '-' }} tanggal {{ $sbp->tanggal_sbp_terbilang ?? '-' }}, berdasarkan Surat Perintah Kepala KPPBC Tipe Madya Pabean C Banda Aceh Nomor {{ $sbp->nomor_surat_perintah ?? '-' }} tanggal {{ optional($sbp->tanggal_surat_perintah)->translatedFormat('d F Y') ?? '-' }}. Kami yang bertanda tangan di bawah ini telah melakukan pemeriksaan terhadap:
-                </td>
+                <td class="label">Nama</td>
+                <td class="colon">:</td>
+                <td class="value">{{ $pemeriksaanBadan->nama ?? '-' }}</td>
             </tr>
+            <tr>
+                <td class="label">Tempat dan Tanggal Lahir</td>
+                <td class="colon">:</td>
+                <td class="value">{{ $pemeriksaanBadan->tempat_lahir ?? '-' }}, {{ optional($pemeriksaanBadan->tanggal_lahir)->translatedFormat('d F Y') ?? '-' }}</td>
+            </tr>
+            <tr>
+                <td class="label">Jenis Kelamin</td>
+                <td class="colon">:</td>
+                <td class="value">{{ $pemeriksaanBadan->jenis_kelamin ?? '-' }}</td>
+            </tr>
+            <tr>
+                <td class="label">Kewarganegaraan</td>
+                <td class="colon">:</td>
+                <td class="value">{{ $pemeriksaanBadan->kewarganegaraan ?? '-' }}</td>
+            </tr>
+            <tr>
+                <td class="label">Alamat Tempat Tinggal</td>
+                <td class="colon">:</td>
+                <td class="value">{{ $pemeriksaanBadan->alamat_tinggal ?? '-' }}</td>
+            </tr>
+            <tr>
+                <td class="label">Alamat Sesuai Identitas</td>
+                <td class="colon">:</td>
+                <td class="value">{{ $pemeriksaanBadan->alamat_pada_identitas ?? '-' }}</td>
+            </tr>
+            <tr>
+                <td class="label">Jenis/Nomor Identitas</td>
+                <td class="colon">:</td>
+                <td class="value">{{ $pemeriksaanBadan->jenis_identitas ?? '-' }} / {{ $pemeriksaanBadan->no_identitas ?? '-' }}</td>
+            </tr>
+            <tr><td colspan="3" style="height: 8px;"></td></tr>
 
-            <!-- SARANA PENGANGKUT -->
+            <!-- DATA PERJALANAN -->
             <tr>
-                <td class="num">a.</td>
-                <td colspan="3" class="section-title">Sarana pengangkut:</td>
+                <td class="label">Datang Dari</td>
+                <td class="colon">:</td>
+                <td class="value">{{ $pemeriksaanBadan->datang_dari ?? '-' }}</td>
             </tr>
             <tr>
-                <td class="indent"></td>
+                <td class="label">Tujuan Ke</td>
+                <td class="colon">:</td>
+                <td class="value">{{ $pemeriksaanBadan->tujuan_ke ?? '-' }}</td>
+            </tr>
+            <tr>
+                <td class="label">Rekan Seperjalanan</td>
+                <td class="colon">:</td>
+                <td class="value">{{ $pemeriksaanBadan->rekan_perjalanan ?? '-' }}</td>
+            </tr>
+            <tr>
                 <td class="label">Nama dan Jenis Sarkut</td>
                 <td class="colon">:</td>
-                <td class="value">{{ $sbp->nama_sarkut ?? '-' }}</td>
+                <td class="value">{{ $pemeriksaanBadan->nama_sarkut ?? '-' }}</td>
             </tr>
             <tr>
-                <td class="indent"></td>
-                <td class="label">Ukuran/Kapasitas Muatan</td>
+                <td class="label">No. Register Sarkut</td>
                 <td class="colon">:</td>
-                <td class="value">{{ $sbp->kapasitas_muatan ?? '-' }}</td>
+                <td class="value">{{ $pemeriksaanBadan->no_register ?? '-' }}</td>
             </tr>
             <tr>
-                <td class="indent"></td>
-                <td class="label">No. Voy/Penerbangan/Trayek*</td>
+                <td class="label">Dokumen Barang Yang Dibawa</td>
                 <td class="colon">:</td>
-                <td class="value">{{ $sbp->nomor_voyage ?? '-' }}</td>
+                <td class="value">
+                    @if($pemeriksaanBadan->jenis_dokumen_barang || $pemeriksaanBadan->nomor_dokumen_barang)
+                        {{ $pemeriksaanBadan->jenis_dokumen_barang }} / {{ $pemeriksaanBadan->nomor_dokumen_barang }} / {{ optional($pemeriksaanBadan->tgl_dokumen_barang)->translatedFormat('d F Y') }}
+                    @else
+                        -
+                    @endif
+                </td>
             </tr>
-            <tr>
-                <td class="indent"></td>
-                <td class="label">Nahkoda/Pilot/Pengemudi*</td>
-                <td class="colon">:</td>
-                <td class="value">{{ $sbp->nama_pengemudi ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td class="indent"></td>
-                <td class="label">Nomor Identitas</td>
-                <td class="colon">:</td>
-                <td class="value">{{ $sbp->nomor_identitas_pengemudi ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td class="indent"></td>
-                <td class="label">Bendera</td>
-                <td class="colon">:</td>
-                <td class="value">{{ $sbp->bendera ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td class="indent"></td>
-                <td class="label">Nomor Register/Polisi*</td>
-                <td class="colon">:</td>
-                <td class="value">{{ $sbp->nomor_polisi ?? '-' }}</td>
-            </tr>
-
-            <!-- BARANG -->
-            <tr>
-                <td class="num">b.</td>
-                <td colspan="3" class="section-title">Barang:</td>
-            </tr>
-            <tr>
-                <td class="indent"></td>
-                <td class="label">Jumlah/Jenis/Ukuran Nomor</td>
-                <td class="colon">:</td>
-                <td class="value">{{ $sbp->jumlah_kemasan ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td class="indent"></td>
-                <td class="label">Peti Kemas/Kemasan</td>
-                <td class="colon">:</td>
-                <td class="value">{{ $sbp->jenis_kemasan ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td class="indent"></td>
-                <td class="label">Jumlah/Jenis barang</td>
-                <td class="colon">:</td>
-                <td class="value">{{ $sbp->uraian_barang ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td class="indent"></td>
-                <td class="label">Jenis/Nomor dan Tgl Dokumen</td>
-                <td class="colon">:</td>
-                <td class="value">{{ $sbp->nomor_dokumen ?? '-' }} / {{ optional($sbp->tanggal_dokumen)->translatedFormat('d F Y') ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td class="indent"></td>
-                <td class="label">Pemilik/Importir/Eksportir/Kuasa*</td>
-                <td class="colon">:</td>
-                <td class="value">{{ $sbp->nama_pelaku ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td class="indent"></td>
-                <td class="label">Nomor Identitas</td>
-                <td class="colon">:</td>
-                <td class="value">{{ $sbp->jenis_identitas ?? '-' }} {{ $sbp->nomor_identitas ?? '-' }}</td>
-            </tr>
-
-            <!-- BANGUNAN ATAU TEMPAT -->
-            <tr>
-                <td class="num">c.</td>
-                <td colspan="3" class="section-title">Bangunan atau tempat:</td>
-            </tr>
-            <tr>
-                <td class="indent"></td>
-                <td class="label">Alamat Bangunan/Tempat</td>
-                <td class="colon">:</td>
-                <td class="value">{{ $sbp->alamat_tempat ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td class="indent"></td>
-                <td class="label">No Reg Bangunan/NPPBKC/NPWP*</td>
-                <td class="colon">:</td>
-                <td class="value">{{ $sbp->nomor_registrasi ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td class="indent"></td>
-                <td class="label">Nama Pemilik/Yang Menguasai*</td>
-                <td class="colon">:</td>
-                <td class="value">{{ $sbp->nama_pemilik_tempat ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td class="indent"></td>
-                <td class="label">Nomor Identitas</td>
-                <td class="colon">:</td>
-                <td class="value">{{ $sbp->nomor_identitas_pemilik ?? '-' }}</td>
-            </tr>
+            <tr><td colspan="3" style="height: 8px;"></td></tr>
 
             <!-- HASIL PEMERIKSAAN -->
             <tr>
-                <td class="num"><br></td>
-                <td colspan="3"><br></td>
-            </tr>
-            <tr>
-                <td class="indent"></td>
                 <td class="label">Lokasi Pemeriksaan</td>
                 <td class="colon">:</td>
-                <td class="value">{{ $sbp->lokasi_penindakan ?? '-' }}</td>
+                <td class="value">{{ $pemeriksaanBadan->lokasi_pemeriksaan ?? '-' }}</td>
             </tr>
             <tr>
-                <td class="indent"></td>
+                <td class="label">Jenis Pemeriksaan</td>
+                <td class="colon">:</td>
+                <td class="value">{{ $pemeriksaanBadan->jenis_pemeriksaan ?? '-' }}</td>
+            </tr>
+            <tr>
                 <td class="label">Hasil Pemeriksaan</td>
                 <td class="colon">:</td>
-                <td class="value">Didapati {{ $sbp->uraian_barang ?? '-' }}</td>
-            </tr>
-
-            <!-- LAPORAN & SAKSI -->
-            <tr>
-                <td colspan="4"><br></td>
-            </tr>
-            <tr>
-                <td colspan="4" class="full-width">Laporan hasil pemeriksaan terlampir sebanyak 1 halaman</td>
-            </tr>
-            <tr>
-                <td colspan="4"><br></td>
-            </tr>
-            <tr>
-                <td colspan="4" class="full-width">Pemeriksaan disaksikan oleh pengangkut/pemilik/importir/eksportir atau kuasanya/ketua lingkungan/dll*:</td>
-            </tr>
-            <tr>
-                <td class="indent"></td>
-                <td class="label">Nama</td>
-                <td class="colon">:</td>
-                <td class="value">{{ $sbp->nama_pelaku ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td class="indent"></td>
-                <td class="label">Alamat</td>
-                <td class="colon">:</td>
-                <td class="value">{{ $sbp->alamat_pelaku ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td class="indent"></td>
-                <td class="label">Pekerjaan</td>
-                <td class="colon">:</td>
-                <td class="value">{{ $sbp->pekerjaan_pelaku ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td class="indent"></td>
-                <td class="label">Nomor Identitas</td>
-                <td class="colon">:</td>
-                <td class="value">{{ $sbp->nomor_identitas ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td colspan="4"><br></td>
-            </tr>
-            <tr>
-                <td colspan="4" class="full-width">Demikian Berita Acara ini dibuat dengan sebenarnya.</td>
+                <td class="value">{{ $pemeriksaanBadan->hasil_pemeriksaan ?? '-' }}</td>
             </tr>
         </tbody>
     </table>
 
+    <!-- PENUTUP -->
+    <p class="full-width">
+        Demikian Berita Acara ini dibuat dengan sebenarnya.
+    </p>
+
+    <!-- SIGNATURE -->
     <table class="signature">
         <tbody>
             <tr>
-                <td class="num"></td>
+                <td class="num"><br></td>
                 <td class="sig-left"><br></td>
-                <td class="sig-right">{{ $sbp->kota_penindakan ?? 'Banda Aceh' }}, {{ optional($sbp->tanggal_sbp)->translatedFormat('d F Y') ?? '-' }}</td>
+                <td class="sig-right">Banda Aceh, {{ optional($pemeriksaanBadan->tgl_ba_riksa)->translatedFormat('d F Y') ?? '-' }}</td>
             </tr>
             <tr>
-                <td class="num"></td>
-                <td class="sig-left">Pemilik/Kuasanya/Saksi*,</td>
+                <td class="num"><br></td>
+                <td class="sig-left">Orang yang diperiksa,</td>
                 <td class="sig-right">Pejabat yang melakukan pemeriksaan,</td>
             </tr>
             <tr>
-                <td class="num"></td>
+                <td class="num"><br></td>
                 <td class="sig-left">
-                    <div class="name">{{ $sbp->nama_pelaku ?? '-' }}</div>
+                    <div class="name">{{ $pemeriksaanBadan->nama ?? '-' }}</div>
                 </td>
                 <td class="sig-right">
-                    <div class="name">{{ optional($sbp->petugas1)->nama ?? '-' }}<br>NIP {{ optional($sbp->petugas1)->nip_formatted ?? '-' }}</div>
+                    <div class="name">{{ optional($pemeriksaanBadan->petugas1)->nama ?? '-' }}<br>NIP {{ optional($pemeriksaanBadan->petugas1)->nip_formatted ?? '-' }}</div>
                 </td>
             </tr>
             <tr>
-                <td class="num"></td>
+                <td class="num"><br></td>
                 <td class="sig-left"><br></td>
                 <td class="sig-right">
-                    <div class="name">{{ optional($sbp->petugas2)->nama ?? '-' }}<br>NIP {{ optional($sbp->petugas2)->nip_formatted ?? '-' }}</div>
+                    <div class="name">{{ optional($pemeriksaanBadan->petugas2)->nama ?? '-' }}<br>NIP {{ optional($pemeriksaanBadan->petugas2)->nip_formatted ?? '-' }}</div>
                 </td>
             </tr>
         </tbody>

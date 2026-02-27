@@ -8,6 +8,9 @@ use App\Models\SuratPerintah;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Collection;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
+use App\Helpers\TerbilangHelper;
 
 class PemeriksaanBadanController extends Controller
 {
@@ -117,16 +120,30 @@ class PemeriksaanBadanController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Generate PDF for the specified resource and stream it to the browser.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function cetak($id)
     {
         $pemeriksaanBadan = PemeriksaanBadan::with('petugas1', 'petugas2')->findOrFail($id);
-        return view('pemeriksaan-badan.show', compact('pemeriksaanBadan'));
+        
+        Carbon::setLocale('id');
+        $tanggal_ba_riksa = Carbon::parse($pemeriksaanBadan->tgl_ba_riksa);
+        $hari = TerbilangHelper::terbilang($tanggal_ba_riksa->day);
+        $bulan = $tanggal_ba_riksa->getTranslatedMonthName();
+        $tahun = TerbilangHelper::terbilang($tanggal_ba_riksa->year);
+        $tanggal_ba_riksa_terbilang = ucwords($hari) . ' ' . ucwords($bulan) . ' ' . ucwords($tahun);
+        
+        $filename = str_replace('/', '-', $pemeriksaanBadan->no_ba_riksa) . '.pdf';
+
+        $pdf = Pdf::loadView('templatecetak.template-ba-riksa-badan', compact('pemeriksaanBadan', 'tanggal_ba_riksa_terbilang'))
+                  ->setPaper([0, 0, 609.45, 935.43], 'portrait');
+
+        return $pdf->stream($filename);
     }
+
 
     /**
      * Show the form for editing the specified resource.

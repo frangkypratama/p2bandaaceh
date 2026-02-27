@@ -118,7 +118,11 @@ Route::resource('bariksa-badan', BariksaBadanController::class);
 | Pemeriksaan Badan
 |--------------------------------------------------------------------------
 */
-Route::resource('pemeriksaan-badan', PemeriksaanBadanController::class);
+// Rute untuk Cetak PDF (harus di atas resource)
+Route::get('pemeriksaan-badan/{id}/cetak', [PemeriksaanBadanController::class, 'cetak'])->name('pemeriksaan-badan.cetak');
+
+// Rute Resource
+Route::resource('pemeriksaan-badan', PemeriksaanBadanController::class)->except(['show']);
 
 
 /*

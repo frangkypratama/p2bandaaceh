@@ -30,7 +30,12 @@
                                 <td class="text-center">{{ $item->kewarganegaraan }}</td>
                                 <td class="text-center">
                                     <div class="btn-group" role="group" aria-label="Aksi">
-                                        <a href="{{ route('pemeriksaan-badan.show', $item->id) }}" class="btn btn-info btn-sm"><i class="cil-search"></i></a>
+                                        <button type="button" class="btn btn-info btn-sm btn-preview"
+                                            data-coreui-toggle="modal"
+                                            data-coreui-target="#cetakModal"
+                                            data-preview-url="{{ route('pemeriksaan-badan.cetak', [$item->id, 'is_preview' => true]) }}">
+                                            <i class="cil-print"></i>
+                                        </button>
                                         <a href="{{ route('pemeriksaan-badan.edit', $item->id) }}" class="btn btn-warning btn-sm"><i class="cil-pencil"></i></a>
                                         <button type="button" class="btn btn-danger btn-sm" data-coreui-toggle="modal" data-coreui-target="#deleteConfirmationModal" data-url="{{ route('pemeriksaan-badan.destroy', $item->id) }}">
                                             <i class="cil-trash"></i>
@@ -40,7 +45,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center">Tidak ada data.</td>
+                                <td colspan="5" class="text-center">Tidak ada data.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -54,4 +59,45 @@
         </div>
     </div>
 </div>
+
+{{-- Modal Cetak --}}
+<div class="modal fade" id="cetakModal" tabindex="-1" aria-labelledby="cetakModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cetakModalLabel">Preview Dokumen</h5>
+                <button type="button" class="btn-close" data-coreui-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                <iframe id="previewIframe" src="about:blank" style="width: 100%; height: 75vh; border: none;" title="Preview Dokumen"></iframe>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var cetakModal = document.getElementById('cetakModal');
+        if (cetakModal) {
+            cetakModal.addEventListener('show.coreui.modal', function (event) {
+                var button = event.relatedTarget;
+                var previewUrl = button.getAttribute('data-preview-url');
+                var iframe = cetakModal.querySelector('#previewIframe');
+
+                if (iframe) {
+                    iframe.src = previewUrl;
+                }
+            });
+
+            cetakModal.addEventListener('hidden.coreui.modal', function () {
+                var iframe = cetakModal.querySelector('#previewIframe');
+                if (iframe) {
+                    iframe.src = 'about:blank';
+                }
+            });
+        }
+    });
+</script>
+@endpush
