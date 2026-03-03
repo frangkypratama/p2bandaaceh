@@ -75,7 +75,7 @@
                                 <select class="form-select" id="jenis_identitas" name="jenis_identitas">
                                     <option value="" disabled selected>Pilih...</option>
                                     <option value="Paspor" {{ old('jenis_identitas') == 'Paspor' ? 'selected' : '' }}>Paspor</option>
-                                    <option value="Kartu Tanda Penduduk" {{ old('jenis_identitas') == 'Kartu Tanda Penduduk' ? 'selected' : '' }}>Kartu Tanda Penduduk</option>
+                                    <option value="KTP" {{ old('jenis_identitas') == 'KTP' ? 'selected' : '' }}>KTP</option>
                                     <option value="KITAS" {{ old('jenis_identitas') == 'KITAS' ? 'selected' : '' }}>KITAS</option>
                                     <option value="Kartu Keluarga" {{ old('jenis_identitas') == 'Kartu Keluarga' ? 'selected' : '' }}>Kartu Keluarga</option>
                                 </select>
