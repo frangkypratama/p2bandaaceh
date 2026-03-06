@@ -8,7 +8,7 @@
         <div class="col-12">
             <div class="card mb-4">
                 <div class="card-header">
-                    <strong>Dashboard</strong>
+                    <h5><strong>Dashboard</strong></h5>
                 </div>
                 <div class="card-body">
                     You are logged in!

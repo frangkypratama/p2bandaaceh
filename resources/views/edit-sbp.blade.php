@@ -8,7 +8,7 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title mb-0"><strong>Edit Surat Bukti Penindakan (SBP)</strong></h4>
+                    <h5 class="card-title mb-0"><strong>Edit Surat Bukti Penindakan (SBP)</strong></h5>
                     <small class="text-medium-emphasis">Perbarui informasi yang diperlukan di bawah ini.</small>
                 </div>
 
