@@ -38,7 +38,7 @@
 
         /* ===== TITLE ===== */
         .title { text-align: center; margin: 12px 0; }
-        .title h3 { font-size: 11pt; text-decoration: underline; margin-bottom: 4px; }
+        .title h3 { font-size: 11pt; margin-bottom: 4px; }
 
         /* ===== CONTENT ===== */
         .content-table td { padding: 2px 2px; line-height: 1; }
