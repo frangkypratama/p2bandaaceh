@@ -37,6 +37,37 @@
                     </div>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="no_hp" class="form-label">Nomor Handphone</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="cil-phone"></i></span>
+                            <input id="no_hp" type="tel" class="form-control" name="no_hp" value="{{ old('no_hp') }}" placeholder="Contoh: 081234567890">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="jenis_kelamin" class="form-label">Jenis Kelamin</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="cil-wc"></i></span>
+                            <select id="jenis_kelamin" class="form-select" name="jenis_kelamin" required>
+                                <option selected disabled value="">Pilih Jenis Kelamin...</option>
+                                <option value="Laki-laki" {{ old('jenis_kelamin') == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
+                                <option value="Perempuan" {{ old('jenis_kelamin') == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="alamat_di_indonesia" class="form-label">Alamat di Indonesia</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="cil-location-pin"></i></span>
+                    <textarea id="alamat_di_indonesia" class="form-control" name="alamat_di_indonesia" rows="3" placeholder="Alamat lengkap pelaku di Indonesia">{{ old('alamat_di_indonesia') }}</textarea>
+                </div>
+            </div>
         </div>
     </div>
 </div>

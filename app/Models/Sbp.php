@@ -41,6 +41,10 @@ class Sbp extends Model
         'flag_bast',
         'flag_ba_musnah',
         'nomor_ba_musnah',
+        'no_hp',
+        'jenis_kelamin',
+        'alamat_di_indonesia',
+        'kondisi_barang',
     ];
 
     protected $casts = [

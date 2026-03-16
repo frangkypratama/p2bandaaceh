@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Surat Perintah')
+@section('title', 'Referensi Surat Perintah')
 
 @section('content')
 <div class="container-lg">

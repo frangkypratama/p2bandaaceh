@@ -6,12 +6,25 @@
         </div>
         <div class="card-body">
             <div class="row">
-                <div class="col-12">
+                <div class="col-6">
                     <div class="mb-3">
                         <label for="jenis_barang" class="form-label">Jenis Barang</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="cil-layers"></i></span>
                             <input id="jenis_barang" type="text" class="form-control" name="jenis_barang" value="{{ old('jenis_barang') }}" placeholder="Contoh: Hasil Tembakau" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="mb-3">
+                        <label for="kondisi_barang" class="form-label">Kondisi Barang</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="cil-3d"></i></span>
+                            <select id="kondisi_barang" class="form-select" name="kondisi_barang" required>
+                                <option selected disabled value="">Pilih Kondisi...</option>
+                                <option value="Baru" {{ old('kondisi_barang') == 'Baru' ? 'selected' : '' }}>Baru</option>
+                                <option value="Bukan Baru" {{ old('kondisi_barang') == 'Bukan Baru' ? 'selected' : '' }}>Bukan Baru</option>
+                            </select>
                         </div>
                     </div>
                 </div>
