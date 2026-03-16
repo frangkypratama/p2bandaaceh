@@ -70,6 +70,33 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="no_hp" class="form-label">Nomor Handphone</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="cil-phone"></i></span>
+                                                <input id="no_hp" type="tel" class="form-control" name="no_hp" value="{{ old('no_hp', $sbp->no_hp) }}" placeholder="Contoh: 081234567890">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="jenis_kelamin" class="form-label">Jenis Kelamin</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="cil-wc"></i></span>
+                                                <select id="jenis_kelamin" class="form-select" name="jenis_kelamin">
+                                                    <option value="">Pilih Jenis Kelamin...</option>
+                                                    <option value="Laki-laki" {{ old('jenis_kelamin', $sbp->jenis_kelamin) == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
+                                                    <option value="Perempuan" {{ old('jenis_kelamin', $sbp->jenis_kelamin) == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="alamat_di_indonesia" class="form-label">Alamat di Indonesia</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="cil-location-pin"></i></span>
+                                            <textarea id="alamat_di_indonesia" class="form-control" name="alamat_di_indonesia" rows="3" placeholder="Alamat lengkap pelaku di Indonesia">{{ old('alamat_di_indonesia', $sbp->alamat_di_indonesia) }}</textarea>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -139,11 +166,24 @@
                                     <h5 class="card-title mb-0">4. Informasi Barang Bukti</h5>
                                 </div>
                                 <div class="card-body">
-                                    <div class="mb-3">
-                                        <label for="jenis_barang" class="form-label">Jenis Barang</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text"><i class="cil-layers"></i></span>
-                                            <input id="jenis_barang" type="text" class="form-control" name="jenis_barang" value="{{ old('jenis_barang', $sbp->jenis_barang) }}" required>
+                                    <div class="row">
+                                        <div class="col-6 mb-3">
+                                            <label for="jenis_barang" class="form-label">Jenis Barang</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="cil-layers"></i></span>
+                                                <input id="jenis_barang" type="text" class="form-control" name="jenis_barang" value="{{ old('jenis_barang', $sbp->jenis_barang) }}" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-6 mb-3">
+                                            <label for="kondisi_barang" class="form-label">Kondisi Barang</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="cil-3d"></i></span>
+                                                <select id="kondisi_barang" class="form-select" name="kondisi_barang">
+                                                    <option value="">Pilih Kondisi...</option>
+                                                    <option value="Baru" {{ old('kondisi_barang', $sbp->kondisi_barang) == 'Baru' ? 'selected' : '' }}>Baru</option>
+                                                    <option value="Bukan Baru" {{ old('kondisi_barang', $sbp->kondisi_barang) == 'Bukan Baru' ? 'selected' : '' }}>Bukan Baru</option>
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="row">
