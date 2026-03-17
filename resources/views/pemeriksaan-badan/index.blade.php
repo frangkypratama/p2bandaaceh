@@ -68,20 +68,21 @@
                                 <td class="text-center">{{ $item->jenis_identitas }} / {{ $item->no_identitas }}</td>
                                 <td class="text-center">{{ $item->kewarganegaraan }}</td>
                                 <td class="text-center">
-                                    <div class="btn-group" role="group" aria-label="Aksi">
+                                    <div class="d-flex justify-content-center gap-2" role="group" aria-label="Aksi">
                                         <button type="button" class="btn btn-info btn-sm btn-preview"
                                             data-coreui-toggle="modal"
                                             data-coreui-target="#cetakModal"
                                             data-preview-url="{{ route('pemeriksaan-badan.cetak', [$item->id, 'is_preview' => true]) }}"
                                             data-download-url="{{ route('pemeriksaan-badan.cetak', $item->id) }}">
-                                            <i class="cil-print"></i>
+                                            <i class="cil-search"></i>
                                         </button>
                                         <a href="{{ route('pemeriksaan-badan.edit', $item->id) }}" class="btn btn-warning btn-sm"><i class="cil-pencil"></i></a>
-                                        <form action="{{ route('pemeriksaan-badan.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?');" style="display:inline;">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger btn-sm"><i class="cil-trash"></i></button>
-                                        </form>
+                                        <button type="button" class="btn btn-danger btn-sm"
+                                                data-coreui-toggle="modal"
+                                                data-coreui-target="#deleteConfirmationModal"
+                                                data-url="{{ route('pemeriksaan-badan.destroy', $item->id) }}">
+                                            <i class="cil-trash"></i>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -143,6 +144,9 @@
                         <a href="#" target="_blank" class="btn btn-light pdf-download" title="Unduh PDF">
                             <i class="cil-data-transfer-down"></i> <span class="d-none d-md-inline">Unduh</span>
                         </a>
+                        <button type="button" class="btn btn-light pdf-print" title="Cetak PDF">
+                            <i class="cil-print"></i> <span class="d-none d-md-inline">Cetak</span>
+                        </button>
                     </div>
                 </div>
 
@@ -190,6 +194,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const rotateCwBtn = modalEl.querySelector('.pdf-rotate-cw');
     const rotateCcwBtn = modalEl.querySelector('.pdf-rotate-ccw');
     const downloadBtn = modalEl.querySelector('.pdf-download');
+    const printBtn = modalEl.querySelector('.pdf-print');
 
     function showLoading(show = true) {
         loadingEl.style.display = show ? 'flex' : 'none';
@@ -296,6 +301,16 @@ document.addEventListener('DOMContentLoaded', function () {
     rotateCcwBtn.addEventListener('click', () => {
         rotation = (rotation - 90 + 360) % 360;
         renderAllPages();
+    });
+
+    printBtn.addEventListener('click', () => {
+        if (!currentUrl) return;
+        const printWindow = window.open(currentUrl, '_blank');
+        if (printWindow) {
+            printWindow.addEventListener('load', () => {
+                printWindow.print();
+            });
+        }
     });
     
     pageNumInput.addEventListener('change', function() {
