@@ -414,7 +414,7 @@ class SbpController extends Controller
             ['nama' => 'LAPORAN DAN PENENTUAN HASIL PENINDAKAN (LPHP)*', 'status' => false],
             ['nama' => 'LAPORAN PELANGGARAN (LP)*', 'status' => false],
             ['nama' => 'BERITA ACARA SERAH TERIMA (BAST KE PENYIDIKAN)', 'status' => !empty($sbp->bast)],
-            ['nama' => 'BERITA ACARA SERAH TERIMA (KE PEMUSNAHAN)', 'status' => !empty($sbp->nomor_ba_musnah)],
+            ['nama' => 'BERITA ACARA PEMUSNAHAN', 'status' => !empty($sbp->nomor_ba_musnah)],
             ['nama' => 'LEMBAR PENERIMAAN PERKARA (LPP)*', 'status' => false],
             ['nama' => 'LEMBAR PENELITIAN FORMAL (LPF)*', 'status' => false],
             ['nama' => 'LAPORAN PELANGGARAN DARI UNIT/INSTANSI LAIN (LP-1)', 'status' => false],
