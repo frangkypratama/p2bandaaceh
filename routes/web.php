@@ -11,6 +11,7 @@ use App\Http\Controllers\RefSatuanController;
 use App\Http\Controllers\SuratPerintahController;
 use App\Http\Controllers\BariksaBadanController;
 use App\Http\Controllers\PemeriksaanBadanController;
+use App\Http\Controllers\LptController;
 
 /*
 |--------------------------------------------------------------------------
@@ -123,6 +124,17 @@ Route::get('pemeriksaan-badan/{id}/cetak', [PemeriksaanBadanController::class, '
 
 // Rute Resource
 Route::resource('pemeriksaan-badan', PemeriksaanBadanController::class)->except(['show']);
+
+
+/*
+|--------------------------------------------------------------------------
+| LPT
+|--------------------------------------------------------------------------
+*/
+Route::resource('lpt', LptController::class)->except(['show']);
+Route::get('/lpt/{id}/preview', [LptController::class, 'preview'])->name('lpt.preview');
+Route::delete('/lpt/photo/{photo}', [LptController::class, 'destroyPhoto'])->name('lpt.photo.destroy');
+Route::get('/api/sbp/{id}', [SbpController::class, 'showApi'])->name('sbp.api.show');
 
 
 /*
