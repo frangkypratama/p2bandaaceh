@@ -386,13 +386,52 @@ class SbpController extends Controller
      */
     public function generatePdfChecklist($id)
     {
-        $sbp = Sbp::with(['petugas1', 'petugas2'])->findOrFail($id);
+        $sbp = Sbp::with(['petugas1', 'petugas2', 'bast'])->findOrFail($id);
 
-        $pdf = Pdf::loadView('templatecetak.template-checklist-sbp', compact('sbp'))
+        $checklistItems = [
+            ['nama' => 'SURAT TUGAS (INTELIJEN)', 'status' => false],
+            ['nama' => 'LAPORAN PELAKSANAAN TUGAS (INTELIJEN)', 'status' => false],
+            ['nama' => 'LEMBAR PENGUMPULAN DAN PENILAIAN INFORMASI (LPPI)', 'status' => false],
+            ['nama' => 'LEMBAR KERJA ANALISIS INTELIJEN (LKAI)', 'status' => false],
+            ['nama' => 'NOTA HASIL INTELIJEN (NHI)', 'status' => false],
+            ['nama' => 'NOTA INFORMASI (NI)', 'status' => false],
+            ['nama' => 'LEMBAR INFORMASI (LI-1)', 'status' => false],
+            ['nama' => 'LEMBAR ANALISIS PRAPENINDAKAN (LAP)', 'status' => false],
+            ['nama' => 'NOTA PENGEMBALIAN INFORMASI (NPI)', 'status' => false],
+            ['nama' => 'MEMO PELIMPAHAN PENINDAKAN (MPP)', 'status' => false],
+            ['nama' => 'SURAT PERINTAH (PENINDAKAN)*', 'status' => !empty($sbp->nomor_surat_perintah)],
+            ['nama' => 'BERITA ACARA PEMERIKSAAN*', 'status' => !empty($sbp->nomor_ba_riksa)],
+            ['nama' => 'BERITA ACARA PENGAMBILAN CONTOH BARANG', 'status' => false],
+            ['nama' => 'BERITA ACARA PENEGAHAN*', 'status' => !empty($sbp->nomor_ba_tegah)],
+            ['nama' => 'BERITA ACARA PENYEGELAN*', 'status' => !empty($sbp->nomor_ba_segel)],
+            ['nama' => 'BERITA ACARA PENGAMBILAN DOKUMENTASI', 'status' => false],
+            ['nama' => 'BERITA ACARA MEMBAWA SARANA PENGANGKUT DAN/ATAU BARANG', 'status' => false],
+            ['nama' => 'SURAT BUKTI PENINDAKAN (SBP)*', 'status' => !empty($sbp->nomor_sbp)],
+            ['nama' => 'BERITA ACARA PENOLAKAN TANDA TANGAN SURAT BUKTI PENINDAKAN', 'status' => false],
+            ['nama' => 'BERITA ACARA PENOLAKAN TANDA TANGAN TERHADAP BERITA ACARA PENOLAKAN TANDA TANGAN SURAT BUKTI PENINDAKAN', 'status' => false],
+            ['nama' => 'PENINDAKAN SEGERA', 'status' => false],
+            ['nama' => 'LAPORAN PELAKSANAAN TUGAS (LPT)*', 'status' => false],
+            ['nama' => 'LAPORAN DAN PENENTUAN HASIL PENINDAKAN (LPHP)*', 'status' => false],
+            ['nama' => 'LAPORAN PELANGGARAN (LP)*', 'status' => false],
+            ['nama' => 'BERITA ACARA SERAH TERIMA (BAST KE PENYIDIKAN)', 'status' => !empty($sbp->bast)],
+            ['nama' => 'BERITA ACARA SERAH TERIMA (KE PEMUSNAHAN)', 'status' => !empty($sbp->nomor_ba_musnah)],
+            ['nama' => 'LEMBAR PENERIMAAN PERKARA (LPP)*', 'status' => false],
+            ['nama' => 'LEMBAR PENELITIAN FORMAL (LPF)*', 'status' => false],
+            ['nama' => 'LAPORAN PELANGGARAN DARI UNIT/INSTANSI LAIN (LP-1)', 'status' => false],
+            ['nama' => 'SURAT PERINTAH PENELITIAN (SPLIT)*', 'status' => false],
+            ['nama' => 'LEMBAR HASIL PENELITIAN (LHP)*', 'status' => false],
+            ['nama' => 'LEMBAR RESUME PERKARA (LRP)*', 'status' => false],
+            ['nama' => 'BERITA ACARA PENCACAHAN', 'status' => false],
+            ['nama' => 'KEP BDN', 'status' => false],
+            ['nama' => 'BERITA ACARA WAWANCARA', 'status' => false],
+            ['nama' => 'Lainnya........................', 'status' => false],
+        ];
+
+        $pdf = Pdf::loadView('templatecetak.template-checklist-sbp', compact('sbp', 'checklistItems'))
             // F4 REAL SIZE (pt)
             ->setPaper([0, 0, 595.28, 935.43], 'portrait');
 
-        $filename = 'Checklist' . str_replace('/', '-', $sbp->nomor_sbp) . '.pdf';
+        $filename = 'Checklist ' . str_replace('/', '-', $sbp->nomor_sbp) . '.pdf';
 
         return $pdf->stream($filename);
     }
