@@ -12,6 +12,9 @@
                             <span class="input-group-text"><i class="cil-notes"></i></span>
                             <input id="nomor_sbp" type="number" class="form-control @error('nomor_sbp_final') is-invalid @enderror" name="nomor_sbp" 
                                    value="{{ old('nomor_sbp', $sbp->nomor_sbp_int ?? '') }}" placeholder="Masukkan hanya angka" required>
+                            <button class="btn btn-outline-secondary" type="button" id="fetch-last-sbp">
+                                <i class="cil-loop-circular"></i> Ambil Nomor
+                            </button>
                             @error('nomor_sbp_final')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -62,6 +65,7 @@
     @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            // --- Script untuk autofill tanggal surat perintah ---
             const suratPerintahData = @json($suratPerintahData);
             const nomorSuratInput = document.getElementById('nomor_surat_perintah');
             const tanggalSuratInput = document.getElementById('tanggal_surat_perintah');
@@ -70,12 +74,7 @@
             function autofillTanggal() {
                 const nomorDipilih = nomorSuratInput.value;
                 const dataCocok = suratPerintahData.find(surat => surat.nomor_prin === nomorDipilih);
-
-                if (dataCocok) {
-                    tanggalSuratInput.value = dataCocok.tanggal_prin;
-                } else {
-                    tanggalSuratInput.value = '';
-                }
+                tanggalSuratInput.value = dataCocok ? dataCocok.tanggal_prin : '';
             }
 
             function enforcePrefix() {
@@ -84,7 +83,6 @@
                 }
             }
 
-            // Mencegah penghapusan prefix
             nomorSuratInput.addEventListener('keydown', function(e) {
                 const { value, selectionStart } = e.target;
                 if ((e.key === 'Backspace' && selectionStart <= prefix.length) || 
@@ -93,22 +91,54 @@
                 }
             });
 
-            // Event listener untuk input utama
             nomorSuratInput.addEventListener('input', function() {
                 enforcePrefix();
                 autofillTanggal();
             });
 
-            // Memastikan prefix ada saat fokus
             nomorSuratInput.addEventListener('focus', function() {
                 if (nomorSuratInput.value === '') {
                     nomorSuratInput.value = prefix;
                 }
             });
-
-            // Panggil saat halaman dimuat untuk menangani data yang ada
+            
             if (nomorSuratInput.value) {
                 autofillTanggal();
+            }
+
+            // --- Script baru untuk mengambil nomor SBP terakhir ---
+            const fetchButton = document.getElementById('fetch-last-sbp');
+            const nomorSbpInput = document.getElementById('nomor_sbp');
+
+            if (fetchButton) {
+                fetchButton.addEventListener('click', function() {
+                    const originalHtml = this.innerHTML;
+                    this.disabled = true;
+                    this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+
+                    fetch("{{ route('sbp.get-last-number') }}")
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Gagal mengambil data. Status: ' + response.status);
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (data.next_number) {
+                                nomorSbpInput.value = data.next_number;
+                            } else {
+                                alert('Tidak dapat menemukan nomor SBP berikutnya.');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Terjadi kesalahan: ' + error.message);
+                        })
+                        .finally(() => {
+                            this.disabled = false;
+                            this.innerHTML = originalHtml;
+                        });
+                });
             }
         });
     </script>

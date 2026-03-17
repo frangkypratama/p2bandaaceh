@@ -27,6 +27,9 @@ Route::get('/dashboard', fn () => view('dashboard'));
 |--------------------------------------------------------------------------
 */
 
+// Get Last SBP Number
+Route::get('/sbp/get-last-number', [SbpController::class, 'getLastNumber'])->name('sbp.get-last-number');
+
 // Preview & PDF (HARUS DI ATAS)
 Route::get('/data-sbp/cetak-preview/{id}', [SbpController::class, 'cetakPreview'])
     ->name('sbp.cetak.preview');

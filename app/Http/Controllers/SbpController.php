@@ -11,11 +11,34 @@ use App\Models\SuratPerintah;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class SbpController extends Controller
 {
+    /**
+     * Get the last SBP number and return the next one.
+     */
+    public function getLastNumber()
+    {
+        try {
+            // Mengambil nomor_sbp_int tertinggi dari SBP yang tidak di-soft delete
+            $lastSbp = Sbp::orderBy('nomor_sbp_int', 'desc')->first();
+
+            $nextNumber = $lastSbp ? $lastSbp->nomor_sbp_int + 1 : 1;
+
+            return response()->json(['next_number' => $nextNumber]);
+
+        } catch (\Exception $e) {
+            // Log the error for debugging
+            Log::error("Failed to get last SBP number: " . $e->getMessage());
+            
+            // Return a generic error response
+            return response()->json(['error' => 'Gagal mengambil nomor SBP terakhir.'], 500);
+        }
+    }
+
     /**
      * Display a listing of the resource.
      */
