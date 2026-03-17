@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Intervention\Image\ImageManagerStatic as Image;
+use Illuminate\Support\Facades\Storage;
 
 class LptController extends Controller
 {
@@ -24,14 +26,7 @@ class LptController extends Controller
                 'name' => 'LPT Penindakan Bandara',
                 'icon' => 'cil-flight-takeoff',
             ],
-            'opsar'   => [
-                'name' => 'LPT Operasi Pasar',
-                'icon' => 'cil-bullhorn',
-            ],
-            'cukai'   => [
-                'name' => 'LPT Penindakan Cukai',
-                'icon' => 'cil-storage',
-            ],
+
         ];
     }
 
@@ -67,7 +62,7 @@ class LptController extends Controller
     {
         $jenis_lpt_options = $this->getJenisLptOptions();
         $validatedData = $request->validate([
-            'nomor_lpt_int' => 'required|integer|unique:lpt,deleted_at,nomor_lpt_int',
+            'nomor_lpt_int' => 'required|integer|unique:lpt,deleted_at,NULL,id,deleted_at,NULL',
             'tanggal_lpt'   => 'required|date',
             'jenis_lpt'     => 'required|in:' . implode(',', array_keys($jenis_lpt_options)),
             'sbp_id'        => 'required|exists:sbp,id',
@@ -79,7 +74,6 @@ class LptController extends Controller
             DB::transaction(function () use ($request, $validatedData) {
                 $lptData = $validatedData;
 
-                // Generate nomor_lpt string
                 $year = Carbon::parse($validatedData['tanggal_lpt'])->year;
                 $lptData['nomor_lpt'] = 'LPT-' . $validatedData['nomor_lpt_int'] . '/KBC.0102/' . $year;
 
@@ -89,6 +83,16 @@ class LptController extends Controller
                 if ($request->hasFile('photos')) {
                     foreach ($request->file('photos') as $photo) {
                         $path = $photo->store('lpt-photos', 'public');
+
+                        if ($photo->getSize() > 2000000) { // 2MB
+                            $image = Image::make(storage_path('app/public/' . $path));
+                            $image->resize(1200, null, function ($constraint) {
+                                $constraint->aspectRatio();
+                                $constraint->upsize();
+                            });
+                            $image->save(null, 75);
+                        }
+
                         LptPhoto::create([
                             'lpt_id' => $lpt->id,
                             'file_path' => $path
@@ -149,7 +153,6 @@ class LptController extends Controller
             DB::transaction(function () use ($request, $lpt, $validatedData) {
                 $lptData = $validatedData;
 
-                // Re-generate nomor_lpt string
                 $year = Carbon::parse($validatedData['tanggal_lpt'])->year;
                 $lptData['nomor_lpt'] = 'LPT-' . $validatedData['nomor_lpt_int'] . '/KBC.0102/' . $year;
 
@@ -159,6 +162,16 @@ class LptController extends Controller
                 if ($request->hasFile('photos')) {
                     foreach ($request->file('photos') as $photo) {
                         $path = $photo->store('lpt-photos', 'public');
+
+                        if ($photo->getSize() > 2000000) { // 2MB
+                            $image = Image::make(storage_path('app/public/' . $path));
+                            $image->resize(1200, null, function ($constraint) {
+                                $constraint->aspectRatio();
+                                $constraint->upsize();
+                            });
+                            $image->save(null, 75);
+                        }
+
                         LptPhoto::create([
                             'lpt_id'    => $lpt->id,
                             'file_path' => $path,
@@ -179,6 +192,11 @@ class LptController extends Controller
      */
     public function destroy(Lpt $lpt)
     {
+        foreach ($lpt->photos as $photo) {
+            Storage::disk('public')->delete($photo->file_path);
+            $photo->delete();
+        }
+
         $lpt->delete();
 
         return redirect()->route('lpt.index')

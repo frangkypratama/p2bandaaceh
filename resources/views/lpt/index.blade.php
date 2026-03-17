@@ -79,17 +79,14 @@
     <div class="row justify-content-center">
         <div class="col-md-12">
             <div class="card">
-                <div class="card-header">
-                    <h5><strong>Data Laporan Pelaksanaan Tugas (LPT)</strong></h5>
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><strong>Data Laporan Pelaksanaan Tugas (LPT)</strong></h5>
+                    <button type="button" class="btn btn-primary" data-coreui-toggle="modal" data-coreui-target="#lptModal">
+                        <i class="cil-plus"></i>
+                        Tambah Data
+                    </button>
                 </div>
                 <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <button type="button" class="btn btn-primary" data-coreui-toggle="modal" data-coreui-target="#lptModal">
-                            <i class="cil-plus me-2"></i>
-                            Buat LPT
-                        </button>
-                    </div>
-
                     <div class="table-responsive">
                         <table class="table table-striped table-bordered table-hover">
                             <thead class="thead-dark">
