@@ -12,6 +12,7 @@ use App\Http\Controllers\SuratPerintahController;
 use App\Http\Controllers\BariksaBadanController;
 use App\Http\Controllers\PemeriksaanBadanController;
 use App\Http\Controllers\LptController;
+use App\Http\Controllers\PencacahanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -139,6 +140,12 @@ Route::get('/lpt/{id}/preview', [LptController::class, 'preview'])->name('lpt.pr
 Route::delete('/lpt/photo/{photo}', [LptController::class, 'destroyPhoto'])->name('lpt.photo.destroy');
 Route::get('/api/sbp/{id}', [SbpController::class, 'showApi'])->name('sbp.api.show');
 
+/*
+|--------------------------------------------------------------------------
+| Pencacahan
+|--------------------------------------------------------------------------
+*/
+Route::resource('pencacahan', PencacahanController::class);
 
 /*
 |--------------------------------------------------------------------------

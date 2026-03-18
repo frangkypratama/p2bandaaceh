@@ -52,6 +52,24 @@
             </li>
 
             <li class="nav-title">
+                <h2 class="fs-6 text-uppercase">Pencacahan</h2>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="nav-icon cil-description"></i>
+                    ST Cacah
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('pencacahan.index') }}">
+                    <i class="nav-icon cil-calculator"></i>
+                    BA Cacah
+                </a>
+            </li>
+
+            <li class="nav-title">
                 <h2 class="fs-6 text-uppercase">Referensi</h2>
             </li>
 
