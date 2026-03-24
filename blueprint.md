@@ -2,7 +2,7 @@
 
 ## Ikhtisar
 
-Aplikasi ini adalah aplikasi web berbasis Laravel untuk mengelola Surat Bukti Penindakan (SBP). Aplikasi ini memungkinkan pengguna untuk membuat, melihat, mengedit, dan mencetak dokumen SBP beserta dokumen terkait lainnya seperti Berita Acara Pemeriksaan, Penegahan, Penyegelan, dan Laporan Pelaksanaan Tugas (LPT).
+Aplikasi ini adalah aplikasi web berbasis Laravel untuk mengelola Surat Bukti Penindakan (SBP). Aplikasi ini memungkinkan pengguna untuk membuat, melihat, mengedit, dan mencetak dokumen SBP beserta dokumen terkait lainnya seperti Berita Acara Pemeriksaan, Penegahan, Penyegelan, Laporan Pelaksanaan Tugas (LPT), dan Pencacahan Barang.
 
 ## Desain dan Fitur
 
@@ -34,7 +34,12 @@ Aplikasi ini adalah aplikasi web berbasis Laravel untuk mengelola Surat Bukti Pe
 *   **Manajemen Surat Perintah:**
     *   CRUD untuk data Surat Perintah (Nomor & Tanggal).
 *   **Manajemen LPT (Laporan Pelaksanaan Tugas):**
-    *   Membuat, membaca, memperbarui, dan menghapus (CRUD) data LPT.
+    *   CRUD untuk data LPT.
+*   **Manajemen Pencacahan:**
+    *   Membuat dokumen Berita Acara Pencacahan baru.
+    *   Formulir pencacahan memungkinkan pengguna untuk memilih satu atau lebih dokumen SBP yang sudah ada melalui sebuah modal pencarian.
+    *   Data SBP yang dipilih (seperti nama pelaku, jenis barang, dll.) akan ditampilkan dalam bentuk kartu-kartu informatif di halaman pembuatan pencacahan.
+    *   Menyimpan relasi antara dokumen pencacahan dan SBP yang dipilih.
 *   **Cetak & Pratinjau Dokumen:**
     *   Mencetak SBP dan dokumen terkait (Berita Acara Pemeriksaan, Penegahan, Penyegelan, LPT) dalam format PDF.
     *   Menampilkan pratinjau PDF dari semua dokumen yang dapat dicetak langsung di browser.
@@ -42,4 +47,9 @@ Aplikasi ini adalah aplikasi web berbasis Laravel untuk mengelola Surat Bukti Pe
 
 ## Rencana Perubahan Saat Ini
 
-(Tidak ada perubahan yang sedang berlangsung)
+**Tugas:** Mengimplementasikan fitur "Manajemen Pencacahan".
+
+**Langkah-langkah:**
+1.  Membuat dan memperbaiki Model, View, dan Controller untuk fitur "Pencacahan".
+2.  Memastikan form pembuatan Pencacahan dapat mengambil dan menampilkan data dari SBP yang sudah ada.
+3.  Menyelesaikan proses penyimpanan data Pencacahan beserta relasinya ke SBP.

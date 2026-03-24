@@ -2,13 +2,20 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Pencacahan extends Model
 {
+    use HasFactory;
+
     protected $table = 'pencacahan';
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'no_ba_cacah',
         'tanggal_ba_cacah',
@@ -17,13 +24,36 @@ class Pencacahan extends Model
         'id_petugas_2',
     ];
 
-    public function petugas1(): BelongsTo
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'tanggal_ba_cacah' => 'date',
+    ];
+
+    /**
+     * Get the first officer associated with the pencacahan.
+     */
+    public function petugas1()
     {
         return $this->belongsTo(Petugas::class, 'id_petugas_1');
     }
 
-    public function petugas2(): BelongsTo
+    /**
+     * Get the second officer associated with the pencacahan.
+     */
+    public function petugas2()
     {
         return $this->belongsTo(Petugas::class, 'id_petugas_2');
+    }
+
+    /**
+     * The SBP documents that belong to the pencacahan.
+     */
+    public function sbp()
+    {
+        return $this->belongsToMany(Sbp::class, 'pencacahan_sbp', 'pencacahan_id', 'sbp_id');
     }
 }

@@ -62,7 +62,7 @@
                         @forelse ($pencacahan as $item)
                             <tr>
                                 <td class="text-center">{{ $item->no_ba_cacah }}</td>
-                                <td class="text-center">{{ $item->tanggal_ba_cacah }}</td>
+                                <td class="text-center">{{ \Carbon\Carbon::parse($item->tanggal_ba_cacah)->translatedFormat('d F Y') }}</td>
                                 <td class="text-center">
                                     <div class="d-flex justify-content-center gap-2" role="group" aria-label="Aksi">
                                         <a href="{{ route('pencacahan.edit', $item->id) }}" class="btn btn-warning btn-sm"><i class="cil-pencil"></i></a>

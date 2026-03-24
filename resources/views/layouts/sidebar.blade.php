@@ -58,14 +58,14 @@
             <li class="nav-item">
                 <a class="nav-link" href="#">
                     <i class="nav-icon cil-description"></i>
-                    ST Cacah
+                    Surat Tugas Pencacahan
                 </a>
             </li>
 
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('pencacahan.index') }}">
                     <i class="nav-icon cil-calculator"></i>
-                    BA Cacah
+                    Berita Acara Pencacahan
                 </a>
             </li>
 
