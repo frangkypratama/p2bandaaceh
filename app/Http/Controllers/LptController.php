@@ -129,6 +129,7 @@ class LptController extends Controller
      */
     public function edit(Lpt $lpt)
     {
+        $lpt->load('photos');
         $sbp = Sbp::orderBy('tanggal_sbp', 'desc')->get();
         $jenis_lpt_options = $this->getJenisLptOptions();
         return view('lpt.edit', compact('lpt', 'sbp', 'jenis_lpt_options'));
@@ -147,10 +148,23 @@ class LptController extends Controller
             'sbp_id'        => 'required|exists:sbp,id',
             'photos'        => 'nullable|array',
             'photos.*'      => 'image|mimes:jpeg,png,jpg,gif,svg|max:10240',
+            'deleted_photos' => 'nullable|array',
+            'deleted_photos.*' => 'integer|exists:lpt_photos,id'
         ]);
 
         try {
             DB::transaction(function () use ($request, $lpt, $validatedData) {
+                if (!empty($validatedData['deleted_photos'])) {
+                    $photosToDelete = LptPhoto::where('lpt_id', $lpt->id)
+                                              ->whereIn('id', $validatedData['deleted_photos'])
+                                              ->get();
+
+                    foreach ($photosToDelete as $photo) {
+                        Storage::disk('public')->delete($photo->file_path);
+                        $photo->delete();
+                    }
+                }
+
                 $lptData = $validatedData;
 
                 $year = Carbon::parse($validatedData['tanggal_lpt'])->year;
