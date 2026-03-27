@@ -15,7 +15,6 @@
                             @csrf
                             @method('PUT')
 
-                            {{-- Hidden field for deleted photos --}}
                             <div id="deleted_photos_container"></div>
 
                             {{-- Jenis LPT --}}
@@ -87,7 +86,7 @@
                                             <i class="cil-cloud-upload"></i>
                                         </div>
                                         <div class="upload-dropzone-title">Klik atau seret foto baru ke sini</div>
-                                        <div class="upload-dropzone-sub">JPG, PNG — otomatis dikompres maks. 2 MB per file</div>
+                                        <div class="upload-dropzone-sub">JPG, PNG — otomatis dikompres maks. 300 KB per file</div>
                                     </div>
                                 </div>
                                 @error('photos.*')
@@ -193,24 +192,21 @@
 @endsection
 
 @push('scripts')
-{{-- Styles from create.blade.php --}}
 <style>
-    .upload-dropzone{position:relative;border:2px dashed #c4c9d0;border-radius:8px;padding:28px 16px;text-align:center;cursor:pointer;transition:border-color .2s,background-color .2s;background:transparent}.upload-dropzone:hover,.upload-dropzone.dragover{border-color:var(--cui-primary,#321fdb);background-color:rgba(50,31,219,.03)}.upload-dropzone-input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}.upload-dropzone-icon{width:48px;height:48px;margin:0 auto 10px;border-radius:50%;background:rgba(50,31,219,.08);display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:var(--cui-primary,#321fdb)}.upload-dropzone-title{font-size:.875rem;font-weight:600;color:var(--cui-body-color,#4f5d73);margin-bottom:2px}.upload-dropzone-sub{font-size:.78rem;color:var(--cui-text-medium-emphasis,#9da5b1)}.upload-progress{display:none;margin-top:12px}.upload-progress.active{display:block}.upload-progress-info{display:flex;align-items:center;gap:8px;margin-bottom:6px}.upload-spinner{width:14px;height:14px;border:2px solid #d8dbe0;border-top-color:var(--cui-primary,#321fdb);border-radius:50%;animation:upload-spin .6s linear infinite}@keyframes upload-spin{to{transform:rotate(360deg)}}.upload-progress-text{font-size:.78rem;color:var(--cui-text-medium-emphasis,#9da5b1)}.upload-progress-track{height:4px;background:#ebedef;border-radius:2px;overflow:hidden}.upload-progress-fill{height:100%;width:0;background:var(--cui-primary,#321fdb);border-radius:2px;transition:width .2s}.upload-preview{display:none;margin-top:16px}.upload-preview.active{display:block}.upload-preview-header{display:flex;justify-content:space-between;align-items:center;padding-bottom:8px;margin-bottom:12px;border-bottom:1px solid #d8dbe0}.upload-preview-title{font-size:.82rem;font-weight:600;color:var(--cui-body-color,#4f5d73);display:flex;align-items:center;gap:6px}.upload-preview-count{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;padding:0 7px;border-radius:11px;background:var(--cui-primary,#321fdb);color:#fff;font-size:.72rem;font-weight:700}.upload-preview-clear{font-size:.75rem;color:#e55353;background:transparent;border:1px solid #e55353;padding:3px 12px;border-radius:6px;cursor:pointer;transition:background .15s,color .15s}.upload-preview-clear:hover{background:#e55353;color:#fff}.upload-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px}.upload-tile{position:relative;border-radius:8px;overflow:hidden;border:1px solid #d8dbe0;background:#f8f9fa;transition:border-color .15s,box-shadow .15s}.upload-tile.existing-photo{border-color:#a6aeb8}.upload-tile.existing-photo:hover{border-color:#e55353}.upload-tile:not(.existing-photo):hover{border-color:var(--cui-primary,#321fdb);box-shadow:0 0 0 1px var(--cui-primary,#321fdb)}.upload-tile-img{width:100%;aspect-ratio:1;object-fit:cover;display:block;cursor:pointer}.upload-tile-meta{padding:5px 8px 6px;border-top:1px solid #ebedef;background:#fff}.upload-tile-name{display:block;font-size:.68rem;font-weight:600;color:var(--cui-body-color,#4f5d73);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.4}.upload-tile-size{font-size:.68rem;color:var(--cui-text-medium-emphasis,#9da5b1);line-height:1.4}.upload-tile-badge{position:absolute;top:5px;left:5px;font-size:.62rem;font-weight:700;padding:2px 7px;border-radius:4px;background:rgba(46,184,92,.9);color:#fff;letter-spacing:.02em}.upload-tile-badge.existing{background:rgba(113,128,150,.9)}.upload-tile-del{position:absolute;top:5px;right:5px;width:22px;height:22px;border-radius:50%;border:none;background:rgba(0,0,0,.5);color:#fff;font-size:14px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;opacity:0;transition:opacity .15s,background .15s}.upload-tile:hover .upload-tile-del{opacity:1}.upload-tile-del:hover{background:rgba(229,83,83,.9)}.upload-lightbox{display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.85);justify-content:center;align-items:center}.upload-lightbox.active{display:flex}.upload-lightbox img{max-width:90vw;max-height:90vh;border-radius:8px;box-shadow:0 8px 40px rgba(0,0,0,.4)}.upload-lightbox-close{position:absolute;top:16px;right:24px;background:none;border:none;color:#fff;font-size:2rem;cursor:pointer;line-height:1;opacity:.8;transition:opacity .15s}.upload-lightbox-close:hover{opacity:1}
+    .upload-dropzone{position:relative;border:2px dashed #c4c9d0;border-radius:8px;padding:28px 16px;text-align:center;cursor:pointer;transition:border-color .2s,background-color .2s;background:transparent}.upload-dropzone:hover,.upload-dropzone.dragover{border-color:var(--cui-primary,#321fdb);background-color:rgba(50,31,219,.03)}.upload-dropzone-input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}.upload-dropzone-icon{width:48px;height:48px;margin:0 auto 10px;border-radius:50%;background:rgba(50,31,219,.08);display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:var(--cui-primary,#321fdb)}.upload-dropzone-title{font-size:.875rem;font-weight:600;color:var(--cui-body-color,#4f5d73);margin-bottom:2px}.upload-dropzone-sub{font-size:.78rem;color:var(--cui-text-medium-emphasis,#9da5b1)}.upload-progress{display:none;margin-top:12px}.upload-progress.active{display:block}.upload-progress-info{display:flex;align-items:center;gap:8px;margin-bottom:6px}.upload-spinner{width:14px;height:14px;border:2px solid #d8dbe0;border-top-color:var(--cui-primary,#321fdb);border-radius:50%;animation:upload-spin .6s linear infinite}@keyframes upload-spin{to{transform:rotate(360deg)}}.upload-progress-text{font-size:.78rem;color:var(--cui-text-medium-emphasis,#9da5b1)}.upload-progress-track{height:4px;background:#ebedef;border-radius:2px;overflow:hidden}.upload-progress-fill{height:100%;width:0;background:var(--cui-primary,#321fdb);border-radius:2px;transition:width .2s}.upload-preview{display:none;margin-top:16px}.upload-preview.active{display:block}.upload-preview-header{display:flex;justify-content:space-between;align-items:center;padding-bottom:8px;margin-bottom:12px;border-bottom:1px solid #d8dbe0}.upload-preview-title{font-size:.82rem;font-weight:600;color:var(--cui-body-color,#4f5d73);display:flex;align-items:center;gap:6px}.upload-preview-count{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;padding:0 7px;border-radius:11px;background:var(--cui-primary,#321fdb);color:#fff;font-size:.72rem;font-weight:700}.upload-preview-clear{font-size:.75rem;color:#e55353;background:transparent;border:1px solid #e55353;padding:3px 12px;border-radius:6px;cursor:pointer;transition:background .15s,color .15s}.upload-preview-clear:hover{background:#e55353;color:#fff}.upload-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px}.upload-tile{position:relative;border-radius:8px;overflow:hidden;border:1px solid #d8dbe0;background:#f8f9fa;transition:border-color .15s,box-shadow .15s}.upload-tile.existing-photo{border-color:#a6aeb8}.upload-tile.existing-photo:hover{border-color:#e55353}.upload-tile:not(.existing-photo):hover{border-color:var(--cui-primary,#321fdb);box-shadow:0 0 0 1px var(--cui-primary,#321fdb)}.upload-tile-img{width:100%;aspect-ratio:1;object-fit:cover;display:block;cursor:pointer}.upload-tile-meta{padding:5px 8px 6px;border-top:1px solid #ebedef;background:#fff;min-height:24px}.upload-tile-size{font-size:.68rem;color:var(--cui-text-medium-emphasis,#9da5b1);line-height:1.4}.upload-tile-badge{position:absolute;top:5px;left:5px;font-size:.62rem;font-weight:700;padding:2px 7px;border-radius:4px;background:rgba(46,184,92,.9);color:#fff;letter-spacing:.02em}.upload-tile-badge.existing{background:rgba(113,128,150,.9)}.upload-tile-del{position:absolute;top:5px;right:5px;width:22px;height:22px;border-radius:50%;border:none;background:rgba(0,0,0,.5);color:#fff;font-size:14px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;opacity:0;transition:opacity .15s,background .15s}.upload-tile:hover .upload-tile-del{opacity:1}.upload-tile-del:hover{background:rgba(229,83,83,.9)}.upload-lightbox{display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.85);justify-content:center;align-items:center}.upload-lightbox.active{display:flex}.upload-lightbox img{max-width:90vw;max-height:90vh;border-radius:8px;box-shadow:0 8px 40px rgba(0,0,0,.4)}.upload-lightbox-close{position:absolute;top:16px;right:24px;background:none;border:none;color:#fff;font-size:2rem;cursor:pointer;line-height:1;opacity:.8;transition:opacity .15s}.upload-lightbox-close:hover{opacity:1}
 </style>
 
-{{-- Library --}}
 <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
 
-{{-- Upload Component Script --}}
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
     // =========================================================
     // SBP Modal Logic
     // =========================================================
-    const sbpModalEl = document.getElementById('sbpModal');
+    const sbpModalEl  = document.getElementById('sbpModal');
     const pilihSbpBtn = document.getElementById('pilihSbpBtn');
-    const sbpTable = document.getElementById('sbpTable');
+    const sbpTable    = document.getElementById('sbpTable');
 
     if (sbpModalEl && pilihSbpBtn && sbpTable) {
         const sbpModal = new coreui.Modal(sbpModalEl);
@@ -219,7 +215,6 @@ document.addEventListener('DOMContentLoaded', function () {
         sbpTable.addEventListener('click', function (e) {
             const btn = e.target.closest('.pilih-sbp-btn');
             if (!btn) return;
-
             document.getElementById('sbp_id').value = btn.dataset.id;
             document.getElementById('nomor_sbp_display').value = btn.dataset.nomor;
             sbpModal.hide();
@@ -229,36 +224,34 @@ document.addEventListener('DOMContentLoaded', function () {
     // =========================================================
     // Photo Upload & Compression Logic
     // =========================================================
-    const photoInput = document.getElementById('photos');
-    const dropzone = document.getElementById('uploadDropzone');
-    const progressWrap = document.getElementById('uploadProgress');
-    const progressFill = document.getElementById('progressFill');
-    const progressText = document.getElementById('progressText');
-    const previewSection = document.getElementById('uploadPreview');
-    const photoGrid = document.getElementById('photoGrid');
-    const photoCountEl = document.getElementById('photoCount');
-    const clearAllBtn = document.getElementById('clearAllBtn');
-    const submitBtn = document.getElementById('submitBtn');
-    const lightbox = document.getElementById('lightbox');
-    const lightboxImg = document.getElementById('lightboxImg');
-    const lightboxClose = document.getElementById('lightboxClose');
+    const photoInput             = document.getElementById('photos');
+    const dropzone               = document.getElementById('uploadDropzone');
+    const progressWrap           = document.getElementById('uploadProgress');
+    const progressFill           = document.getElementById('progressFill');
+    const progressText           = document.getElementById('progressText');
+    const previewSection         = document.getElementById('uploadPreview');
+    const photoGrid              = document.getElementById('photoGrid');
+    const photoCountEl           = document.getElementById('photoCount');
+    const clearAllBtn            = document.getElementById('clearAllBtn');
+    const submitBtn              = document.getElementById('submitBtn');
+    const lightbox               = document.getElementById('lightbox');
+    const lightboxImg            = document.getElementById('lightboxImg');
+    const lightboxClose          = document.getElementById('lightboxClose');
     const deletedPhotosContainer = document.getElementById('deleted_photos_container');
 
     const existingPhotos = @json($lpt->photos);
-    let newFiles = []; // To hold newly added File objects
+    let newFiles = [];
 
     const COMPRESS_OPTIONS = {
-        maxSizeMB: 2,
-        maxWidthOrHeight: 1920,
+        maxSizeMB: 0.3,
+        maxWidthOrHeight: 1200,
         useWebWorker: true,
         fileType: 'image/jpeg',
     };
 
-    // --- Drag & Drop Visuals ---
     ['dragenter', 'dragover'].forEach(evt => dropzone.addEventListener(evt, () => dropzone.classList.add('dragover')));
     ['dragleave', 'drop'].forEach(evt => dropzone.addEventListener(evt, () => dropzone.classList.remove('dragover')));
 
-    // --- Helper Functions ---
     function formatSize(bytes) {
         if (bytes < 1024) return bytes + ' B';
         if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
@@ -280,17 +273,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function addDeletedPhotoId(id) {
         const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = 'deleted_photos[]';
+        input.type  = 'hidden';
+        input.name  = 'deleted_photos[]';
         input.value = id;
         deletedPhotosContainer.appendChild(input);
-    }
-
-    function removeDeletedPhotoId(id) {
-        const input = deletedPhotosContainer.querySelector(`input[value="${id}"]`);
-        if (input) {
-            input.remove();
-        }
     }
 
     function updatePreview() {
@@ -307,47 +293,41 @@ document.addEventListener('DOMContentLoaded', function () {
 
         allPhotos.forEach((photo, index) => {
             const isExisting = !!photo.id;
-            const url = isExisting ? `{{ asset('storage') }}/${photo.file_path}` : URL.createObjectURL(photo);
-            const size = isExisting ? '-' : formatSize(photo.size);
+            const url  = isExisting ? `{{ asset('storage') }}/${photo.file_path}` : URL.createObjectURL(photo);
             const name = isExisting ? photo.file_path.split('/').pop() : photo.name;
 
             const tile = document.createElement('div');
             tile.className = `upload-tile ${isExisting ? 'existing-photo' : ''}`;
-            tile.id = `photo-tile-${isExisting ? 'existing-' + photo.id : 'new-' + index}`;
-            
+
             let badges = '';
-            if(isExisting) badges += '<span class="upload-tile-badge existing">Sudah Tersimpan</span>';
-            if(photo._compressed) badges += '<span class="upload-tile-badge">Dikompres</span>';
+            if (isExisting)        badges += '<span class="upload-tile-badge existing">Sudah Tersimpan</span>';
+            if (photo._compressed) badges += '<span class="upload-tile-badge">Dikompres</span>';
 
             tile.innerHTML = `
                 <button type="button" class="upload-tile-del" data-index="${index}" data-id="${photo.id || ''}" title="Hapus">&times;</button>
                 ${badges}
                 <img src="${url}" class="upload-tile-img" data-url="${url}" alt="${name}">
                 <div class="upload-tile-meta">
-                    <span class="upload-tile-name" title="${name}">${name}</span>
-                    <span class="upload-tile-size">${size}</span>
+                    ${!isExisting ? `<span class="upload-tile-size">${formatSize(photo.size)}</span>` : ''}
                 </div>
             `;
             photoGrid.appendChild(tile);
         });
     }
 
-    // --- Event Listeners ---
     photoGrid.addEventListener('click', function (e) {
         const delBtn = e.target.closest('.upload-tile-del');
         if (delBtn) {
-            const id = delBtn.dataset.id;
+            const id    = delBtn.dataset.id;
             const index = parseInt(delBtn.dataset.index);
-            const tile = delBtn.closest('.upload-tile');
 
-            if (id) { // Deleting an existing photo
+            if (id) {
                 addDeletedPhotoId(id);
                 const existingIndex = existingPhotos.findIndex(p => p.id == id);
-                if(existingIndex > -1) existingPhotos.splice(existingIndex, 1);
-                tile.remove(); // Or just hide it: tile.style.display = 'none';
-            } else { // Deleting a new photo
+                if (existingIndex > -1) existingPhotos.splice(existingIndex, 1);
+            } else {
                 const newIndex = index - existingPhotos.length;
-                if(newIndex > -1) newFiles.splice(newIndex, 1);
+                if (newIndex > -1) newFiles.splice(newIndex, 1);
             }
             syncInputFiles();
             updatePreview();
@@ -366,17 +346,15 @@ document.addEventListener('DOMContentLoaded', function () {
         updatePreview();
     });
 
-    // Lightbox close events
     lightboxClose.addEventListener('click', () => lightbox.classList.remove('active'));
     lightbox.addEventListener('click', (e) => e.target === lightbox && lightbox.classList.remove('active'));
     document.addEventListener('keydown', (e) => e.key === 'Escape' && lightbox.classList.remove('active'));
 
-    // Main file input/compression handler
     photoInput.addEventListener('change', async function () {
         const files = Array.from(this.files);
         if (!files.length) return;
 
-        newFiles = []; // Reset new files on new selection
+        newFiles = [];
         progressWrap.classList.add('active');
         progressFill.style.width = '0%';
         setSubmitLoading(true, `Mengompres ${files.length} foto...`);
@@ -386,7 +364,7 @@ document.addEventListener('DOMContentLoaded', function () {
             progressFill.style.width = Math.round((i / files.length) * 100) + '%';
             progressText.textContent = `Memproses ${i + 1}/${files.length}: ${file.name}`;
 
-            if (file.size > 2 * 1024 * 1024 && file.type.startsWith('image/')) {
+            if (file.size > 300 * 1024 && file.type.startsWith('image/')) {
                 try {
                     const compressed = await imageCompression(file, COMPRESS_OPTIONS);
                     const newFile = new File([compressed], file.name, { type: compressed.type, lastModified: Date.now() });
@@ -394,7 +372,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     newFiles.push(newFile);
                 } catch (err) {
                     console.error('Compress error:', file.name, err);
-                    newFiles.push(file); // fallback to original file on error
+                    newFiles.push(file);
                 }
             } else {
                 newFiles.push(file);
@@ -409,7 +387,6 @@ document.addEventListener('DOMContentLoaded', function () {
         setSubmitLoading(false);
     });
 
-    // Initial load
     updatePreview();
 });
 </script>

@@ -103,7 +103,8 @@
                                             <i class="cil-cloud-upload"></i>
                                         </div>
                                         <div class="upload-dropzone-title">Klik atau seret foto ke sini</div>
-                                        <div class="upload-dropzone-sub">JPG, PNG — otomatis dikompres maks. 2 MB per file</div>
+                                        {{-- [UBAH 1] teks hint --}}
+                                        <div class="upload-dropzone-sub">JPG, PNG — otomatis dikompres maks. 300 KB per file</div>
                                     </div>
                                 </div>
                                 @error('photos.*')
@@ -208,7 +209,6 @@
 @endsection
 
 @push('scripts')
-{{-- Upload Component Styles (inside scripts stack for CoreUI compatibility) --}}
 <style>
     /* ===== Dropzone ===== */
     .upload-dropzone {
@@ -477,10 +477,8 @@
     }
 </style>
 
-{{-- Library --}}
 <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
 
-{{-- Upload Component Script --}}
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -532,9 +530,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     let processedFiles = [];
 
+    // [UBAH 2] maxSizeMB: 0.3 dan maxWidthOrHeight: 1200
     const COMPRESS_OPTIONS = {
-        maxSizeMB: 2,
-        maxWidthOrHeight: 1920,
+        maxSizeMB: 0.3,
+        maxWidthOrHeight: 1200,
         useWebWorker: true,
         fileType: 'image/jpeg',
     };
@@ -547,7 +546,6 @@ document.addEventListener('DOMContentLoaded', function () {
         dropzone.addEventListener(evt, () => dropzone.classList.remove('dragover'))
     );
 
-    // Helpers
     function formatSize(bytes) {
         if (bytes < 1024)        return bytes + ' B';
         if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
@@ -596,7 +594,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Remove single photo
     photoGrid.addEventListener('click', function (e) {
         const delBtn = e.target.closest('.upload-tile-del');
         if (delBtn) {
@@ -606,7 +603,6 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!processedFiles.length) return;
         }
 
-        // Lightbox
         const img = e.target.closest('.upload-tile-img');
         if (img) {
             lightboxImg.src = img.dataset.url;
@@ -614,14 +610,12 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Clear all
     clearAllBtn.addEventListener('click', function () {
         processedFiles = [];
         syncInputFiles();
         updatePreview();
     });
 
-    // Lightbox
     lightboxClose.addEventListener('click', () => lightbox.classList.remove('active'));
     lightbox.addEventListener('click', (e) => {
         if (e.target === lightbox) lightbox.classList.remove('active');
@@ -630,7 +624,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (e.key === 'Escape') lightbox.classList.remove('active');
     });
 
-    // Main compression handler
+    // [UBAH 3] threshold kondisi: 300 * 1024 (300 KB)
     photoInput.addEventListener('change', async function () {
         const files = Array.from(this.files);
         if (!files.length) return;
@@ -646,7 +640,7 @@ document.addEventListener('DOMContentLoaded', function () {
             progressFill.style.width = Math.round((i / files.length) * 100) + '%';
             progressText.textContent = 'Memproses ' + (i + 1) + ' dari ' + files.length + ': ' + file.name;
 
-            if (file.size > 2 * 1024 * 1024) {
+            if (file.size > 300 * 1024) { // [UBAH 3] 300 KB
                 try {
                     const compressed = await imageCompression(file, COMPRESS_OPTIONS);
                     const newFile = new File([compressed], file.name, {
