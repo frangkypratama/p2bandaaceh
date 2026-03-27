@@ -171,7 +171,11 @@
                                             <label for="jenis_barang" class="form-label">Jenis Barang</label>
                                             <div class="input-group">
                                                 <span class="input-group-text"><i class="cil-layers"></i></span>
-                                                <input id="jenis_barang" type="text" class="form-control" name="jenis_barang" value="{{ old('jenis_barang', $sbp->jenis_barang) }}" required>
+                                                <select id="jenis_barang" class="form-select" name="jenis_barang" required>
+                                                    @foreach($komoditi as $item)
+                                                        <option value="{{ $item }}" {{ old('jenis_barang', $sbp->jenis_barang) == $item ? 'selected' : '' }}>{{ $item }}</option>
+                                                    @endforeach
+                                                </select>
                                             </div>
                                         </div>
                                         <div class="col-6 mb-3">
