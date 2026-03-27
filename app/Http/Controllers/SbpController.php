@@ -23,8 +23,11 @@ class SbpController extends Controller
     public function getLastNumber()
     {
         try {
-            // Mengambil nomor_sbp_int tertinggi dari SBP yang tidak di-soft delete
-            $lastSbp = Sbp::orderBy('nomor_sbp_int', 'desc')->first();
+            $currentYear = now()->year;
+
+            $lastSbp = Sbp::whereYear('tanggal_sbp', $currentYear)
+                ->orderBy('nomor_sbp_int', 'desc')
+                ->first();
 
             $nextNumber = $lastSbp ? $lastSbp->nomor_sbp_int + 1 : 1;
 

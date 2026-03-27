@@ -17,6 +17,9 @@
                             <div class="input-group">
                                 <span class="input-group-text"><i class="cil-notes"></i></span>
                                 <input type="text" class="form-control" id="no_ba_riksa_nomor" placeholder="Masukkan hanya angka" required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                <button class="btn btn-outline-secondary" type="button" id="fetch-last-number">
+                                    <i class="cil-loop-circular"></i> Ambil Nomor
+                                </button>
                             </div>
                             <input type="hidden" name="no_ba_riksa" id="no_ba_riksa">
                         </div>
@@ -309,6 +312,7 @@
         const form = document.getElementById('createPemeriksaanForm');
         const noBaRiksaNomorInput = document.getElementById('no_ba_riksa_nomor');
         const noBaRiksaHiddenInput = document.getElementById('no_ba_riksa');
+        const fetchButton = document.getElementById('fetch-last-number');
 
         form.addEventListener('submit', function(e) {
             const nomor = noBaRiksaNomorInput.value;
@@ -321,6 +325,37 @@
                 noBaRiksaHiddenInput.value = ''; 
             }
         });
+
+        if (fetchButton) {
+            fetchButton.addEventListener('click', function() {
+                const originalHtml = this.innerHTML;
+                this.disabled = true;
+                this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+
+                fetch("{{ route('pemeriksaan-badan.get-last-number') }}")
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Gagal mengambil data. Status: ' + response.status);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.next_number) {
+                            noBaRiksaNomorInput.value = data.next_number;
+                        } else {
+                            alert('Tidak dapat menemukan nomor berikutnya.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Terjadi kesalahan: ' + error.message);
+                    })
+                    .finally(() => {
+                        this.disabled = false;
+                        this.innerHTML = originalHtml;
+                    });
+            });
+        }
 
         // --- Script untuk Surat Perintah ---
         const suratPerintahData = @json($suratPerintahData);

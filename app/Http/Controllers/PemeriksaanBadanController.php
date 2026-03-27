@@ -120,6 +120,32 @@ class PemeriksaanBadanController extends Controller
     }
 
     /**
+     * Get the last BA Riksa number and return the next number.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getLastNumber()
+    {
+        try {
+            $currentYear = now()->year;
+
+            $lastPemeriksaan = PemeriksaanBadan::whereYear('tgl_ba_riksa', $currentYear)
+                ->orderBy('id', 'desc')
+                ->first();
+
+            if ($lastPemeriksaan && preg_match('/^BA-(\d+)/', $lastPemeriksaan->no_ba_riksa, $matches)) {
+                $nextNumber = intval($matches[1]) + 1;
+            } else {
+                $nextNumber = 1;
+            }
+
+            return response()->json(['next_number' => $nextNumber]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Could not retrieve the last number.'], 500);
+        }
+    }
+
+    /**
      * Generate PDF for the specified resource and stream it to the browser.
      *
      * @param  int  $id
