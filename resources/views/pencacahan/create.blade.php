@@ -256,11 +256,86 @@ document.addEventListener('DOMContentLoaded', function () {
         return isNaN(d.getTime()) ? '-' : d.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
     }
 
-    const sbpSearchInput = document.getElementById('sbpSearchInput');
-    const sbpTableBody = document.getElementById('sbpTableBody');
+    // ─── Image resize & preview ───────────────────────────────────────────────
+    // Batas dimensi sesuai lebar card col-md-3 (≈ 300 px)
+    const MAX_DIM = 300;
+
+    function resizeAndPreview(file, wrapper, sbpId) {
+        const preview     = wrapper.querySelector('img');
+        const placeholder = wrapper.querySelector('.foto-placeholder');
+        const removeBtn   = wrapper.querySelector('.btn-remove-foto');
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const img = new Image();
+            img.onload = function () {
+                // Hitung dimensi proporsional agar tidak melebihi MAX_DIM
+                let w = img.width;
+                let h = img.height;
+                if (w > MAX_DIM || h > MAX_DIM) {
+                    if (w > h) {
+                        h = Math.round(h * MAX_DIM / w);
+                        w = MAX_DIM;
+                    } else {
+                        w = Math.round(w * MAX_DIM / h);
+                        h = MAX_DIM;
+                    }
+                }
+
+                const canvas = document.createElement('canvas');
+                canvas.width  = w;
+                canvas.height = h;
+                canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+
+                // Tampilkan preview dari canvas (sudah kecil)
+                preview.src = canvas.toDataURL('image/jpeg', 0.85);
+                preview.classList.remove('d-none');
+                placeholder.classList.add('d-none');
+                if (removeBtn) removeBtn.classList.remove('d-none');
+
+                // Ganti file di input agar yang dikirim ke server juga sudah kecil
+                canvas.toBlob(function (blob) {
+                    const dt   = new DataTransfer();
+                    const nama = (file.name.replace(/\.[^.]+$/, '') || 'foto') + '.jpg';
+                    dt.items.add(new File([blob], nama, { type: 'image/jpeg' }));
+                    const fileInput = document.getElementById('foto_barang_' + sbpId);
+                    if (fileInput) fileInput.files = dt.files;
+                }, 'image/jpeg', 0.85);
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function attachFotoListener(fileInput) {
+        if (!fileInput) return;
+        fileInput.addEventListener('change', function () {
+            if (!this.files || !this.files[0]) return;
+            const sbpId  = this.id.replace('foto_barang_', '');
+            const wrapper = this.closest('.foto-upload-wrapper');
+            resizeAndPreview(this.files[0], wrapper, sbpId);
+        });
+    }
+
+    window.removeImage = function (button, sbpId) {
+        const wrapper     = button.closest('.foto-upload-wrapper');
+        const preview     = wrapper.querySelector('img');
+        const placeholder = wrapper.querySelector('.foto-placeholder');
+        const fileInput   = document.getElementById('foto_barang_' + sbpId);
+
+        if (fileInput) fileInput.value = '';
+        preview.src = '';
+        preview.classList.add('d-none');
+        placeholder.classList.remove('d-none');
+        button.classList.add('d-none');
+    };
+    // ─────────────────────────────────────────────────────────────────────────
+
+    const sbpSearchInput    = document.getElementById('sbpSearchInput');
+    const sbpTableBody      = document.getElementById('sbpTableBody');
     const sbpLoadingIndicator = document.getElementById('sbpLoadingIndicator');
-    const sbpErrorAlert = document.getElementById('sbpErrorAlert');
-    const sbpModalElement = document.getElementById('sbpModal');
+    const sbpErrorAlert     = document.getElementById('sbpErrorAlert');
+    const sbpModalElement   = document.getElementById('sbpModal');
 
     function showModalError(msg) {
         sbpErrorAlert.textContent = msg;
@@ -325,9 +400,9 @@ document.addEventListener('DOMContentLoaded', function () {
         fetchSbp('');
     });
 
-    const selectSbpButton = document.getElementById('selectSbpButton');
+    const selectSbpButton      = document.getElementById('selectSbpButton');
     const selectedSbpContainer = document.getElementById('selectedSbpContainer');
-    const hiddenInputsDiv = document.getElementById('hiddenSbpInputs');
+    const hiddenInputsDiv      = document.getElementById('hiddenSbpInputs');
 
     selectSbpButton.addEventListener('click', () => {
         const checkboxes = document.querySelectorAll('#sbpTableBody .sbp-checkbox:checked');
@@ -350,15 +425,15 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!sbpId) return;
 
         const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = 'id_sbp[]';
+        input.type  = 'hidden';
+        input.name  = 'id_sbp[]';
         input.value = sbpId;
-        input.id = `hidden-input-${sbpId}`;
+        input.id    = `hidden-input-${sbpId}`;
         hiddenInputsDiv.appendChild(input);
 
         const col = document.createElement('div');
         col.className = 'col-12';
-        col.id = `selected-sbp-${sbpId}`;
+        col.id        = `selected-sbp-${sbpId}`;
 
         col.innerHTML = `
             <div class="card shadow-sm">
@@ -390,7 +465,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 <input type="file" name="foto_barang[${sbpId}]" id="foto_barang_${sbpId}" class="foto-input" accept="image/*" style="display:none;">
                                 <div class="foto-actions text-center mt-2">
                                     <button type="button" class="btn btn-sm btn-light border" onclick="document.getElementById('foto_barang_${sbpId}').click()">Pilih</button>
-                                    <button type="button" class="btn btn-sm btn-light border d-none" onclick="removeImage(this, ${sbpId})">Hapus</button>
+                                    <button type="button" class="btn btn-sm btn-light border d-none btn-remove-foto" onclick="removeImage(this, ${sbpId})">Hapus</button>
                                 </div>
                             </div>
                         </div>
@@ -406,40 +481,7 @@ document.addEventListener('DOMContentLoaded', function () {
         attachFotoListener(col.querySelector('.foto-input'));
     }
 
-    function attachFotoListener(fileInput) {
-        if (!fileInput) return;
-        fileInput.addEventListener('change', function(event) {
-            const wrapper = this.closest('.foto-upload-wrapper');
-            const preview = wrapper.querySelector('img');
-            const placeholder = wrapper.querySelector('.foto-placeholder');
-            const removeBtn = wrapper.querySelector('button[onclick^="removeImage"]');
-            
-            if (this.files && this.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    preview.src = e.target.result;
-                    preview.classList.remove('d-none');
-                    placeholder.classList.add('d-none');
-                    removeBtn.classList.remove('d-none');
-                }
-                reader.readAsDataURL(this.files[0]);
-            }
-        });
-    }
-    
-    window.removeImage = function(button, sbpId) {
-        const wrapper = button.closest('.foto-upload-wrapper');
-        const preview = wrapper.querySelector('img');
-        const placeholder = wrapper.querySelector('.foto-placeholder');
-        const fileInput = document.getElementById(`foto_barang_${sbpId}`);
-        
-        fileInput.value = ''; 
-        preview.src = '';
-        preview.classList.add('d-none');
-        placeholder.classList.remove('d-none');
-        button.classList.add('d-none');
-    }
-
+    // Pasang listener untuk card yang di-render ulang (setelah validasi error)
     document.querySelectorAll('.foto-input').forEach(attachFotoListener);
 
     selectedSbpContainer.addEventListener('click', event => {
