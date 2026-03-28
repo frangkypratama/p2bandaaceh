@@ -54,15 +54,21 @@ class LptController extends Controller
         $lpt = Lpt::with('sbp')
                     ->orderBy('tanggal_lpt', 'desc')
                     ->orderBy('nomor_lpt_int', 'desc')
-                    ->paginate(10);
+                    ->paginate(10)
+                    ->appends(request()->query());
         $jenis_lpt_options = $this->getJenisLptOptions();
         return view('lpt.index', compact('lpt', 'jenis_lpt_options'));
     }
 
     public function create(Request $request)
     {
+        $sbp = Sbp::orderBy('tanggal_sbp', 'desc')->orderBy('nomor_sbp_int', 'desc')->paginate(10);
+
+        if ($request->ajax()) {
+            return view('lpt.partials.sbp-table', compact('sbp'));
+        }
+
         $jenis = $request->query('jenis');
-        $sbp = Sbp::orderBy('tanggal_sbp', 'desc')->get();
         $jenis_lpt_options = $this->getJenisLptOptions();
 
         return view('lpt.create', compact('sbp', 'jenis', 'jenis_lpt_options'));
@@ -123,10 +129,15 @@ class LptController extends Controller
         return $pdf->stream($filename);
     }
 
-    public function edit(Lpt $lpt)
+    public function edit(Request $request, Lpt $lpt)
     {
+        $sbp = Sbp::orderBy('tanggal_sbp', 'desc')->paginate(10);
+
+        if ($request->ajax()) {
+            return view('lpt.partials.sbp-table', compact('sbp'));
+        }
+
         $lpt->load('photos');
-        $sbp = Sbp::orderBy('tanggal_sbp', 'desc')->get();
         $jenis_lpt_options = $this->getJenisLptOptions();
         return view('lpt.edit', compact('lpt', 'sbp', 'jenis_lpt_options'));
     }

@@ -96,4 +96,9 @@ class Sbp extends Model
     {
         return $this->hasOne(Bast::class);
     }
+
+    public function lpt()
+    {
+        return $this->hasOne(Lpt::class);
+    }
 }

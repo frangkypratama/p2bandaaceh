@@ -17,6 +17,7 @@
                             <th>Tanggal SBP</th>
                             <th>Pelaku</th>
                             <th>Identitas</th>
+                            <th>Jenis Barang</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -34,6 +35,9 @@
                                 </td>
                                 <td>
                                     <div>{{ $sbp->jenis_identitas }} / {{ $sbp->nomor_identitas }}</div>
+                                </td>
+                                <td>
+                                    <div>{{ $sbp->jenis_barang }}</div>
                                 </td>
                                 <td>
                                     <div class="d-flex align-items-center">
@@ -55,7 +59,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="text-center py-4">Belum ada data SBP.</td>
+                                <td colspan="6" class="text-center py-4">Belum ada data SBP.</td>
                             </tr>
                         @endforelse
                     </tbody>

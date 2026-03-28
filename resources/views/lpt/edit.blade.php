@@ -66,7 +66,7 @@
                                 <label for="nomor_sbp_display" class="form-label">Nomor SBP</label>
                                 <div class="input-group">
                                     <input type="text" class="form-control @error('sbp_id') is-invalid @enderror" id="nomor_sbp_display" placeholder="Pilih SBP..." readonly value="{{ optional($lpt->sbp)->nomor_sbp }}">
-                                    <button class="btn btn-outline-primary" type="button" id="pilihSbpBtn">
+                                    <button class="btn btn-outline-primary" type="button" data-coreui-toggle="modal" data-coreui-target="#sbpModal">
                                         <i class="cil-search me-1"></i>Pilih SBP
                                     </button>
                                 </div>
@@ -145,40 +145,8 @@
                     <h5 class="modal-title" id="sbpModalLabel">Pilih SBP</h5>
                     <button type="button" class="btn-close" data-coreui-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover" id="sbpTable">
-                            <thead>
-                                <tr>
-                                    <th>No</th>
-                                    <th>Nomor SBP</th>
-                                    <th>Tanggal SBP</th>
-                                    <th>Nama Pelaku</th>
-                                    <th>Jenis Barang</th>
-                                    <th>Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($sbp as $item)
-                                    <tr>
-                                        <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $item->nomor_sbp }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($item->tanggal_sbp)->format('d-m-Y') }}</td>
-                                        <td>{{ $item->nama_pelaku }}</td>
-                                        <td>{{ $item->jenis_barang }}</td>
-                                        <td>
-                                            <button type="button"
-                                                    class="btn btn-sm btn-primary pilih-sbp-btn"
-                                                    data-id="{{ $item->id }}"
-                                                    data-nomor="{{ $item->nomor_sbp }}">
-                                                Pilih
-                                            </button>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="modal-body" id="sbpModalBody">
+                    @include('lpt.partials.sbp-table')
                 </div>
             </div>
         </div>
@@ -201,25 +169,41 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
-    // =========================================================
-    // SBP Modal Logic
-    // =========================================================
-    const sbpModalEl  = document.getElementById('sbpModal');
-    const pilihSbpBtn = document.getElementById('pilihSbpBtn');
-    const sbpTable    = document.getElementById('sbpTable');
+    const sbpModalBody = document.getElementById('sbpModalBody');
 
-    if (sbpModalEl && pilihSbpBtn && sbpTable) {
-        const sbpModal = new coreui.Modal(sbpModalEl);
-        pilihSbpBtn.addEventListener('click', () => sbpModal.show());
+    // AJAX pagination for SBP modal
+    sbpModalBody.addEventListener('click', function(e) {
+        // Handle SBP selection
+        const selectBtn = e.target.closest('.pilih-sbp-btn');
+        if (selectBtn) {
+            document.getElementById('sbp_id').value = selectBtn.dataset.id;
+            document.getElementById('nomor_sbp_display').value = selectBtn.dataset.nomorSbp;
+            return;
+        }
 
-        sbpTable.addEventListener('click', function (e) {
-            const btn = e.target.closest('.pilih-sbp-btn');
-            if (!btn) return;
-            document.getElementById('sbp_id').value = btn.dataset.id;
-            document.getElementById('nomor_sbp_display').value = btn.dataset.nomor;
-            sbpModal.hide();
-        });
-    }
+        // Handle pagination link click
+        const pageLink = e.target.closest('.pagination a');
+        if (pageLink) {
+            e.preventDefault();
+            const url = pageLink.getAttribute('href');
+
+            sbpModalBody.innerHTML = `<div class="d-flex justify-content-center align-items-center" style="height: 200px;"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>`;
+
+            fetch(url, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.text())
+            .then(html => {
+                sbpModalBody.innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Error fetching SBP page:', error);
+                sbpModalBody.innerHTML = '<p class="text-center text-danger">Gagal memuat data. Silakan coba lagi.</p>';
+            });
+        }
+    });
 
     // =========================================================
     // Photo Upload & Compression Logic
