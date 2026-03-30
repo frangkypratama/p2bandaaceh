@@ -127,7 +127,7 @@
                                                 </div>
                                                 <div class="col-md-3">
                                                     <div class="foto-upload-wrapper">
-                                                        <div class="foto-preview-container">
+                                                        <div class="foto-preview-container" onclick="document.getElementById('foto_barang_{{ $sbp->id }}').click()">
                                                             <img src="" alt="Pratinjau Foto" class="img-fluid rounded d-none">
                                                             <div class="foto-placeholder text-center">
                                                                 <i class="cil-camera" style="font-size: 2rem;"></i>
@@ -137,7 +137,7 @@
                                                         <input type="file" name="foto_barang[{{ $sbp->id }}]" id="foto_barang_{{ $sbp->id }}" class="foto-input" accept="image/*" style="display:none;">
                                                         <div class="foto-actions text-center mt-2">
                                                             <button type="button" class="btn btn-sm btn-light border" onclick="document.getElementById('foto_barang_{{ $sbp->id }}').click()">Pilih</button>
-                                                            <button type="button" class="btn btn-sm btn-light border d-none" onclick="removeImage(this, {{ $sbp->id }})">Hapus</button>
+                                                            <button type="button" class="btn btn-sm btn-light border d-none btn-remove-foto" onclick="removeImage(this, {{ $sbp->id }})">Hapus</button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -187,12 +187,14 @@
                             <th>Nomor SBP</th>
                             <th>Tanggal SBP</th>
                             <th>Nama Pelaku</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody id="sbpTableBody">
-                        <tr><td colspan="4" class="text-center text-muted">Ketik untuk mencari SBP...</td></tr>
+                        <tr><td colspan="5" class="text-center text-muted">Ketik untuk mencari SBP...</td></tr>
                     </tbody>
                 </table>
+                <div id="sbpPagination" class="d-flex justify-content-center mt-3"></div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-coreui-dismiss="modal">Tutup</button>
@@ -224,6 +226,14 @@
     }
     .foto-placeholder {
         color: #6c757d;
+    }
+    .row-dicacah {
+        background-color: #e9ecef !important;
+        color: #6c757d;
+        cursor: not-allowed;
+    }
+    #sbpPagination .pagination {
+        cursor: pointer;
     }
 </style>
 @endpush
@@ -257,7 +267,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ─── Image resize & preview ───────────────────────────────────────────────
-    // Batas dimensi sesuai lebar card col-md-3 (≈ 300 px)
     const MAX_DIM = 300;
 
     function resizeAndPreview(file, wrapper, sbpId) {
@@ -269,7 +278,6 @@ document.addEventListener('DOMContentLoaded', function () {
         reader.onload = function (e) {
             const img = new Image();
             img.onload = function () {
-                // Hitung dimensi proporsional agar tidak melebihi MAX_DIM
                 let w = img.width;
                 let h = img.height;
                 if (w > MAX_DIM || h > MAX_DIM) {
@@ -287,13 +295,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 canvas.height = h;
                 canvas.getContext('2d').drawImage(img, 0, 0, w, h);
 
-                // Tampilkan preview dari canvas (sudah kecil)
                 preview.src = canvas.toDataURL('image/jpeg', 0.85);
                 preview.classList.remove('d-none');
                 placeholder.classList.add('d-none');
                 if (removeBtn) removeBtn.classList.remove('d-none');
 
-                // Ganti file di input agar yang dikirim ke server juga sudah kecil
                 canvas.toBlob(function (blob) {
                     const dt   = new DataTransfer();
                     const nama = (file.name.replace(/\.[^.]+$/, '') || 'foto') + '.jpg';
@@ -336,6 +342,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const sbpLoadingIndicator = document.getElementById('sbpLoadingIndicator');
     const sbpErrorAlert     = document.getElementById('sbpErrorAlert');
     const sbpModalElement   = document.getElementById('sbpModal');
+    const sbpPaginationContainer = document.getElementById('sbpPagination');
 
     function showModalError(msg) {
         sbpErrorAlert.textContent = msg;
@@ -346,25 +353,32 @@ document.addEventListener('DOMContentLoaded', function () {
         sbpErrorAlert.classList.add('d-none');
     }
 
-    function fetchSbp(searchTerm) {
+    function fetchSbp(url) {
         sbpLoadingIndicator.classList.remove('d-none');
         hideModalError();
-        fetch(`{{ route('pencacahan.searchSbp') }}?search=${encodeURIComponent(searchTerm)}`)
+        fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
             .then(response => {
                 if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
                 return response.json();
             })
             .then(data => {
                 sbpTableBody.innerHTML = '';
-                if (data.length === 0) {
-                    sbpTableBody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Data tidak ditemukan.</td></tr>';
+                if (data.data.length === 0) {
+                    sbpTableBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Data tidak ditemukan.</td></tr>';
+                    sbpPaginationContainer.innerHTML = ''; // Clear pagination
                     return;
                 }
-                data.forEach(sbp => {
+                data.data.forEach(sbp => {
                     const tr = document.createElement('tr');
+                    const isDicacah = sbp.pencacahan_exists;
+
+                    if(isDicacah) {
+                        tr.classList.add('row-dicacah');
+                    }
+
                     tr.innerHTML = `
                         <td class="text-center">
-                            <input class="form-check-input sbp-checkbox" type="checkbox" value="${sbp.id}" ${selectedSbpIds.has(sbp.id.toString()) ? 'checked' : ''}
+                            <input class="form-check-input sbp-checkbox" type="checkbox" value="${sbp.id}" ${selectedSbpIds.has(sbp.id.toString()) ? 'checked' : ''} ${isDicacah ? 'disabled' : ''}
                             data-nomor-sbp="${sbp.nomor_sbp || ''}"
                             data-tanggal-sbp="${sbp.tanggal_sbp || ''}"
                             data-nama-pelaku="${sbp.nama_pelaku || ''}"
@@ -376,14 +390,20 @@ document.addEventListener('DOMContentLoaded', function () {
                         <td>${sbp.nomor_sbp || '-'}</td>
                         <td>${formatTanggal(sbp.tanggal_sbp)}</td>
                         <td>${sbp.nama_pelaku || '-'}</td>
+                        <td>
+                            <span class="badge bg-${isDicacah ? 'success' : 'secondary'}">${isDicacah ? 'Sudah dicacah' : 'Belum dicacah'}</span>
+                        </td>
                     `;
                     sbpTableBody.appendChild(tr);
                 });
+
+                sbpPaginationContainer.innerHTML = data.pagination;
             })
             .catch(error => {
                 console.error('Fetch SBP error:', error);
                 showModalError('Gagal memuat data SBP. Silakan coba lagi.');
-                sbpTableBody.innerHTML = '<tr><td colspan="4" class="text-center text-danger">Terjadi kesalahan.</td></tr>';
+                sbpTableBody.innerHTML = '<tr><td colspan="5" class="text-center text-danger">Terjadi kesalahan.</td></tr>';
+                sbpPaginationContainer.innerHTML = ''; // Clear pagination on error
             })
             .finally(() => sbpLoadingIndicator.classList.add('d-none'));
     }
@@ -391,13 +411,29 @@ document.addEventListener('DOMContentLoaded', function () {
     let searchTimeout;
     sbpSearchInput.addEventListener('keyup', () => {
         clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => fetchSbp(sbpSearchInput.value.trim()), 300);
+        searchTimeout = setTimeout(() => {
+            const searchTerm = sbpSearchInput.value.trim();
+            const url = `{{ route('pencacahan.searchSbp') }}?search=${encodeURIComponent(searchTerm)}`;
+            fetchSbp(url);
+        }, 300);
+    });
+
+    sbpPaginationContainer.addEventListener('click', function(event) {
+        event.preventDefault();
+        const link = event.target.closest('a.page-link');
+        if (link) {
+            const url = link.getAttribute('href');
+            if (url) {
+                fetchSbp(url);
+            }
+        }
     });
 
     sbpModalElement.addEventListener('show.coreui.modal', () => {
         sbpSearchInput.value = '';
         hideModalError();
-        fetchSbp('');
+        const url = `{{ route('pencacahan.searchSbp') }}?search=`;
+        fetchSbp(url);
     });
 
     const selectSbpButton      = document.getElementById('selectSbpButton');

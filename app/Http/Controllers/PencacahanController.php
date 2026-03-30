@@ -31,7 +31,6 @@ class PencacahanController extends Controller
 
     public function store(Request $request)
     {
-        // Validasi tetap sama
         $validator = Validator::make($request->all(), [
             'no_ba_cacah' => 'required|string|max:255|unique:pencacahan,no_ba_cacah',
             'tanggal_ba_cacah' => 'required|date',
@@ -39,7 +38,6 @@ class PencacahanController extends Controller
             'id_petugas_1' => 'required|exists:petugas,id',
             'id_petugas_2' => 'nullable|exists:petugas,id|different:id_petugas_1',
             'id_sbp' => 'required|array|min:1',
-
         ]);
 
         if ($validator->fails()) {
@@ -54,7 +52,6 @@ class PencacahanController extends Controller
         return redirect()->route('pencacahan.index')->with('success', 'Data Pencacahan berhasil ditambahkan.');
     }
 
-    // ... (Fungsi show, edit, update, destroy tetap sama seperti sebelumnya)
     public function show(string $id)
     {
         $pencacahan = Pencacahan::with('petugas1', 'petugas2', 'sbp')->findOrFail($id);
@@ -103,37 +100,27 @@ class PencacahanController extends Controller
         return redirect()->route('pencacahan.index')->with('success', 'Data Pencacahan berhasil dihapus.');
     }
 
-    /**
-     * Fungsi ini menangani pencarian SBP via AJAX.
-     * Fungsi ini sekarang mengembalikan JSON yang bersih dan terstruktur.
-     */
     public function searchSbp(Request $request)
     {
         $search = $request->input('search', '');
-        $query = Sbp::latest();
+        $query = Sbp::withExists('pencacahan')->latest();
 
         if (!empty($search)) {
             $query->where(function ($q) use ($search) {
                 $q->where('nomor_sbp', 'like', "%{$search}%")
-                  ->orWhere('nama_pelaku', 'like', "%{$search}%"); // Mencari di kolom nama_pelaku
+                  ->orWhere('nama_pelaku', 'like', "%{$search}%");
             });
         }
 
-        $sbp_results = $query->limit(20)->get();
+        $sbp = $query->paginate(5)->appends(['search' => $search]);
 
-        // Format ulang hasil untuk kebutuhan AJAX di frontend
-        $formatted_sbp = $sbp_results->map(function($item) {
-            return [
-                'id' => $item->id,
-                'nomor_sbp' => $item->nomor_sbp,
-                'tanggal_sbp' => $item->tanggal_sbp->toDateString(), // Kirim sebagai string Y-m-d
-                'nama_pelaku' => $item->nama_pelaku, // Langsung dari kolom
-                'jenis_barang' => $item->jenis_barang,
-                'kondisi_barang' => $item->kondisi_barang,
-                'uraian_barang' => $item->uraian_barang,
-            ];
-        });
+        if ($request->ajax()) {
+            return response()->json([
+                'data' => $sbp->items(),
+                'pagination' => $sbp->links()->toHtml(),
+            ]);
+        }
 
-        return response()->json($formatted_sbp);
+        return response()->json($sbp);
     }
 }
