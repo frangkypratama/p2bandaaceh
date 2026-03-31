@@ -12,6 +12,7 @@ use App\Http\Controllers\SuratPerintahController;
 use App\Http\Controllers\BariksaBadanController;
 use App\Http\Controllers\PemeriksaanBadanController;
 use App\Http\Controllers\LptController;
+use App\Http\Controllers\RefJenisBarangController;
 
 /*
 |--------------------------------------------------------------------------
@@ -102,6 +103,13 @@ Route::resource('ref-pelanggaran', RefPelanggaranController::class);
 |--------------------------------------------------------------------------
 */
 Route::resource('ref-satuan', RefSatuanController::class);
+
+/*
+|--------------------------------------------------------------------------
+| Referensi Jenis Barang
+|--------------------------------------------------------------------------
+*/
+Route::resource('ref-jenis-barang', RefJenisBarangController::class);
 
 /*
 |--------------------------------------------------------------------------

@@ -77,6 +77,13 @@
             </li>
 
             <li class="nav-item">
+                <a class="nav-link" href="{{ route('ref-jenis-barang.index') }}">
+                    <i class="nav-icon cil-layers"></i>
+                    Referensi Jenis Barang
+                </a>
+            </li>
+
+            <li class="nav-item">
                 <a class="nav-link" href="{{ route('surat-perintah.index') }}">
                     <i class="nav-icon cil-description"></i>
                     Referensi Surat Perintah

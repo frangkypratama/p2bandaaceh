@@ -12,8 +12,11 @@
                         <div class="input-group">
                             <span class="input-group-text"><i class="cil-layers"></i></span>
                             <select id="jenis_barang" class="form-select" name="jenis_barang" required>
-                                @foreach($komoditi as $item)
-                                    <option value="{{ $item }}" {{ old('jenis_barang') == $item ? 'selected' : '' }}>{{ $item }}</option>
+                                <option selected disabled value="">Silahkan Pilih Jenis Barang...</option>
+                                @foreach($jenisBarang as $barang)
+                                    <option value="{{ $barang->nama_barang }}" {{ old('jenis_barang') == $barang->nama_barang ? 'selected' : '' }}>
+                                        {{ $barang->nomor_urut }}. {{ $barang->nama_barang }}
+                                    </option>
                                 @endforeach
                             </select>
                         </div>
