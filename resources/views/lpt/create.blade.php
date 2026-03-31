@@ -80,7 +80,7 @@
                                     <input type="text"
                                            class="form-control @error('sbp_id') is-invalid @enderror"
                                            id="nomor_sbp_display" placeholder="Pilih SBP..." readonly>
-                                    <button class="btn btn-outline-primary" type="button" id="pilihSbpBtn">
+                                    <button class="btn btn-outline-primary" type="button" data-coreui-toggle="modal" data-coreui-target="#sbpModal">
                                         <i class="cil-search me-1"></i>Pilih SBP
                                     </button>
                                 </div>
@@ -89,6 +89,7 @@
                                     <div class="invalid-feedback d-block">{{ $message }}</div>
                                 @enderror
                             </div>
+
 
                             {{-- Photo Upload --}}
                             <div class="form-group mb-3">
@@ -103,7 +104,8 @@
                                             <i class="cil-cloud-upload"></i>
                                         </div>
                                         <div class="upload-dropzone-title">Klik atau seret foto ke sini</div>
-                                        <div class="upload-dropzone-sub">JPG, PNG — otomatis dikompres maks. 2 MB per file</div>
+                                        {{-- [UBAH 1] teks hint --}}
+                                        <div class="upload-dropzone-sub">JPG, PNG — otomatis dikompres maks. 300 KB per file</div>
                                     </div>
                                 </div>
                                 @error('photos.*')
@@ -162,43 +164,13 @@
                     <h5 class="modal-title" id="sbpModalLabel">Pilih SBP</h5>
                     <button type="button" class="btn-close" data-coreui-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover" id="sbp">
-                            <thead>
-                                <tr>
-                                    <th>No</th>
-                                    <th>Nomor SBP</th>
-                                    <th>Tanggal SBP</th>
-                                    <th>Nama Pelaku</th>
-                                    <th>Jenis Barang</th>
-                                    <th>Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($sbp as $item)
-                                    <tr>
-                                        <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $item->nomor_sbp }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($item->tanggal_sbp)->format('d-m-Y') }}</td>
-                                        <td>{{ $item->nama_pelaku }}</td>
-                                        <td>{{ $item->jenis_barang }}</td>
-                                        <td>
-                                            <button type="button"
-                                                    class="btn btn-sm btn-primary pilih-sbp-btn"
-                                                    data-id="{{ $item->id }}">
-                                                Pilih
-                                            </button>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="modal-body" id="sbpModalBody">
+                    @include('lpt.partials.sbp-table')
                 </div>
             </div>
         </div>
     </div>
+
 
     {{-- Lightbox --}}
     <div class="upload-lightbox" id="lightbox">
@@ -208,7 +180,6 @@
 @endsection
 
 @push('scripts')
-{{-- Upload Component Styles (inside scripts stack for CoreUI compatibility) --}}
 <style>
     /* ===== Dropzone ===== */
     .upload-dropzone {
@@ -477,44 +448,50 @@
     }
 </style>
 
-{{-- Library --}}
 <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
 
-{{-- Upload Component Script --}}
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    const sbpModalBody = document.getElementById('sbpModalBody');
 
-    // =========================================================
-    // SBP Modal
-    // =========================================================
-    const sbpModalEl = document.getElementById('sbpModal');
-    const pilihSbpBtn = document.getElementById('pilihSbpBtn');
+    // AJAX pagination for SBP modal
+    sbpModalBody.addEventListener('click', function(e) {
+        // Handle SBP selection
+        const selectBtn = e.target.closest('.pilih-sbp-btn');
+        if (selectBtn) {
+            document.getElementById('sbp_id').value = selectBtn.dataset.id;
+            document.getElementById('nomor_sbp_display').value = selectBtn.dataset.nomorSbp;
+            // No need to prevent default or stop propagation, modal dismissal is handled by data attributes
+            return;
+        }
 
-    if (sbpModalEl && pilihSbpBtn) {
-        const sbpModal = new coreui.Modal(sbpModalEl);
-        pilihSbpBtn.addEventListener('click', () => sbpModal.show());
-    }
+        // Handle pagination link click
+        const pageLink = e.target.closest('.pagination a');
+        if (pageLink) {
+            e.preventDefault(); // Prevent full page reload
+            const url = pageLink.getAttribute('href');
 
-    document.getElementById('sbp')?.addEventListener('click', function (e) {
-        const btn = e.target.closest('.pilih-sbp-btn');
-        if (!btn) return;
+            // Add a loading indicator
+            sbpModalBody.innerHTML = `<div class="d-flex justify-content-center align-items-center" style="height: 200px;"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>`;
 
-        fetch(`/api/sbp/${btn.dataset.id}`)
-            .then(r => { if (!r.ok) throw new Error('Network error'); return r.json(); })
-            .then(data => {
-                document.getElementById('sbp_id').value = data.id;
-                const display = document.getElementById('nomor_sbp_display');
-                display.value = data.nomor_sbp;
-                display.dataset.tanggalSbp  = data.tanggal_sbp;
-                display.dataset.namaPelaku   = data.nama_pelaku;
-                display.dataset.jenisBarang  = data.jenis_barang;
-                coreui.Modal.getInstance(sbpModalEl)?.hide();
+            fetch(url, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
             })
-            .catch(() => alert('Gagal mengambil data SBP.'));
+            .then(response => response.text())
+            .then(html => {
+                sbpModalBody.innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Error fetching SBP page:', error);
+                sbpModalBody.innerHTML = '<p class="text-center text-danger">Gagal memuat data. Silakan coba lagi.</p>';
+            });
+        }
     });
 
     // =========================================================
-    // Photo Upload & Compression
+    // Photo Upload & Compression (Existing Script)
     // =========================================================
     const photoInput      = document.getElementById('photos');
     const dropzone        = document.getElementById('uploadDropzone');
@@ -533,13 +510,12 @@ document.addEventListener('DOMContentLoaded', function () {
     let processedFiles = [];
 
     const COMPRESS_OPTIONS = {
-        maxSizeMB: 2,
-        maxWidthOrHeight: 1920,
+        maxSizeMB: 0.3,
+        maxWidthOrHeight: 1200,
         useWebWorker: true,
         fileType: 'image/jpeg',
     };
 
-    // Drag visual feedback
     ['dragenter', 'dragover'].forEach(evt =>
         dropzone.addEventListener(evt, () => dropzone.classList.add('dragover'))
     );
@@ -547,7 +523,6 @@ document.addEventListener('DOMContentLoaded', function () {
         dropzone.addEventListener(evt, () => dropzone.classList.remove('dragover'))
     );
 
-    // Helpers
     function formatSize(bytes) {
         if (bytes < 1024)        return bytes + ' B';
         if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
@@ -596,7 +571,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Remove single photo
     photoGrid.addEventListener('click', function (e) {
         const delBtn = e.target.closest('.upload-tile-del');
         if (delBtn) {
@@ -606,7 +580,6 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!processedFiles.length) return;
         }
 
-        // Lightbox
         const img = e.target.closest('.upload-tile-img');
         if (img) {
             lightboxImg.src = img.dataset.url;
@@ -614,14 +587,12 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Clear all
     clearAllBtn.addEventListener('click', function () {
         processedFiles = [];
         syncInputFiles();
         updatePreview();
     });
 
-    // Lightbox
     lightboxClose.addEventListener('click', () => lightbox.classList.remove('active'));
     lightbox.addEventListener('click', (e) => {
         if (e.target === lightbox) lightbox.classList.remove('active');
@@ -630,7 +601,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if (e.key === 'Escape') lightbox.classList.remove('active');
     });
 
-    // Main compression handler
     photoInput.addEventListener('change', async function () {
         const files = Array.from(this.files);
         if (!files.length) return;
@@ -646,7 +616,7 @@ document.addEventListener('DOMContentLoaded', function () {
             progressFill.style.width = Math.round((i / files.length) * 100) + '%';
             progressText.textContent = 'Memproses ' + (i + 1) + ' dari ' + files.length + ': ' + file.name;
 
-            if (file.size > 2 * 1024 * 1024) {
+            if (file.size > 300 * 1024) {
                 try {
                     const compressed = await imageCompression(file, COMPRESS_OPTIONS);
                     const newFile = new File([compressed], file.name, {

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Sbp;
 use App\Models\Petugas;
+use App\Models\Lpt;
 use App\Models\Bast;
 use App\Models\RefPelanggaran;
 use App\Models\RefSatuan;
@@ -23,8 +24,11 @@ class SbpController extends Controller
     public function getLastNumber()
     {
         try {
-            // Mengambil nomor_sbp_int tertinggi dari SBP yang tidak di-soft delete
-            $lastSbp = Sbp::orderBy('nomor_sbp_int', 'desc')->first();
+            $currentYear = now()->year;
+
+            $lastSbp = Sbp::whereYear('tanggal_sbp', $currentYear)
+                ->orderBy('nomor_sbp_int', 'desc')
+                ->first();
 
             $nextNumber = $lastSbp ? $lastSbp->nomor_sbp_int + 1 : 1;
 
@@ -59,7 +63,72 @@ class SbpController extends Controller
         $refPelanggaranData = RefPelanggaran::all();
         $refSatuanData = RefSatuan::orderBy('nama_satuan', 'asc')->get();
         $suratPerintahData = SuratPerintah::orderBy('tanggal_prin', 'desc')->get();
-        return view('input-sbp', compact('petugasData', 'refPelanggaranData', 'refSatuanData', 'suratPerintahData'));
+        $komoditi = [
+            'Silahkan Pilih Komoditi',
+            '1. Tekstil & Produk Tekstil & Accessories',
+            '2. Ballpress',
+            '3. Daging (Sapi/Ayam/Babi/Bebek)',
+            '4. Beras',
+            '5. Gula',
+            '6. Bawang',
+            '7. Serealia',
+            '8. Sembako Lainya',
+            '9. Handphone, Gadget, Part & Accesories',
+            '10. Elektronik',
+            '11. Biji & Produk Plastik (Kec. Furniture)',
+            '12. Besi, Baja & Produknya (Kec. Furniture)',
+            '13. Kendaraan Darat (Bermotor/Tidak), Part & Accessories',
+            '14. Kendaraan Air (Bermotor/Tidak), Part & Accessories',
+            '15. Kendaraan Udara (Bermotor/Tidak), Part & Accessories',
+            '16. Makanan Dan Minuman (Olahan / Kemasan)',
+            '17. Produk Pertanian & Perkebunan',
+            '18. Logam Mulia Dan Perhiasan',
+            '19. Logam Non Mulia',
+            '20. Senjata Api, Airgun, Airsoftgun & Part',
+            '21. Bahan Peledak & Ammonium Nitrat',
+            '22. Senjata Tajam',
+            '23. Kosmetik',
+            '24. Obat-Obatan',
+            '25. Bahan Kimia',
+            '26. Cites (Flora & Fauna)',
+            '27. Hewan Dan Bagian Tubuh (Non Cites)',
+            '28. Tumbuhan Dan Bagian Tumbuhan (Non Cites)',
+            '29. Benda Cagar Budaya',
+            '30. Produk Melanggar Haki',
+            '31. Kayu & Rotan (Asalan)',
+            '32. Produk Olahan Kayu & Rotan (Kec. Furniture)',
+            '33. Furniture',
+            '34. Pupuk',
+            '35. Racun & Pestisida',
+            '36. Crude Oil (Minyak Mentah), Pelumas & Bbm',
+            '37. Uang Tunai /Bni',
+            '38. Hasil Tembakau',
+            '39. Minuman Mengandung Etil Alkohol',
+            '40. Etil Alkohol',
+            '41. Pita Cukai',
+            '42. Crude Palm Oil (Minyak Sawit)',
+            '43. Produk Turunan Cpo (Kec. Minyak Goreng)',
+            '44. Minerba, Tanah, Pasir & Top Soil',
+            '45. Barang Pornografi & Sextoys',
+            '46. Alat Berat, Part & Acc',
+            '47. Mesin (Bakar, Listrik, Pompa, Dll)',
+            '48. Produk Perikanan & Kelautan',
+            '49. Produk Mainan & Alat Olah Raga',
+            '50. Alat Kesehatan',
+            '51. Perkakas (Mekanik/Elektrik)',
+            '52. Peralatan Dapur Dan Kamar Mandi',
+            '53. Bibit Dan Benih Tanaman',
+            '54. Alas Kaki',
+            '55. Tas',
+            '56. Limbah & Scrap',
+            '57. HVG (High Value Goods)',
+            '58. Persyaratan Perizinan',
+            '59. Pembukuan, Pencatatan, & Administrasi Lainnya',
+            '60. Barang Lainnya',
+            '61. Barang & Bahan Radioaktif',
+
+        ];
+        return view('input-sbp', compact('petugasData', 'refPelanggaranData', 'refSatuanData', 'suratPerintahData', 'komoditi'));
     }
 
     /**
@@ -132,6 +201,7 @@ class SbpController extends Controller
 
             // ===== SIMPAN SBP =====
             $dataToStore = $validated;
+            $dataToStore['jenis_barang'] = preg_replace('/^\d+\.\s*/', '', $validated['jenis_barang']);
             $dataToStore['kota_penindakan'] = $validated['kota'];
             $dataToStore['kecamatan_penindakan'] = $validated['kecamatan'];
             $dataToStore['nama_petugas_1'] = $petugas1->nama;
@@ -182,9 +252,73 @@ class SbpController extends Controller
         $petugasData = Petugas::orderBy('nama', 'asc')->get();
         $refPelanggaranData = RefPelanggaran::all();
         $refSatuanData = RefSatuan::orderBy('nama_satuan', 'asc')->get();
-        $suratPerintahData = SuratPerintah::orderBy('tanggal_prin', 'desc')->get(); // <-- DATA DITAMBAHKAN DI SINI
+        $suratPerintahData = SuratPerintah::orderBy('tanggal_prin', 'desc')->get();
+        $komoditi = [
+            'Silahkan Pilih Komoditi',
+            '1. Tekstil & Produk Tekstil & Accessories',
+            '2. Ballpress',
+            '3. Daging (Sapi/Ayam/Babi/Bebek)',
+            '4. Beras',
+            '5. Gula',
+            '6. Bawang',
+            '7. Serealia',
+            '8. Sembako Lainya',
+            '9. Handphone, Gadget, Part & Accesories',
+            '10. Elektronik',
+            '11. Biji & Produk Plastik (Kec. Furniture)',
+            '12. Besi, Baja & Produknya (Kec. Furniture)',
+            '13. Kendaraan Darat (Bermotor/Tidak), Part & Accessories',
+            '14. Kendaraan Air (Bermotor/Tidak), Part & Accessories',
+            '15. Kendaraan Udara (Bermotor/Tidak), Part & Accessories',
+            '16. Makanan Dan Minuman (Olahan / Kemasan)',
+            '17. Produk Pertanian & Perkebunan',
+            '18. Logam Mulia Dan Perhiasan',
+            '19. Logam Non Mulia',
+            '20. Senjata Api, Airgun, Airsoftgun & Part',
+            '21. Bahan Peledak & Ammonium Nitrat',
+            '22. Senjata Tajam',
+            '23. Kosmetik',
+            '24. Obat-Obatan',
+            '25. Bahan Kimia',
+            '26. Cites (Flora & Fauna)',
+            '27. Hewan Dan Bagian Tubuh (Non Cites)',
+            '28. Tumbuhan Dan Bagian Tumbuhan (Non Cites)',
+            '29. Benda Cagar Budaya',
+            '30. Produk Melanggar Haki',
+            '31. Kayu & Rotan (Asalan)',
+            '32. Produk Olahan Kayu & Rotan (Kec. Furniture)',
+            '33. Furniture',
+            '34. Pupuk',
+            '35. Racun & Pestisida',
+            '36. Crude Oil (Minyak Mentah), Pelumas & Bbm',
+            '37. Uang Tunai /Bni',
+            '38. Hasil Tembakau',
+            '39. Minuman Mengandung Etil Alkohol',
+            '40. Etil Alkohol',
+            '41. Pita Cukai',
+            '42. Crude Palm Oil (Minyak Sawit)',
+            '43. Produk Turunan Cpo (Kec. Minyak Goreng)',
+            '44. Minerba, Tanah, Pasir & Top Soil',
+            '45. Barang Pornografi & Sextoys',
+            '46. Alat Berat, Part & Acc',
+            '47. Mesin (Bakar, Listrik, Pompa, Dll)',
+            '48. Produk Perikanan & Kelautan',
+            '49. Produk Mainan & Alat Olah Raga',
+            '50. Alat Kesehatan',
+            '51. Perkakas (Mekanik/Elektrik)',
+            '52. Peralatan Dapur Dan Kamar Mandi',
+            '53. Bibit Dan Benih Tanaman',
+            '54. Alas Kaki',
+            '55. Tas',
+            '56. Limbah & Scrap',
+            '57. HVG (High Value Goods)',
+            '58. Persyaratan Perizinan',
+            '59. Pembukuan, Pencatatan, & Administrasi Lainnya',
+            '60. Barang Lainnya',
+            '61. Barang & Bahan Radioaktif',
+        ];
 
-        return view('edit-sbp', compact('sbp', 'petugasData', 'refPelanggaranData', 'refSatuanData', 'suratPerintahData')); // <-- DAN DI SINI
+        return view('edit-sbp', compact('sbp', 'petugasData', 'refPelanggaranData', 'refSatuanData', 'suratPerintahData', 'komoditi'));
     }
 
     /**
@@ -254,6 +388,7 @@ class SbpController extends Controller
             $petugas2 = Petugas::find($validated['id_petugas_2']);
 
             $dataToUpdate = $validated;
+            $dataToUpdate['jenis_barang'] = preg_replace('/^\d+\.\s*/', '', $validated['jenis_barang']);
             $dataToUpdate['kota_penindakan'] = $validated['kota'];
             $dataToUpdate['kecamatan_penindakan'] = $validated['kecamatan'];
             $dataToUpdate['nama_petugas_1'] = $petugas1->nama;
@@ -409,7 +544,7 @@ class SbpController extends Controller
      */
     public function generatePdfChecklist($id)
     {
-        $sbp = Sbp::with(['petugas1', 'petugas2', 'bast'])->findOrFail($id);
+        $sbp = Sbp::with(['petugas1', 'petugas2', 'bast', 'lpt'])->findOrFail($id);
 
         $checklistItems = [
             ['nama' => 'SURAT TUGAS (INTELIJEN)', 'status' => false],
@@ -433,7 +568,7 @@ class SbpController extends Controller
             ['nama' => 'BERITA ACARA PENOLAKAN TANDA TANGAN SURAT BUKTI PENINDAKAN', 'status' => false],
             ['nama' => 'BERITA ACARA PENOLAKAN TANDA TANGAN TERHADAP BERITA ACARA PENOLAKAN TANDA TANGAN SURAT BUKTI PENINDAKAN', 'status' => false],
             ['nama' => 'PENINDAKAN SEGERA', 'status' => false],
-            ['nama' => 'LAPORAN PELAKSANAAN TUGAS (LPT)*', 'status' => false],
+            ['nama' => 'LAPORAN PELAKSANAAN TUGAS (LPT)*', 'status' => !empty($sbp->lpt)],
             ['nama' => 'LAPORAN DAN PENENTUAN HASIL PENINDAKAN (LPHP)*', 'status' => false],
             ['nama' => 'LAPORAN PELANGGARAN (LP)*', 'status' => false],
             ['nama' => 'BERITA ACARA SERAH TERIMA (BAST KE PENYIDIKAN)', 'status' => !empty($sbp->bast)],

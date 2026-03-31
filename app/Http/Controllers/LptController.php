@@ -15,10 +15,6 @@ use Illuminate\Support\Facades\Storage;
 
 class LptController extends Controller
 {
-    /**
-     * Define the source of truth for LPT types and their properties.
-     * @return array
-     */
     private function getJenisLptOptions(): array
     {
         return [
@@ -26,43 +22,64 @@ class LptController extends Controller
                 'name' => 'LPT Penindakan Bandara',
                 'icon' => 'cil-flight-takeoff',
             ],
-
         ];
     }
 
-    /**
-     * Display a listing of the resource.
-     */
+    private function compressPhoto(string $storedPath): void
+    {
+        $threshold = 300 * 1024;
+        $fullPath  = storage_path('app/public/' . $storedPath);
+
+        if (filesize($fullPath) > $threshold) {
+            $image = Image::make($fullPath);
+
+            $image->resize(1200, null, function ($constraint) {
+                $constraint->aspectRatio();
+                $constraint->upsize();
+            });
+            $image->save($fullPath, 70);
+
+            if (filesize($fullPath) > $threshold) {
+                $image->resize(800, null, function ($constraint) {
+                    $constraint->aspectRatio();
+                    $constraint->upsize();
+                });
+                $image->save($fullPath, 65);
+            }
+        }
+    }
+
     public function index()
     {
         $lpt = Lpt::with('sbp')
                     ->orderBy('tanggal_lpt', 'desc')
                     ->orderBy('nomor_lpt_int', 'desc')
-                    ->paginate(10);
+                    ->paginate(10)
+                    ->appends(request()->query());
         $jenis_lpt_options = $this->getJenisLptOptions();
         return view('lpt.index', compact('lpt', 'jenis_lpt_options'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create(Request $request)
     {
+        $sbp = Sbp::orderBy('tanggal_sbp', 'desc')->orderBy('nomor_sbp_int', 'desc')->paginate(10);
+
+        if ($request->ajax()) {
+            return view('lpt.partials.sbp-table', compact('sbp'));
+        }
+
         $jenis = $request->query('jenis');
-        $sbp = Sbp::orderBy('tanggal_sbp', 'desc')->get();
         $jenis_lpt_options = $this->getJenisLptOptions();
 
         return view('lpt.create', compact('sbp', 'jenis', 'jenis_lpt_options'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $jenis_lpt_options = $this->getJenisLptOptions();
         $validatedData = $request->validate([
-            'nomor_lpt_int' => 'required|integer|unique:lpt,deleted_at,NULL,id,deleted_at,NULL',
+            // [PERBAIKAN] rule unique yang benar
+            'nomor_lpt_int' => ['required', 'integer', Rule::unique('lpt', 'nomor_lpt_int')->whereNull('deleted_at')],
             'tanggal_lpt'   => 'required|date',
             'jenis_lpt'     => 'required|in:' . implode(',', array_keys($jenis_lpt_options)),
             'sbp_id'        => 'required|exists:sbp,id',
@@ -83,34 +100,22 @@ class LptController extends Controller
                 if ($request->hasFile('photos')) {
                     foreach ($request->file('photos') as $photo) {
                         $path = $photo->store('lpt-photos', 'public');
-
-                        if ($photo->getSize() > 2000000) { // 2MB
-                            $image = Image::make(storage_path('app/public/' . $path));
-                            $image->resize(1200, null, function ($constraint) {
-                                $constraint->aspectRatio();
-                                $constraint->upsize();
-                            });
-                            $image->save(null, 75);
-                        }
-
+                        $this->compressPhoto($path);
                         LptPhoto::create([
-                            'lpt_id' => $lpt->id,
-                            'file_path' => $path
+                            'lpt_id'    => $lpt->id,
+                            'file_path' => $path,
                         ]);
                     }
                 }
             });
 
-            return redirect()->route('lpt.index')->with('success','LPT berhasil dibuat.');
+            return redirect()->route('lpt.index')->with('success', 'LPT berhasil dibuat.');
         } catch (\Exception $e) {
             logger()->error('Failed to create LPT: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Gagal membuat LPT. Silakan coba lagi.')->withInput();
         }
     }
 
-    /**
-     * Display a preview of the specified resource.
-     */
     public function preview($id)
     {
         $lpt = Lpt::with(['sbp', 'photos'])->findOrFail($id);
@@ -124,33 +129,46 @@ class LptController extends Controller
         return $pdf->stream($filename);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Lpt $lpt)
+    public function edit(Request $request, Lpt $lpt)
     {
-        $sbp = Sbp::orderBy('tanggal_sbp', 'desc')->get();
+        $sbp = Sbp::orderBy('tanggal_sbp', 'desc')->paginate(10);
+
+        if ($request->ajax()) {
+            return view('lpt.partials.sbp-table', compact('sbp'));
+        }
+
+        $lpt->load('photos');
         $jenis_lpt_options = $this->getJenisLptOptions();
         return view('lpt.edit', compact('lpt', 'sbp', 'jenis_lpt_options'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Lpt $lpt)
     {
         $jenis_lpt_options = $this->getJenisLptOptions();
         $validatedData = $request->validate([
-            'nomor_lpt_int' => ['required', 'integer', Rule::unique('lpt')->ignore($lpt->id)],
-            'tanggal_lpt'   => 'required|date',
-            'jenis_lpt'     => 'required|in:' . implode(',', array_keys($jenis_lpt_options)),
-            'sbp_id'        => 'required|exists:sbp,id',
-            'photos'        => 'nullable|array',
-            'photos.*'      => 'image|mimes:jpeg,png,jpg,gif,svg|max:10240',
+            'nomor_lpt_int'    => ['required', 'integer', Rule::unique('lpt', 'nomor_lpt_int')->ignore($lpt->id)->whereNull('deleted_at')],
+            'tanggal_lpt'      => 'required|date',
+            'jenis_lpt'        => 'required|in:' . implode(',', array_keys($jenis_lpt_options)),
+            'sbp_id'           => 'required|exists:sbp,id',
+            'photos'           => 'nullable|array',
+            'photos.*'         => 'image|mimes:jpeg,png,jpg,gif,svg|max:10240',
+            'deleted_photos'   => 'nullable|array',
+            'deleted_photos.*' => 'integer|exists:lpt_photos,id'
         ]);
 
         try {
             DB::transaction(function () use ($request, $lpt, $validatedData) {
+                if (!empty($validatedData['deleted_photos'])) {
+                    $photosToDelete = LptPhoto::where('lpt_id', $lpt->id)
+                                              ->whereIn('id', $validatedData['deleted_photos'])
+                                              ->get();
+
+                    foreach ($photosToDelete as $photo) {
+                        Storage::disk('public')->delete($photo->file_path);
+                        $photo->delete();
+                    }
+                }
+
                 $lptData = $validatedData;
 
                 $year = Carbon::parse($validatedData['tanggal_lpt'])->year;
@@ -162,16 +180,7 @@ class LptController extends Controller
                 if ($request->hasFile('photos')) {
                     foreach ($request->file('photos') as $photo) {
                         $path = $photo->store('lpt-photos', 'public');
-
-                        if ($photo->getSize() > 2000000) { // 2MB
-                            $image = Image::make(storage_path('app/public/' . $path));
-                            $image->resize(1200, null, function ($constraint) {
-                                $constraint->aspectRatio();
-                                $constraint->upsize();
-                            });
-                            $image->save(null, 75);
-                        }
-
+                        $this->compressPhoto($path);
                         LptPhoto::create([
                             'lpt_id'    => $lpt->id,
                             'file_path' => $path,
@@ -179,17 +188,14 @@ class LptController extends Controller
                     }
                 }
             });
-            
-            return redirect()->route('lpt.index')->with('success','LPT berhasil diupdate');
+
+            return redirect()->route('lpt.index')->with('success', 'LPT berhasil diupdate');
         } catch (\Exception $e) {
             logger()->error('LPT gagal diupdate: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Gagal memperbarui LPT. Silakan coba lagi.')->withInput();
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Lpt $lpt)
     {
         foreach ($lpt->photos as $photo) {
@@ -199,7 +205,6 @@ class LptController extends Controller
 
         $lpt->delete();
 
-        return redirect()->route('lpt.index')
-                        ->with('success','LPT berhasil dihapus');
+        return redirect()->route('lpt.index')->with('success', 'LPT berhasil dihapus');
     }
 }

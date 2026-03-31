@@ -27,7 +27,7 @@
                         <div class="input-group">
                             <span class="input-group-text"><i class="cil-calendar"></i></span>
                             <input id="tanggal_sbp" type="date" class="form-control" name="tanggal_sbp" 
-                                   value="{{ old('tanggal_sbp', isset($sbp) ? $sbp->tanggal_sbp->format('Y-m-d') : '') }}" required>
+                                   value="{{ old('tanggal_sbp', (isset($sbp) && $sbp->tanggal_sbp) ? $sbp->tanggal_sbp->format('Y-m-d') : '') }}" required>
                         </div>
                     </div>
                 </div>
@@ -52,7 +52,7 @@
                         <div class="input-group">
                             <span class="input-group-text"><i class="cil-calendar"></i></span>
                             <input id="tanggal_surat_perintah" type="date" class="form-control" name="tanggal_surat_perintah" 
-                                   value="{{ old('tanggal_surat_perintah', isset($sbp) ? $sbp->tanggal_surat_perintah->format('Y-m-d') : '') }}" required readonly>
+                                   value="{{ old('tanggal_surat_perintah', (isset($sbp) && $sbp->tanggal_surat_perintah) ? $sbp->tanggal_surat_perintah->format('Y-m-d') : '') }}" required readonly>
                         </div>
                     </div>
                 </div>
@@ -102,7 +102,8 @@
                 }
             });
             
-            if (nomorSuratInput.value) {
+            // Modifikasi di sini: hanya autofill jika field tanggal kosong
+            if (nomorSuratInput.value && !tanggalSuratInput.value) {
                 autofillTanggal();
             }
 

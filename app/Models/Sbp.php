@@ -102,4 +102,9 @@ class Sbp extends Model
     {
         return $this->belongsToMany(Pencacahan::class, 'pencacahan_sbp', 'sbp_id', 'pencacahan_id');
     }
+
+    public function lpt()
+    {
+        return $this->hasOne(Lpt::class);
+    }
 }
