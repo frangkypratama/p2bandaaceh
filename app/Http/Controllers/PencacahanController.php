@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Pencacahan;
 use App\Models\Petugas;
+use App\Models\RefSatuan;
 use App\Models\Sbp;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -20,13 +21,14 @@ class PencacahanController extends Controller
     public function create()
     {
         $petugasData = Petugas::all();
+        $satuanData = RefSatuan::all();
         $oldSbpData = [];
 
         if (old('id_sbp')) {
             $oldSbpData = Sbp::whereIn('id', old('id_sbp'))->get();
         }
 
-        return view('pencacahan.create', compact('petugasData', 'oldSbpData'));
+        return view('pencacahan.create', compact('petugasData', 'oldSbpData', 'satuanData'));
     }
 
     public function store(Request $request)

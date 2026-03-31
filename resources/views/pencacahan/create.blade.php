@@ -8,18 +8,19 @@
         </div>
         <div class="card-body">
             @if ($errors->any())
-                <div class="alert alert-danger">
-                    <ul class="mb-0">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
+            <div class="alert alert-danger">
+                <ul class="mb-0">
+                    @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
             @endif
 
             <form action="{{ route('pencacahan.store') }}" method="POST" id="createPencacahanForm" enctype="multipart/form-data">
                 @csrf
 
+                {{-- Penomoran --}}
                 <h5 class="mb-3">Penomoran</h5>
                 <div class="row">
                     <div class="col-md-6">
@@ -27,13 +28,7 @@
                             <label for="no_ba_cacah_nomor" class="form-label">Nomor BA Cacah</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="cil-notes"></i></span>
-                                <input type="text"
-                                    class="form-control"
-                                    id="no_ba_cacah_nomor"
-                                    placeholder="Masukkan hanya angka"
-                                    required
-                                    oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                                    value="{{ old('no_ba_cacah_nomor', old('no_ba_cacah') ? preg_replace('/[^0-9]/', '', explode('/', old('no_ba_cacah'))[0]) : '') }}">
+                                <input type="text" class="form-control" id="no_ba_cacah_nomor" placeholder="Masukkan hanya angka" required oninput="this.value = this.value.replace(/[^0-9]/g, '')" value="{{ old('no_ba_cacah_nomor', old('no_ba_cacah') ? preg_replace('/[^0-9]/', '', explode('/', old('no_ba_cacah'))[0]) : '') }}">
                             </div>
                             <input type="hidden" name="no_ba_cacah" id="no_ba_cacah" value="{{ old('no_ba_cacah') }}">
                         </div>
@@ -50,6 +45,7 @@
                 </div>
 
                 <hr>
+                {{-- Detail Cacah --}}
                 <h5 class="mb-3">Detail Cacah</h5>
                 <div class="row">
                     <div class="col-md-6">
@@ -64,6 +60,7 @@
                 </div>
 
                 <hr>
+                {{-- Petugas --}}
                 <h5 class="mb-3">Petugas</h5>
                 <div class="row">
                     <div class="col-md-6">
@@ -74,7 +71,7 @@
                                 <select id="id_petugas_1" class="form-select" name="id_petugas_1" required>
                                     <option value="" selected disabled>Pilih Petugas 1</option>
                                     @foreach($petugasData as $petugas)
-                                        <option value="{{ $petugas->id }}" {{ old('id_petugas_1') == $petugas->id ? 'selected' : '' }}>{{ $petugas->nama }}</option>
+                                    <option value="{{ $petugas->id }}" {{ old('id_petugas_1') == $petugas->id ? 'selected' : '' }}>{{ $petugas->nama }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -88,7 +85,7 @@
                                 <select id="id_petugas_2" class="form-select" name="id_petugas_2">
                                     <option value="">Pilih Petugas 2</option>
                                     @foreach($petugasData as $petugas)
-                                        <option value="{{ $petugas->id }}" {{ old('id_petugas_2') == $petugas->id ? 'selected' : '' }}>{{ $petugas->nama }}</option>
+                                    <option value="{{ $petugas->id }}" {{ old('id_petugas_2') == $petugas->id ? 'selected' : '' }}>{{ $petugas->nama }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -97,6 +94,7 @@
                 </div>
 
                 <hr>
+                {{-- Dokumen SBP Terkait --}}
                 <h5 class="mb-3">Dokumen Terkait</h5>
                 <div class="mb-3">
                     <label class="form-label">Dokumen SBP Terkait</label><br>
@@ -104,55 +102,53 @@
                         <i class="cil-file-plus me-2"></i> Tambah SBP
                     </button>
 
-                    <div id="selectedSbpContainer" class="mt-3 row g-3">
-                        @if(old('id_sbp') && isset($oldSbpData))
-                            @foreach($oldSbpData as $sbp)
-                                <div class="col-12" id="selected-sbp-{{ $sbp->id }}">
-                                    <div class="card shadow-sm">
-                                        <div class="card-body">
-                                            <div class="row g-3 align-items-center">
-                                                <div class="col-md-8">
-                                                    <h5 class="card-title text-primary mb-1">{{ $sbp->nomor_sbp }}</h5>
-                                                    <p class="mb-2 text-muted small"><i class="cil-calendar me-2"></i>{{ \Carbon\Carbon::parse($sbp->tanggal_sbp)->translatedFormat('l, d F Y') }}</p>
-                                                    <p class="mb-2"><strong>Pelaku:</strong> {{ $sbp->nama_pelaku ?? '-' }}</p>
-                                                    <div class="row">
-                                                        <div class="col-sm-6">
-                                                            <p class="mb-1"><strong>Jenis:</strong> {{ $sbp->jenis_barang ?? '-' }}</p>
-                                                            <p class="mb-1"><strong>Kondisi:</strong> {{ $sbp->kondisi_barang ?? '-' }}</p>
-                                                        </div>
-                                                        <div class="col-sm-6">
-                                                            <p class="mb-1"><strong>Uraian:</strong><br>{{ $sbp->uraian_barang ?? '-' }}</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <div class="foto-upload-wrapper">
-                                                        <div class="foto-preview-container" onclick="document.getElementById('foto_barang_{{ $sbp->id }}').click()">
-                                                            <img src="" alt="Pratinjau Foto" class="img-fluid rounded d-none">
-                                                            <div class="foto-placeholder text-center">
-                                                                <i class="cil-camera" style="font-size: 2rem;"></i>
-                                                                <p class="mb-0 small">Unggah Foto</p>
-                                                            </div>
-                                                        </div>
-                                                        <input type="file" name="foto_barang[{{ $sbp->id }}]" id="foto_barang_{{ $sbp->id }}" class="foto-input" accept="image/*" style="display:none;">
-                                                        <div class="foto-actions text-center mt-2">
-                                                            <button type="button" class="btn btn-sm btn-light border" onclick="document.getElementById('foto_barang_{{ $sbp->id }}').click()">Pilih</button>
-                                                            <button type="button" class="btn btn-sm btn-light border d-none btn-remove-foto" onclick="removeImage(this, {{ $sbp->id }})">Hapus</button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-1 d-flex justify-content-center">
-                                                     <button type="button" class="btn btn-link text-danger p-0 btn-hapus-sbp" data-sbp-id="{{ $sbp->id }}" aria-label="Hapus"><i class="cil-trash" style="font-size: 1.5rem;"></i></button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <input type="hidden" name="id_sbp[]" id="hidden-input-{{ $sbp->id }}" value="{{ $sbp->id }}">
+                    <div class="table-responsive mt-3">
+                        <table class="table table-bordered table-striped table-hover" id="selectedSbpTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Nomor SBP</th>
+                                    <th>Tanggal SBP</th>
+                                    <th class="text-center">Status Detail</th>
+                                    <th class="text-center">Status Foto</th>
+                                    <th class="text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="selectedSbpTableBody">
+                                @if(old('id_sbp') && isset($oldSbpData))
+                                    @foreach($oldSbpData as $sbp)
+                                    <tr id="selected-row-{{ $sbp->id }}">
+                                        <td>{{ $sbp->nomor_sbp }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($sbp->tanggal_sbp)->translatedFormat('d F Y') }}</td>
+                                        <td class="text-center"><span class="badge bg-secondary" id="status-detail-{{$sbp->id}}">Belum Diisi</span></td>
+                                        <td class="text-center"><span class="badge bg-secondary" id="status-foto-{{$sbp->id}}">Belum Diunggah</span></td>
+                                        <td class="text-center">
+                                            <button type="button" class="btn btn-info btn-sm text-white btn-detail-sbp" 
+                                                data-sbp-id="{{ $sbp->id }}" 
+                                                data-nomor-sbp="{{ $sbp->nomor_sbp }}" 
+                                                data-tanggal-sbp="{{ $sbp->tanggal_sbp }}" 
+                                                data-jenis-barang="{{ $sbp->jenis_barang ?? '' }}" 
+                                                data-uraian-barang="{{ $sbp->uraian_barang ?? '' }}">
+                                                <i class="cil-search me-1"></i> Detail
+                                            </button>
+                                            <button type="button" class="btn btn-danger btn-sm text-white btn-hapus-sbp" data-sbp-id="{{ $sbp->id }}">
+                                                <i class="cil-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                @endif
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="hiddenSbpInputs">
+                        @if(old('id_sbp'))
+                            @foreach(old('id_sbp') as $sbpId)
+                                <input type="hidden" name="id_sbp[]" id="hidden-input-{{ $sbpId }}" value="{{ $sbpId }}">
+                                <input type="hidden" name="detail_barang_json[{{$sbpId}}]" id="hidden-barang-json-{{$sbpId}}" value='{{ old("detail_barang_json.$sbpId") }}'>
                             @endforeach
                         @endif
                     </div>
-                    <div id="hiddenSbpInputs"></div>
+                    <div id="hiddenFileInputs" style="display:none;"></div>
                 </div>
 
                 <div class="card-footer text-end bg-light">
@@ -164,101 +160,31 @@
     </div>
 </div>
 
-<!-- Modal SBP -->
-<div class="modal fade" id="sbpModal" tabindex="-1" aria-labelledby="sbpModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="sbpModalLabel">Pilih Dokumen SBP</h5>
-                <button type="button" class="btn-close" data-coreui-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-3">
-                    <input type="text" id="sbpSearchInput" class="form-control" placeholder="Cari berdasarkan Nomor SBP atau Nama Pelaku...">
-                </div>
-                <div id="sbpLoadingIndicator" class="text-center py-3 d-none">
-                    <div class="spinner-border text-primary" role="status"></div><span class="ms-2">Memuat...</span>
-                </div>
-                <div id="sbpErrorAlert" class="alert alert-danger d-none"></div>
-                <table class="table table-bordered table-hover">
-                    <thead class="table-light">
-                        <tr>
-                            <th class="text-center"><i class="cil-check-alt"></i></th>
-                            <th>Nomor SBP</th>
-                            <th>Tanggal SBP</th>
-                            <th>Nama Pelaku</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="sbpTableBody">
-                        <tr><td colspan="5" class="text-center text-muted">Ketik untuk mencari SBP...</td></tr>
-                    </tbody>
-                </table>
-                <div id="sbpPagination" class="d-flex justify-content-center mt-3"></div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-coreui-dismiss="modal">Tutup</button>
-                <button type="button" class="btn btn-primary" id="selectSbpButton">Pilih</button>
-            </div>
-        </div>
-    </div>
-</div>
+@include('pencacahan.partials._modal_sbp_selection')
+@include('pencacahan.partials._modal_sbp_detail')
+
 @endsection
 
 @push('styles')
 <style>
-    .foto-upload-wrapper {
-        border: 1px solid #ced4da;
-        border-radius: .375rem;
-        padding: 1rem;
-        background-color: #f8f9fa;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-    }
-    .foto-preview-container {
-        flex-grow: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-    }
-    .foto-placeholder {
-        color: #6c757d;
-    }
-    .row-dicacah {
-        background-color: #e9ecef !important;
-        color: #6c757d;
-        cursor: not-allowed;
-    }
-    #sbpPagination .pagination {
-        cursor: pointer;
-    }
+    .foto-upload-wrapper { border: 2px dashed #ced4da; border-radius: .375rem; padding: 1.5rem; background-color: #f8f9fa; min-height: 200px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    #foto_preview_modal { max-height: 250px; object-fit: contain; }
+    .row-dicacah { background-color: #e9ecef !important; color: #6c757d; cursor: not-allowed; }
+    #sbpPagination .pagination { cursor: pointer; }
+    #selectedSbpTable .btn-sm { padding: 0.2rem 0.5rem; font-size: 0.8rem; }
+    .form-control-plaintext { padding-top: 0; padding-bottom: 0; }
 </style>
 @endpush
 
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-
-    const oldSbpIds = @json(old('id_sbp', []));
-    const selectedSbpIds = new Set(oldSbpIds.map(id => id.toString()));
-
-    const form = document.getElementById('createPencacahanForm');
-    const tglInput = document.getElementById('tanggal_ba_cacah');
-    const noBaCacahNomor = document.getElementById('no_ba_cacah_nomor');
-    const noBaCacahHidden = document.getElementById('no_ba_cacah');
-
-    form.addEventListener('submit', function () {
-        const nomor = noBaCacahNomor.value.trim();
-        if (nomor && tglInput.value) {
-            const year = new Date(tglInput.value).getFullYear();
-            noBaCacahHidden.value = `BA-${nomor}/CACAH/KBC.010202/${year}`;
-        } else {
-            noBaCacahHidden.value = '';
-        }
-    });
+    // --- Main Form and Modal Logic ---
+    const sbpModalElement = document.getElementById('sbpModal');
+    const detailSbpModalElement = document.getElementById('detailSbpModal');
+    const detailSbpModal = new coreui.Modal(detailSbpModalElement);
+    const selectedSbpIds = new Set(@json(old('id_sbp', [])).map(id => id.toString()));
+    const satuanOptions = @json($satuanData);
 
     function formatTanggal(raw) {
         if (!raw) return '-';
@@ -266,272 +192,303 @@ document.addEventListener('DOMContentLoaded', function () {
         return isNaN(d.getTime()) ? '-' : d.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
     }
 
-    // ─── Image resize & preview ───────────────────────────────────────────────
-    const MAX_DIM = 300;
-
-    function resizeAndPreview(file, wrapper, sbpId) {
-        const preview     = wrapper.querySelector('img');
-        const placeholder = wrapper.querySelector('.foto-placeholder');
-        const removeBtn   = wrapper.querySelector('.btn-remove-foto');
-
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            const img = new Image();
-            img.onload = function () {
-                let w = img.width;
-                let h = img.height;
-                if (w > MAX_DIM || h > MAX_DIM) {
-                    if (w > h) {
-                        h = Math.round(h * MAX_DIM / w);
-                        w = MAX_DIM;
-                    } else {
-                        w = Math.round(w * MAX_DIM / h);
-                        h = MAX_DIM;
-                    }
-                }
-
-                const canvas = document.createElement('canvas');
-                canvas.width  = w;
-                canvas.height = h;
-                canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-
-                preview.src = canvas.toDataURL('image/jpeg', 0.85);
-                preview.classList.remove('d-none');
-                placeholder.classList.add('d-none');
-                if (removeBtn) removeBtn.classList.remove('d-none');
-
-                canvas.toBlob(function (blob) {
-                    const dt   = new DataTransfer();
-                    const nama = (file.name.replace(/\.[^.]+$/, '') || 'foto') + '.jpg';
-                    dt.items.add(new File([blob], nama, { type: 'image/jpeg' }));
-                    const fileInput = document.getElementById('foto_barang_' + sbpId);
-                    if (fileInput) fileInput.files = dt.files;
-                }, 'image/jpeg', 0.85);
-            };
-            img.src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-    }
-
-    function attachFotoListener(fileInput) {
-        if (!fileInput) return;
-        fileInput.addEventListener('change', function () {
-            if (!this.files || !this.files[0]) return;
-            const sbpId  = this.id.replace('foto_barang_', '');
-            const wrapper = this.closest('.foto-upload-wrapper');
-            resizeAndPreview(this.files[0], wrapper, sbpId);
-        });
-    }
-
-    window.removeImage = function (button, sbpId) {
-        const wrapper     = button.closest('.foto-upload-wrapper');
-        const preview     = wrapper.querySelector('img');
-        const placeholder = wrapper.querySelector('.foto-placeholder');
-        const fileInput   = document.getElementById('foto_barang_' + sbpId);
-
-        if (fileInput) fileInput.value = '';
-        preview.src = '';
-        preview.classList.add('d-none');
-        placeholder.classList.remove('d-none');
-        button.classList.add('d-none');
-    };
-    // ─────────────────────────────────────────────────────────────────────────
-
-    const sbpSearchInput    = document.getElementById('sbpSearchInput');
-    const sbpTableBody      = document.getElementById('sbpTableBody');
-    const sbpLoadingIndicator = document.getElementById('sbpLoadingIndicator');
-    const sbpErrorAlert     = document.getElementById('sbpErrorAlert');
-    const sbpModalElement   = document.getElementById('sbpModal');
-    const sbpPaginationContainer = document.getElementById('sbpPagination');
-
-    function showModalError(msg) {
-        sbpErrorAlert.textContent = msg;
-        sbpErrorAlert.classList.remove('d-none');
-    }
-
-    function hideModalError() {
-        sbpErrorAlert.classList.add('d-none');
-    }
+    document.getElementById('createPencacahanForm').addEventListener('submit', function () {
+        const nomor = document.getElementById('no_ba_cacah_nomor').value.trim();
+        const tgl = document.getElementById('tanggal_ba_cacah').value;
+        if (nomor && tgl) {
+            const year = new Date(tgl).getFullYear();
+            document.getElementById('no_ba_cacah').value = `BA-${nomor}/CACAH/KBC.010202/${year}`;
+        }
+    });
 
     function fetchSbp(url) {
-        sbpLoadingIndicator.classList.remove('d-none');
-        hideModalError();
+        document.getElementById('sbpLoadingIndicator').classList.remove('d-none');
+        document.getElementById('sbpErrorAlert').classList.add('d-none');
         fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-            .then(response => {
-                if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
-                return response.json();
-            })
+            .then(response => response.ok ? response.json() : Promise.reject('Gagal mengambil data'))
             .then(data => {
-                sbpTableBody.innerHTML = '';
+                const tbody = document.getElementById('sbpTableBody');
+                tbody.innerHTML = '';
                 if (data.data.length === 0) {
-                    sbpTableBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Data tidak ditemukan.</td></tr>';
-                    sbpPaginationContainer.innerHTML = ''; // Clear pagination
-                    return;
+                    tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Data tidak ditemukan.</td></tr>';
+                } else {
+                    data.data.forEach(sbp => {
+                        const tr = document.createElement('tr');
+                        if (sbp.pencacahan_exists) tr.classList.add('row-dicacah');
+                        tr.innerHTML = `
+                            <td class="text-center"><input class="form-check-input sbp-checkbox" type="checkbox" value="${sbp.id}" ${selectedSbpIds.has(sbp.id.toString()) ? 'checked' : ''} ${sbp.pencacahan_exists ? 'disabled' : ''} data-nomor-sbp="${sbp.nomor_sbp || ''}" data-tanggal-sbp="${sbp.tanggal_sbp || ''}" data-jenis-barang="${sbp.jenis_barang || ''}" data-uraian-barang="${sbp.uraian_barang || ''}"></td>
+                            <td>${sbp.nomor_sbp || '-'}</td>
+                            <td>${formatTanggal(sbp.tanggal_sbp)}</td>
+                            <td><span class="badge bg-${sbp.pencacahan_exists ? 'success' : 'secondary'}">${sbp.pencacahan_exists ? 'Sudah dicacah' : 'Belum dicacah'}</span></td>`;
+                        tbody.appendChild(tr);
+                    });
                 }
-                data.data.forEach(sbp => {
-                    const tr = document.createElement('tr');
-                    const isDicacah = sbp.pencacahan_exists;
-
-                    if(isDicacah) {
-                        tr.classList.add('row-dicacah');
-                    }
-
-                    tr.innerHTML = `
-                        <td class="text-center">
-                            <input class="form-check-input sbp-checkbox" type="checkbox" value="${sbp.id}" ${selectedSbpIds.has(sbp.id.toString()) ? 'checked' : ''} ${isDicacah ? 'disabled' : ''}
-                            data-nomor-sbp="${sbp.nomor_sbp || ''}"
-                            data-tanggal-sbp="${sbp.tanggal_sbp || ''}"
-                            data-nama-pelaku="${sbp.nama_pelaku || ''}"
-                            data-jenis-barang="${sbp.jenis_barang || ''}"
-                            data-uraian-barang="${sbp.uraian_barang || ''}"
-                            data-kondisi-barang="${sbp.kondisi_barang || ''}"
-                            >
-                        </td>
-                        <td>${sbp.nomor_sbp || '-'}</td>
-                        <td>${formatTanggal(sbp.tanggal_sbp)}</td>
-                        <td>${sbp.nama_pelaku || '-'}</td>
-                        <td>
-                            <span class="badge bg-${isDicacah ? 'success' : 'secondary'}">${isDicacah ? 'Sudah dicacah' : 'Belum dicacah'}</span>
-                        </td>
-                    `;
-                    sbpTableBody.appendChild(tr);
-                });
-
-                sbpPaginationContainer.innerHTML = data.pagination;
+                document.getElementById('sbpPagination').innerHTML = data.pagination;
             })
-            .catch(error => {
-                console.error('Fetch SBP error:', error);
-                showModalError('Gagal memuat data SBP. Silakan coba lagi.');
-                sbpTableBody.innerHTML = '<tr><td colspan="5" class="text-center text-danger">Terjadi kesalahan.</td></tr>';
-                sbpPaginationContainer.innerHTML = ''; // Clear pagination on error
-            })
-            .finally(() => sbpLoadingIndicator.classList.add('d-none'));
+            .catch(() => document.getElementById('sbpErrorAlert').classList.remove('d-none'))
+            .finally(() => document.getElementById('sbpLoadingIndicator').classList.add('d-none'));
     }
 
     let searchTimeout;
-    sbpSearchInput.addEventListener('keyup', () => {
+    document.getElementById('sbpSearchInput').addEventListener('keyup', (e) => {
         clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => {
-            const searchTerm = sbpSearchInput.value.trim();
-            const url = `{{ route('pencacahan.searchSbp') }}?search=${encodeURIComponent(searchTerm)}`;
-            fetchSbp(url);
-        }, 300);
+        searchTimeout = setTimeout(() => fetchSbp(`{{ route('pencacahan.searchSbp') }}?search=${encodeURIComponent(e.target.value)}`), 300);
     });
 
-    sbpPaginationContainer.addEventListener('click', function(event) {
-        event.preventDefault();
-        const link = event.target.closest('a.page-link');
-        if (link) {
-            const url = link.getAttribute('href');
-            if (url) {
-                fetchSbp(url);
-            }
+    document.getElementById('sbpPagination').addEventListener('click', (e) => {
+        if (e.target.closest('a.page-link')) {
+            e.preventDefault();
+            fetchSbp(e.target.closest('a.page-link').href);
         }
     });
 
-    sbpModalElement.addEventListener('show.coreui.modal', () => {
-        sbpSearchInput.value = '';
-        hideModalError();
-        const url = `{{ route('pencacahan.searchSbp') }}?search=`;
-        fetchSbp(url);
-    });
+    sbpModalElement.addEventListener('show.coreui.modal', () => fetchSbp(`{{ route('pencacahan.searchSbp') }}`));
 
-    const selectSbpButton      = document.getElementById('selectSbpButton');
-    const selectedSbpContainer = document.getElementById('selectedSbpContainer');
-    const hiddenInputsDiv      = document.getElementById('hiddenSbpInputs');
-
-    selectSbpButton.addEventListener('click', () => {
-        const checkboxes = document.querySelectorAll('#sbpTableBody .sbp-checkbox:checked');
-        if (checkboxes.length === 0) {
-            showModalError('Pilih minimal satu SBP terlebih dahulu.');
-            return;
-        }
-        hideModalError();
-        checkboxes.forEach(checkbox => {
-            const sbpId = checkbox.value;
-            if (!selectedSbpIds.has(sbpId)) {
-                addSbpCard(checkbox.dataset, sbpId);
-                selectedSbpIds.add(sbpId);
+    document.getElementById('selectSbpButton').addEventListener('click', () => {
+        document.querySelectorAll('#sbpTableBody .sbp-checkbox:checked').forEach(cb => {
+            if (!selectedSbpIds.has(cb.value)) {
+                addSbpRow(cb.dataset, cb.value);
+                selectedSbpIds.add(cb.value);
             }
         });
-        coreui.Modal.getInstance(sbpModalElement)?.hide();
+        coreui.Modal.getInstance(sbpModalElement).hide();
     });
 
-    function addSbpCard(dataset, sbpId) {
+    function addSbpRow(dataset, sbpId) {
+        const tbody = document.getElementById('selectedSbpTableBody');
+        const tr = document.createElement('tr');
+        tr.id = `selected-row-${sbpId}`;
+        tr.innerHTML = `
+            <td>${dataset.nomorSbp}</td>
+            <td>${formatTanggal(dataset.tanggalSbp)}</td>
+            <td class="text-center"><span class="badge bg-secondary" id="status-detail-${sbpId}">Belum Diisi</span></td>
+            <td class="text-center"><span class="badge bg-secondary" id="status-foto-${sbpId}">Belum Diunggah</span></td>
+            <td class="text-center">
+                <button type="button" class="btn btn-info btn-sm text-white btn-detail-sbp" data-sbp-id="${sbpId}" data-nomor-sbp="${dataset.nomorSbp}" data-tanggal-sbp="${dataset.tanggalSbp}" data-jenis-barang="${dataset.jenisBarang}" data-uraian-barang="${dataset.uraianBarang}"><i class="cil-search me-1"></i> Detail</button>
+                <button type="button" class="btn btn-danger btn-sm text-white btn-hapus-sbp" data-sbp-id="${sbpId}"><i class="cil-trash"></i></button>
+            </td>`;
+        tbody.appendChild(tr);
+        const hiddenInputsDiv = document.getElementById('hiddenSbpInputs');
+        hiddenInputsDiv.insertAdjacentHTML('beforeend', `<input type="hidden" name="id_sbp[]" id="hidden-input-${sbpId}" value="${sbpId}">`);
+        hiddenInputsDiv.insertAdjacentHTML('beforeend', `<input type="hidden" name="detail_barang_json[${sbpId}]" id="hidden-barang-json-${sbpId}">`);
+    }
+
+    document.getElementById('selectedSbpTableBody').addEventListener('click', e => {
+        const sbpId = e.target.closest('[data-sbp-id]')?.dataset.sbpId;
         if (!sbpId) return;
+        if (e.target.closest('.btn-hapus-sbp')) {
+            document.getElementById(`selected-row-${sbpId}`)?.remove();
+            document.getElementById(`hidden-input-${sbpId}`)?.remove();
+            document.getElementById(`hidden-barang-json-${sbpId}`)?.remove();
+            document.getElementById(`foto_barang_${sbpId}`)?.remove();
+            selectedSbpIds.delete(sbpId);
+        } else if (e.target.closest('.btn-detail-sbp')) {
+            const ds = e.target.closest('.btn-detail-sbp').dataset;
+            detailSbpModalElement.dataset.currentSbpId = sbpId;
+            document.getElementById('detail-nomor-sbp').value = ds.nomorSbp;
+            document.getElementById('detail-tanggal-sbp').value = formatTanggal(ds.tanggalSbp);
+            document.getElementById('detail-jenis-barang').value = ds.jenisBarang;
+            document.getElementById('detail-uraian-barang').value = ds.uraianBarang;
 
-        const input = document.createElement('input');
-        input.type  = 'hidden';
-        input.name  = 'id_sbp[]';
-        input.value = sbpId;
-        input.id    = `hidden-input-${sbpId}`;
-        hiddenInputsDiv.appendChild(input);
+            // --- Logic to load repeater data ---
+            const barangContainer = document.getElementById('barangItemsContainer');
+            barangContainer.innerHTML = ''; // Clear previous items
+            const jsonString = document.getElementById(`hidden-barang-json-${sbpId}`).value;
+            if (jsonString) {
+                try {
+                    const barangData = JSON.parse(jsonString);
+                    if (Array.isArray(barangData)) {
+                        barangData.forEach(itemData => addRepeaterItem(itemData));
+                    }
+                } catch (error) { console.error('Error parsing barang JSON:', error); }
+            }
+            updateEmptyMessage();
+            renumberBarang();
 
-        const col = document.createElement('div');
-        col.className = 'col-12';
-        col.id        = `selected-sbp-${sbpId}`;
+            // --- Logic to load photo preview ---
+            const fileInput = document.getElementById(`foto_barang_${sbpId}`);
+            const preview = document.getElementById('foto_preview_modal');
+            const placeholder = document.querySelector('.foto-placeholder-modal');
+            const removeBtn = document.getElementById('btn-remove-foto-modal');
+            if(fileInput && fileInput.files[0]) {
+                preview.src = URL.createObjectURL(fileInput.files[0]);
+                preview.classList.remove('d-none');
+                placeholder.classList.add('d-none');
+                removeBtn.classList.remove('d-none');
+            } else {
+                preview.src = '';
+                preview.classList.add('d-none');
+                placeholder.classList.remove('d-d-none');
+                removeBtn.classList.add('d-none');
+            }
+            detailSbpModal.show();
+        }
+    });
 
-        col.innerHTML = `
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <div class="row g-3 align-items-center">
-                        <div class="col-md-8">
-                            <h5 class="card-title text-primary mb-1">${dataset.nomorSbp}</h5>
-                            <p class="mb-2 text-muted small"><i class="cil-calendar me-2"></i>${formatTanggal(dataset.tanggalSbp)}</p>
-                            <p class="mb-2"><strong>Pelaku:</strong> ${dataset.namaPelaku || '-'}</p>
-                            <div class="row">
-                                <div class="col-sm-6">
-                                    <p class="mb-1"><strong>Jenis:</strong> ${dataset.jenisBarang || '-'}</p>
-                                    <p class="mb-1"><strong>Kondisi:</strong> ${dataset.kondisiBarang || '-'}</p>
-                                </div>
-                                <div class="col-sm-6">
-                                    <p class="mb-1"><strong>Uraian:</strong><br>${dataset.uraianBarang || '-'}</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="foto-upload-wrapper">
-                                <div class="foto-preview-container" onclick="document.getElementById('foto_barang_${sbpId}').click()">
-                                    <img src="" alt="Pratinjau Foto" class="img-fluid rounded d-none">
-                                    <div class="foto-placeholder text-center">
-                                        <i class="cil-camera" style="font-size: 2rem;"></i>
-                                        <p class="mb-0 small">Unggah Foto</p>
-                                    </div>
-                                </div>
-                                <input type="file" name="foto_barang[${sbpId}]" id="foto_barang_${sbpId}" class="foto-input" accept="image/*" style="display:none;">
-                                <div class="foto-actions text-center mt-2">
-                                    <button type="button" class="btn btn-sm btn-light border" onclick="document.getElementById('foto_barang_${sbpId}').click()">Pilih</button>
-                                    <button type="button" class="btn btn-sm btn-light border d-none btn-remove-foto" onclick="removeImage(this, ${sbpId})">Hapus</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-1 d-flex justify-content-center">
-                            <button type="button" class="btn btn-link text-danger p-0 btn-hapus-sbp" data-sbp-id="${sbpId}" aria-label="Hapus"><i class="cil-trash" style="font-size: 1.5rem;"></i></button>
-                        </div>
+    document.getElementById('saveSbpDetailButton').addEventListener('click', () => {
+        const sbpId = detailSbpModalElement.dataset.currentSbpId;
+        
+        // --- Save Repeater Data ---
+        const barangData = getBarangData();
+        document.getElementById(`hidden-barang-json-${sbpId}`).value = JSON.stringify(barangData);
+
+        const statusDetail = document.getElementById(`status-detail-${sbpId}`);
+        if (barangData.length > 0 && barangData.some(d => d.merek || d.jumlah || d.id_satuan)) {
+            statusDetail.textContent = 'Sudah Diisi';
+            statusDetail.className = 'badge bg-success';
+        } else {
+            statusDetail.textContent = 'Belum Diisi';
+            statusDetail.className = 'badge bg-secondary';
+        }
+
+        // --- Save Photo Data ---
+        const modalFileInput = document.getElementById('foto_barang_modal');
+        let fileInput = document.getElementById(`foto_barang_${sbpId}`);
+        if (!fileInput) {
+            fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.name = `foto_barang[${sbpId}]`;
+            fileInput.id = `foto_barang_${sbpId}`;
+            document.getElementById('hiddenFileInputs').appendChild(fileInput);
+        }
+        if (modalFileInput.files.length > 0) {
+            fileInput.files = modalFileInput.files;
+        }
+
+        const statusFoto = document.getElementById(`status-foto-${sbpId}`);
+        statusFoto.textContent = fileInput.files.length > 0 ? 'Siap Diunggah' : 'Belum Diunggah';
+        statusFoto.className = `badge bg-${fileInput.files.length > 0 ? 'success' : 'secondary'}`;
+
+        detailSbpModal.hide();
+    });
+    
+    // Restore state from old input for status badges
+    selectedSbpIds.forEach(sbpId => {
+        const jsonString = document.getElementById(`hidden-barang-json-${sbpId}`)?.value;
+        if(jsonString) {
+            try {
+                const barangData = JSON.parse(jsonString.replace(/'/g, '"')); // Handle single quotes from old()
+                const statusDetail = document.getElementById(`status-detail-${sbpId}`);
+                if(statusDetail && barangData.length > 0 && barangData.some(d => d.merek || d.jumlah || d.id_satuan)) {
+                    statusDetail.textContent = 'Sudah Diisi';
+                    statusDetail.className = 'badge bg-success';
+                }
+            } catch(e) { console.error('Failed to parse old JSON for ' + sbpId, jsonString); }
+        }
+    });
+
+    // --- Repeater Logic (from your script) ---
+    const barangContainer = document.getElementById('barangItemsContainer');
+    const btnTambah = document.getElementById('btnTambahBarang');
+    const emptyMessage = document.getElementById('emptyBarangMessage');
+
+    window.updateEmptyMessage = function() {
+        const items = barangContainer.querySelectorAll('.barang-item');
+        emptyMessage.classList.toggle('d-none', items.length > 0);
+    }
+
+    window.renumberBarang = function() {
+        const items = barangContainer.querySelectorAll('.barang-item');
+        items.forEach((item, index) => {
+            item.querySelector('.barang-number').textContent = `Barang ${index + 1}`;
+        });
+    }
+
+    function buildSatuanOptions() {
+        let opts = '<option value="" selected disabled>Pilih Satuan</option>';
+        satuanOptions.forEach(s => {
+            opts += `<option value="${s.id}">${s.nama_satuan}</option>`;
+        });
+        return opts;
+    }
+
+    function addRepeaterItem(data = {}) {
+        const item = document.createElement('div');
+        item.className = 'barang-item card mb-3 border';
+        item.innerHTML = `
+            <div class="card-header bg-light d-flex justify-content-between align-items-center py-2">
+                <span class="fw-semibold barang-number">Barang</span>
+                <button type="button" class="btn btn-sm btn-outline-danger btn-hapus-barang" title="Hapus barang ini">
+                    <i class="cil-trash"></i>
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">Merek</label>
+                    <input type="text" class="form-control input-merek" placeholder="Contoh: iPhone, Samsung" value="${data.merek || ''}">
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Jumlah</label>
+                        <input type="number" class="form-control input-jumlah" min="1" placeholder="0" value="${data.jumlah || ''}">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Satuan</label>
+                        <select class="form-select input-satuan">
+                            ${buildSatuanOptions()}
+                        </select>
                     </div>
                 </div>
             </div>
         `;
-
-        selectedSbpContainer.appendChild(col);
-        attachFotoListener(col.querySelector('.foto-input'));
+        barangContainer.appendChild(item);
+        item.querySelector('.input-satuan').value = data.id_satuan || ''; // Set value after appending
     }
 
-    // Pasang listener untuk card yang di-render ulang (setelah validasi error)
-    document.querySelectorAll('.foto-input').forEach(attachFotoListener);
+    btnTambah.addEventListener('click', function () {
+        addRepeaterItem();
+        renumberBarang();
+        updateEmptyMessage();
+        barangContainer.lastChild.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
 
-    selectedSbpContainer.addEventListener('click', event => {
-        const btnHapus = event.target.closest('.btn-hapus-sbp[data-sbp-id]');
+    barangContainer.addEventListener('click', function (e) {
+        const btnHapus = e.target.closest('.btn-hapus-barang');
         if (!btnHapus) return;
+        const item = btnHapus.closest('.barang-item');
+        item.remove();
+        renumberBarang();
+        updateEmptyMessage();
+    });
 
-        const sbpId = btnHapus.dataset.sbpId;
-        document.getElementById(`selected-sbp-${sbpId}`)?.remove();
-        document.getElementById(`hidden-input-${sbpId}`)?.remove();
+    window.getBarangData = function () {
+        const items = barangContainer.querySelectorAll('.barang-item');
+        const data = [];
+        items.forEach((item, index) => {
+            data.push({
+                urutan: index + 1,
+                merek: item.querySelector('.input-merek').value.trim(),
+                jumlah: item.querySelector('.input-jumlah').value,
+                id_satuan: item.querySelector('.input-satuan').value,
+            });
+        });
+        return data;
+    };
+    
+    // --- Photo Preview Logic ---
+    document.getElementById('foto-upload-modal-trigger').addEventListener('click', () => document.getElementById('foto_barang_modal').click());
+    
+    document.getElementById('foto_barang_modal').addEventListener('change', function() {
+        const preview = document.getElementById('foto_preview_modal');
+        const placeholder = document.querySelector('.foto-placeholder-modal');
+        const removeBtn = document.getElementById('btn-remove-foto-modal');
+        if (this.files && this.files[0]) {
+            preview.src = URL.createObjectURL(this.files[0]);
+            preview.classList.remove('d-none');
+            placeholder.classList.add('d-none');
+            removeBtn.classList.remove('d-none');
+        } else {
+            preview.src = '';
+            preview.classList.add('d-none');
+            placeholder.classList.remove('d-none');
+            removeBtn.classList.add('d-none');
+        }
+    });
 
-        const checkbox = document.querySelector(`#sbpTableBody .sbp-checkbox[value="${sbpId}"]`);
-        if (checkbox) checkbox.checked = false;
-
-        selectedSbpIds.delete(sbpId);
+    document.getElementById('btn-remove-foto-modal').addEventListener('click', () => {
+        const modalFileInput = document.getElementById('foto_barang_modal');
+        modalFileInput.value = '';
+        modalFileInput.dispatchEvent(new Event('change')); // Trigger change to update UI
     });
 });
 </script>
