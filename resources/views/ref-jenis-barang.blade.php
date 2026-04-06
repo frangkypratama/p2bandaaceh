@@ -1,0 +1,130 @@
+@extends('layouts.app')
+
+@section('title', 'Referensi Jenis Barang')
+
+@section('content')
+<div class="container-lg">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0"><strong>Data Referensi Jenis Barang</strong></h5>
+            {{-- Tombol untuk membuka modal tambah data --}}
+            <button type="button" class="btn btn-primary" data-coreui-toggle="modal" data-coreui-target="#jenisBarangModal" data-url="{{ route('ref-jenis-barang.store') }}">
+                <i class="cil-plus"></i> Tambah Data
+            </button>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th scope="col" class="text-center" style="width: 5%;">No</th>
+                            <th scope="col">Nama Barang</th>
+                            <th scope="col" class="text-center" style="width: 15%;">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($jenisBarang as $barang)
+                            <tr>
+                                <td class="text-center">{{ $barang->nomor_urut }}</td>
+                                <td>{{ $barang->nama_barang }}</td>
+                                <td class="text-center">
+                                    {{-- Tombol untuk membuka modal edit data --}}
+                                    <button type="button" class="btn btn-sm btn-warning text-white" 
+                                            data-coreui-toggle="modal" 
+                                            data-coreui-target="#jenisBarangModal" 
+                                            data-id="{{ $barang->id }}" 
+                                            data-nomor_urut="{{ $barang->nomor_urut }}" 
+                                            data-nama_barang="{{ $barang->nama_barang }}" 
+                                            data-url="{{ route('ref-jenis-barang.update', $barang->id) }}" 
+                                            title="Edit Data">
+                                        <i class="cil-pencil"></i>
+                                    </button>
+                                    {{-- Tombol untuk hapus data --}}
+                                    <button type="button" class="btn btn-sm btn-danger text-white"
+                                            data-coreui-toggle="modal"
+                                            data-coreui-target="#deleteConfirmationModal"
+                                            data-url="{{ route('ref-jenis-barang.destroy', $barang->id) }}"
+                                            title="Hapus Data">
+                                        <i class="cil-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="3" class="text-center">Tidak ada data.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Modal untuk Tambah & Edit Data --}}
+<div class="modal fade" id="jenisBarangModal" tabindex="-1" aria-labelledby="jenisBarangModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="jenisBarangModalLabel">Tambah Data</h5>
+                <button type="button" class="btn-close" data-coreui-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="jenisBarangForm" method="POST" action="">
+                @csrf
+                <div id="method-field"></div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="nomor_urut" class="form-label">Nomor Urut</label>
+                        <input type="number" class="form-control" id="nomor_urut" name="nomor_urut" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="nama_barang" class="form-label">Nama Barang</label>
+                        <input type="text" class="form-control" id="nama_barang" name="nama_barang" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-coreui-dismiss="modal">Tutup</button>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const jenisBarangModal = document.getElementById('jenisBarangModal');
+        jenisBarangModal.addEventListener('show.coreui.modal', function (event) {
+            const button = event.relatedTarget;
+            const url = button.getAttribute('data-url');
+            const id = button.getAttribute('data-id');
+
+            const modalTitle = jenisBarangModal.querySelector('.modal-title');
+            const jenisBarangForm = jenisBarangModal.querySelector('#jenisBarangForm');
+            const methodField = jenisBarangModal.querySelector('#method-field');
+            const nomorUrutInput = jenisBarangModal.querySelector('#nomor_urut');
+            const namaBarangInput = jenisBarangModal.querySelector('#nama_barang');
+
+            jenisBarangForm.setAttribute('action', url);
+
+            if (id) {
+                // Mode Edit
+                const nomorUrut = button.getAttribute('data-nomor_urut');
+                const namaBarang = button.getAttribute('data-nama_barang');
+                
+                modalTitle.textContent = 'Edit Jenis Barang';
+                methodField.innerHTML = '@method("PUT")';
+                nomorUrutInput.value = nomorUrut;
+                namaBarangInput.value = namaBarang;
+            } else {
+                // Mode Tambah
+                modalTitle.textContent = 'Tambah Jenis Barang';
+                methodField.innerHTML = '';
+                jenisBarangForm.reset(); // Mengosongkan form
+            }
+        });
+    });
+</script>
+@endpush

@@ -52,7 +52,7 @@
                         <div class="input-group">
                             <span class="input-group-text"><i class="cil-calendar"></i></span>
                             <input id="tanggal_surat_perintah" type="date" class="form-control" name="tanggal_surat_perintah" 
-                                   value="{{ old('tanggal_surat_perintah', (isset($sbp) && $sbp->tanggal_surat_perintah) ? $sbp->tanggal_surat_perintah->format('Y-m-d') : '') }}" required readonly>
+                                   value="{{ old('tanggal_surat_perintah', (isset($sbp) && $sbp->tanggal_surat_perintah) ? $sbp->tanggal_surat_perintah->format('Y-m-d') : '') }}" required>
                         </div>
                     </div>
                 </div>
@@ -74,7 +74,9 @@
             function autofillTanggal() {
                 const nomorDipilih = nomorSuratInput.value;
                 const dataCocok = suratPerintahData.find(surat => surat.nomor_prin === nomorDipilih);
-                tanggalSuratInput.value = dataCocok ? dataCocok.tanggal_prin : '';
+                if (dataCocok) {
+                    tanggalSuratInput.value = dataCocok.tanggal_prin;
+                }
             }
 
             function enforcePrefix() {
