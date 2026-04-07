@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Pencacahan;
 use App\Models\Petugas;
+use App\Models\RefJenisBarang;
 use App\Models\RefSatuan;
 use App\Models\Sbp;
 use Illuminate\Http\Request;
@@ -22,13 +23,14 @@ class PencacahanController extends Controller
     {
         $petugasData = Petugas::all();
         $satuanData = RefSatuan::all();
+        $jenisBarangData = RefJenisBarang::get();
         $oldSbpData = [];
 
         if (old('id_sbp')) {
             $oldSbpData = Sbp::whereIn('id', old('id_sbp'))->get();
         }
 
-        return view('pencacahan.create', compact('petugasData', 'oldSbpData', 'satuanData'));
+        return view('pencacahan.create', compact('petugasData', 'oldSbpData', 'satuanData', 'jenisBarangData'));
     }
 
     public function store(Request $request)

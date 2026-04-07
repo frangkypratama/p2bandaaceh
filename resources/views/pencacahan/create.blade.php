@@ -173,6 +173,8 @@
     #sbpPagination .pagination { cursor: pointer; }
     #selectedSbpTable .btn-sm { padding: 0.2rem 0.5rem; font-size: 0.8rem; }
     .form-control-plaintext { padding-top: 0; padding-bottom: 0; }
+    .conditional-fields-container { animation: fadeIn 0.5s; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 </style>
 @endpush
 
@@ -185,6 +187,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const detailSbpModal = new coreui.Modal(detailSbpModalElement);
     const selectedSbpIds = new Set(@json(old('id_sbp', [])).map(id => id.toString()));
     const satuanOptions = @json($satuanData);
+    const jenisBarangOptions = @json($jenisBarangData);
 
     function formatTanggal(raw) {
         if (!raw) return '-';
@@ -300,7 +303,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (Array.isArray(barangData)) {
                         barangData.forEach(itemData => addRepeaterItem(itemData));
                     }
-                } catch (error) { console.error('Error parsing barang JSON:', error); }
+                } catch (error) { console.error('Error parsing barang JSON:', error, jsonString); }
             }
             updateEmptyMessage();
             renumberBarang();
@@ -333,7 +336,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById(`hidden-barang-json-${sbpId}`).value = JSON.stringify(barangData);
 
         const statusDetail = document.getElementById(`status-detail-${sbpId}`);
-        if (barangData.length > 0 && barangData.some(d => d.merek || d.jumlah || d.id_satuan)) {
+        if (barangData.length > 0 && barangData.some(d => d.id_jenis_barang)) {
             statusDetail.textContent = 'Sudah Diisi';
             statusDetail.className = 'badge bg-success';
         } else {
@@ -369,7 +372,7 @@ document.addEventListener('DOMContentLoaded', function () {
             try {
                 const barangData = JSON.parse(jsonString.replace(/'/g, '"')); // Handle single quotes from old()
                 const statusDetail = document.getElementById(`status-detail-${sbpId}`);
-                if(statusDetail && barangData.length > 0 && barangData.some(d => d.merek || d.jumlah || d.id_satuan)) {
+                if(statusDetail && barangData.length > 0 && barangData.some(d => d.id_jenis_barang)) {
                     statusDetail.textContent = 'Sudah Diisi';
                     statusDetail.className = 'badge bg-success';
                 }
@@ -377,29 +380,182 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // --- Repeater Logic (from your script) ---
+    // --- Repeater Logic ---
     const barangContainer = document.getElementById('barangItemsContainer');
     const btnTambah = document.getElementById('btnTambahBarang');
     const emptyMessage = document.getElementById('emptyBarangMessage');
 
-    window.updateEmptyMessage = function() {
-        const items = barangContainer.querySelectorAll('.barang-item');
-        emptyMessage.classList.toggle('d-none', items.length > 0);
+    window.updateEmptyMessage = () => {
+        emptyMessage.classList.toggle('d-none', barangContainer.children.length > 1);
     }
 
-    window.renumberBarang = function() {
-        const items = barangContainer.querySelectorAll('.barang-item');
-        items.forEach((item, index) => {
+    window.renumberBarang = () => {
+        barangContainer.querySelectorAll('.barang-item').forEach((item, index) => {
             item.querySelector('.barang-number').textContent = `Barang ${index + 1}`;
         });
     }
 
-    function buildSatuanOptions() {
-        let opts = '<option value="" selected disabled>Pilih Satuan</option>';
+    function buildSatuanOptions(selectedValue = null) {
+        let opts = '<option value="" disabled>Pilih Satuan</option>';
         satuanOptions.forEach(s => {
-            opts += `<option value="${s.id}">${s.nama_satuan}</option>`;
+            const selected = s.id == selectedValue ? 'selected' : '';
+            opts += `<option value="${s.id}" ${selected}>${s.nama_satuan}</option>`;
         });
+        // if no value is pre-selected, the "Pilih Satuan" is selected
+        if (!selectedValue) {
+            opts = opts.replace('disabled', 'selected disabled');
+        }
         return opts;
+    }
+
+    function buildJenisBarangOptions() {
+        return '<option value="" selected disabled>Pilih Jenis Barang</option>' + jenisBarangOptions.map(jb => `<option value="${jb.id}" data-nama="${jb.nama_barang}">${jb.nama_barang}</option>`).join('');
+    }
+
+    function defaultFieldsHTML(data = {}) {
+        return `
+            <div class="mb-3">
+                <label class="form-label">Merek</label>
+                <input type="text" class="form-control" data-field="merek" placeholder="Contoh: Merek Barang" value="${data.merek || ''}">
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Jumlah</label>
+                    <input type="number" class="form-control" data-field="jumlah" min="1" placeholder="0" value="${data.jumlah || ''}">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Satuan</label>
+                    <select class="form-select" data-field="id_satuan">
+                        ${buildSatuanOptions(data.id_satuan)}
+                    </select>
+                </div>
+            </div>
+        `;
+    }
+
+    function getConditionalFieldsHTML(namaBarang, data = {}) {
+        const specialFields = {
+            'Hasil Tembakau': `...`,
+            'Handphone': `...`,
+            'Minuman Mengandung Etil Alkohol': `...`,
+            'Narkotika, Psikotropika, dan Prekursor': `...`
+        };
+        
+        // Using the full HTML content from the previous, correct implementation
+        specialFields['Hasil Tembakau'] = `
+            <div class="mb-3">
+                <label class="form-label">Merek</label>
+                <input type="text" class="form-control" data-field="merek" placeholder="Contoh: Gudang Garam" value="${data.merek || ''}">
+            </div>
+             <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Jumlah Batang/Bks</label>
+                    <input type="number" class="form-control" data-field="jumlah_batang" min="1" placeholder="20" value="${data.jumlah_batang || ''}">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Jumlah Bungkus</label>
+                    <input type="number" class="form-control" data-field="jumlah_bungkus" min="1" placeholder="10" value="${data.jumlah_bungkus || ''}">
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Jenis Rokok</label>
+                <select class="form-select" data-field="jenis_rokok">
+                    <option value="" ${!data.jenis_rokok ? 'selected' : ''}>Pilih Jenis</option>
+                    <option value="SKM" ${data.jenis_rokok === 'SKM' ? 'selected' : ''}>SKM</option>
+                    <option value="SKT" ${data.jenis_rokok === 'SKT' ? 'selected' : ''}>SKT</option>
+                    <option value="Lainnya" ${data.jenis_rokok === 'Lainnya' ? 'selected' : ''}>Lainnya</option>
+                </select>
+            </div>
+        `;
+        specialFields['Handphone'] = `
+            <div class="mb-3">
+                <label class="form-label">Merek</label>
+                <input type="text" class="form-control" data-field="merek" placeholder="Contoh: iPhone, Samsung" value="${data.merek || ''}">
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">IMEI 1</label>
+                    <input type="text" class="form-control" data-field="imei1" placeholder="Masukkan IMEI 1" value="${data.imei1 || ''}">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">IMEI 2 (Opsional)</label>
+                    <input type="text" class="form-control" data-field="imei2" placeholder="Masukkan IMEI 2" value="${data.imei2 || ''}">
+                </div>
+            </div>
+             <div class="mb-3">
+                <label class="form-label">Warna</label>
+                <input type="text" class="form-control" data-field="warna" placeholder="Contoh: Biru, Hitam" value="${data.warna || ''}">
+            </div>
+        `;
+        specialFields['Minuman Mengandung Etil Alkohol'] = `
+            <div class="mb-3">
+                <label class="form-label">Merek</label>
+                <input type="text" class="form-control" data-field="merek" placeholder="Contoh: Johnnie Walker" value="${data.merek || ''}">
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Kadar Alkohol (%)</label>
+                    <input type="number" class="form-control" data-field="kadar_alkohol" step="0.1" min="0" placeholder="40" value="${data.kadar_alkohol || ''}">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Volume (ml)</label>
+                    <input type="number" class="form-control" data-field="volume" min="0" placeholder="750" value="${data.volume || ''}">
+                </div>
+            </div>
+            <div class="row">
+                 <div class="col-md-6 mb-3">
+                    <label class="form-label">Jumlah Botol</label>
+                    <input type="number" class="form-control" data-field="jumlah_botol" min="1" placeholder="12" value="${data.jumlah_botol || ''}">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Jenis MMEA</label>
+                    <select class="form-select" data-field="jenis_mmea">
+                        <option value="" ${!data.jenis_mmea ? 'selected' : ''}>Pilih Jenis</option>
+                        <option value="Bir" ${data.jenis_mmea === 'Bir' ? 'selected' : ''}>Bir</option>
+                        <option value="Anggur" ${data.jenis_mmea === 'Anggur' ? 'selected' : ''}>Anggur</option>
+                        <option value="Spirit" ${data.jenis_mmea === 'Spirit' ? 'selected' : ''}>Spirit</option>
+                        <option value="Lainnya" ${data.jenis_mmea === 'Lainnya' ? 'selected' : ''}>Lainnya</option>
+                    </select>
+                </div>
+            </div>
+        `;
+        specialFields['Narkotika, Psikotropika, dan Prekursor'] = `
+            <div class="mb-3">
+                <label class="form-label">Jenis Zat</label>
+                <select class="form-select" data-field="jenis_zat">
+                    <option value="" ${!data.jenis_zat ? 'selected' : ''}>Pilih Jenis</option>
+                    <option value="Narkotika" ${data.jenis_zat === 'Narkotika' ? 'selected' : ''}>Narkotika</option>
+                    <option value="Psikotropika" ${data.jenis_zat === 'Psikotropika' ? 'selected' : ''}>Psikotropika</option>
+                    <option value="Prekursor" ${data.jenis_zat === 'Prekursor' ? 'selected' : ''}>Prekursor</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Nama Zat</label>
+                <input type="text" class="form-control" data-field="nama_zat" placeholder="Contoh: Metamfetamin, Alprazolam" value="${data.nama_zat || ''}">
+            </div>
+             <div class="mb-3">
+                <label class="form-label">Bentuk Sediaan</label>
+                <input type="text" class="form-control" data-field="bentuk_sediaan" placeholder="Contoh: Kristal, Tablet, Bubuk" value="${data.bentuk_sediaan || ''}">
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Berat (gram)</label>
+                    <input type="number" class="form-control" data-field="berat" step="0.01" min="0" placeholder="10.5" value="${data.berat || ''}">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Jumlah Kemasan/Wadah</label>
+                    <input type="number" class="form-control" data-field="jumlah_kemasan" min="1" placeholder="5" value="${data.jumlah_kemasan || ''}">
+                </div>
+            </div>
+        `;
+
+        if (specialFields[namaBarang]) {
+            return specialFields[namaBarang];
+        }
+        if (!namaBarang) {
+            return '<div class="text-center text-muted p-3">Pilih jenis barang untuk menampilkan detail isian.</div>';
+        }
+        return defaultFieldsHTML(data);
     }
 
     function addRepeaterItem(data = {}) {
@@ -414,53 +570,62 @@ document.addEventListener('DOMContentLoaded', function () {
             </div>
             <div class="card-body">
                 <div class="mb-3">
-                    <label class="form-label">Merek</label>
-                    <input type="text" class="form-control input-merek" placeholder="Contoh: iPhone, Samsung" value="${data.merek || ''}">
+                    <label class="form-label">Jenis Barang</label>
+                    <select class="form-select input-jenis-barang">
+                        ${buildJenisBarangOptions()}
+                    </select>
                 </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Jumlah</label>
-                        <input type="number" class="form-control input-jumlah" min="1" placeholder="0" value="${data.jumlah || ''}">
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Satuan</label>
-                        <select class="form-select input-satuan">
-                            ${buildSatuanOptions()}
-                        </select>
-                    </div>
+                <div class="conditional-fields-container">
+                    ${data.id_jenis_barang ? getConditionalFieldsHTML(jenisBarangOptions.find(j=>j.id == data.id_jenis_barang)?.nama_barang, data) : '<div class="text-center text-muted p-3">Pilih jenis barang untuk menampilkan detail isian.</div>'}
                 </div>
             </div>
         `;
         barangContainer.appendChild(item);
-        item.querySelector('.input-satuan').value = data.id_satuan || ''; // Set value after appending
+        
+        const jenisBarangSelect = item.querySelector('.input-jenis-barang');
+        if (data.id_jenis_barang) {
+            jenisBarangSelect.value = data.id_jenis_barang;
+        }
+
+        jenisBarangSelect.addEventListener('change', (e) => {
+            const selectedOption = e.target.options[e.target.selectedIndex];
+            const namaBarang = selectedOption.dataset.nama;
+            const conditionalContainer = item.querySelector('.conditional-fields-container');
+            conditionalContainer.innerHTML = getConditionalFieldsHTML(namaBarang);
+        });
+
+        updateEmptyMessage();
+        renumberBarang();
     }
 
-    btnTambah.addEventListener('click', function () {
+    btnTambah.addEventListener('click', () => {
         addRepeaterItem();
-        renumberBarang();
-        updateEmptyMessage();
         barangContainer.lastChild.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     });
 
-    barangContainer.addEventListener('click', function (e) {
+    barangContainer.addEventListener('click', (e) => {
         const btnHapus = e.target.closest('.btn-hapus-barang');
         if (!btnHapus) return;
-        const item = btnHapus.closest('.barang-item');
-        item.remove();
+        btnHapus.closest('.barang-item').remove();
         renumberBarang();
         updateEmptyMessage();
     });
 
-    window.getBarangData = function () {
-        const items = barangContainer.querySelectorAll('.barang-item');
+    window.getBarangData = () => {
         const data = [];
-        items.forEach((item, index) => {
-            data.push({
+        barangContainer.querySelectorAll('.barang-item').forEach((item, index) => {
+            const jenisBarangSelect = item.querySelector('.input-jenis-barang');
+            if (!jenisBarangSelect.value) return; // Skip if no type is selected
+
+            const itemData = {
                 urutan: index + 1,
-                merek: item.querySelector('.input-merek').value.trim(),
-                jumlah: item.querySelector('.input-jumlah').value,
-                id_satuan: item.querySelector('.input-satuan').value,
+                id_jenis_barang: jenisBarangSelect.value,
+            };
+
+            item.querySelectorAll('.conditional-fields-container [data-field]').forEach(field => {
+                itemData[field.dataset.field] = field.value.trim();
             });
+            data.push(itemData);
         });
         return data;
     };
