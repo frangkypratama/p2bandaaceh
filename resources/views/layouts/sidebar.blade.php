@@ -108,6 +108,13 @@
                 </a>
             </li>
 
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('ref-tarif-cukai.index') }}">
+                    <i class="nav-icon cil-money"></i>
+                    Referensi Tarif Cukai
+                </a>
+            </li>
+
             <li class="nav-title">
                 <h2 class="fs-6 text-uppercase">System</h2>
             </li>

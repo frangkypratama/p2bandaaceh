@@ -14,6 +14,7 @@ use App\Http\Controllers\PemeriksaanBadanController;
 use App\Http\Controllers\LptController;
 use App\Http\Controllers\PencacahanController;
 use App\Http\Controllers\RefJenisBarangController;
+use App\Http\Controllers\RefTarifCukaiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -111,6 +112,13 @@ Route::resource('ref-satuan', RefSatuanController::class);
 |--------------------------------------------------------------------------
 */
 Route::resource('ref-jenis-barang', RefJenisBarangController::class);
+
+/*
+|--------------------------------------------------------------------------
+| Referensi Tarif Cukai
+|--------------------------------------------------------------------------
+*/
+Route::resource('ref-tarif-cukai', RefTarifCukaiController::class);
 
 /*
 |--------------------------------------------------------------------------
