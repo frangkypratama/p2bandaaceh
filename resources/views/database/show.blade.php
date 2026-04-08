@@ -33,14 +33,13 @@
                         <tbody>
                             @foreach ($data as $row)
                                 <tr>
+                                    @php $truncateCols = ['alasan_penindakan', 'uraian_barang']; @endphp
                                     @foreach ($columns as $column)
-                                        @php $isAlasan = strtolower(str_replace('_', ' ', $column)) === 'alasan penindakan'; @endphp
-
-                                        @if ($isAlasan && Str::length($row->$column) > 60)
-                                            <td class="alasan-cell">
-                                                <div class="alasan-short">{!! nl2br(e(Str::limit($row->$column, 60))) !!}</div>
-                                                <div class="alasan-full d-none">{!! nl2br(e($row->$column)) !!}</div>
-                                                <button class="btn btn-sm btn-link p-0 btn-toggle-alasan">Selengkapnya</button>
+                                        @if (in_array($column, $truncateCols) && Str::length($row->$column) > 60)
+                                            <td class="truncate-cell">
+                                                <div class="truncate-short">{!! nl2br(e(Str::limit($row->$column, 60))) !!}</div>
+                                                <div class="truncate-full d-none">{!! nl2br(e($row->$column)) !!}</div>
+                                                <button class="btn btn-sm btn-link p-0 btn-toggle-truncate">Selengkapnya</button>
                                             </td>
                                         @else
                                             <td>{!! nl2br(e($row->$column)) !!}</td>
@@ -65,27 +64,27 @@
 
 @push('styles')
 <style>
-    .alasan-cell {
+    .truncate-cell {
         min-width: 200px;
         max-width: 300px;
         transition: max-width 0.3s ease;
     }
-    .alasan-cell.expanded {
+    .truncate-cell.expanded {
         max-width: none;
         white-space: pre-wrap;
         word-break: break-word;
     }
-    .alasan-short {
+    .truncate-short {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
     }
-    .alasan-full {
+    .truncate-full {
         white-space: pre-wrap;
         word-break: break-word;
         line-height: 1.6;
     }
-    .btn-toggle-alasan {
+    .btn-toggle-truncate {
         font-size: 0.75rem;
         text-decoration: none;
     }
@@ -95,11 +94,11 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll('.btn-toggle-alasan').forEach(btn => {
+    document.querySelectorAll('.btn-toggle-truncate').forEach(btn => {
         btn.addEventListener('click', function () {
-            const cell = this.closest('.alasan-cell');
-            const short = cell.querySelector('.alasan-short');
-            const full = cell.querySelector('.alasan-full');
+            const cell = this.closest('.truncate-cell');
+            const short = cell.querySelector('.truncate-short');
+            const full = cell.querySelector('.truncate-full');
             const isExpanded = this.classList.contains('active');
 
             if (isExpanded) {
