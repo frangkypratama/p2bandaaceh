@@ -144,7 +144,7 @@
                         @if(old('id_sbp'))
                             @foreach(old('id_sbp') as $sbpId)
                                 <input type="hidden" name="id_sbp[]" id="hidden-input-{{ $sbpId }}" value="{{ $sbpId }}">
-                                <input type="hidden" name="detail_barang_json[{{$sbpId}}]" id="hidden-barang-json-{{$sbpId}}" value='{{ old("detail_barang_json.$sbpId") }}'>
+                                <input type="hidden" name="detail_barang_json[{{$sbpId}}]" id="hidden-barang-json-{{$sbpId}}" value=\'{{ old("detail_barang_json.$sbpId") }}\'>
                             @endforeach
                         @endif
                     </div>
@@ -370,7 +370,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const jsonString = document.getElementById(`hidden-barang-json-${sbpId}`)?.value;
         if(jsonString) {
             try {
-                const barangData = JSON.parse(jsonString.replace(/'/g, '"')); // Handle single quotes from old()
+                const barangData = JSON.parse(jsonString.replace(/\'/g, '"')); // Handle single quotes from old()
                 const statusDetail = document.getElementById(`status-detail-${sbpId}`);
                 if(statusDetail && barangData.length > 0 && barangData.some(d => d.id_jenis_barang)) {
                     statusDetail.textContent = 'Sudah Diisi';
@@ -384,6 +384,24 @@ document.addEventListener('DOMContentLoaded', function () {
     const barangContainer = document.getElementById('barangItemsContainer');
     const btnTambah = document.getElementById('btnTambahBarang');
     const emptyMessage = document.getElementById('emptyBarangMessage');
+
+    // Event delegation for calculating total
+    barangContainer.addEventListener('input', function(e) {
+        if (e.target.matches('[data-field="jumlah_bungkus"]') || e.target.matches('[data-field="jumlah_batang"]')) {
+            const itemCard = e.target.closest('.barang-item');
+            if (itemCard) {
+                const jumlahBungkusInput = itemCard.querySelector('[data-field="jumlah_bungkus"]');
+                const jumlahBatangInput = itemCard.querySelector('[data-field="jumlah_batang"]');
+                const totalBatangInput = itemCard.querySelector('[data-field="total_batang"]');
+
+                if (jumlahBungkusInput && jumlahBatangInput && totalBatangInput) {
+                    const bungkus = parseInt(jumlahBungkusInput.value, 10) || 0;
+                    const batang = parseInt(jumlahBatangInput.value, 10) || 0;
+                    totalBatangInput.value = bungkus * batang;
+                }
+            }
+        }
+    });
 
     window.updateEmptyMessage = () => {
         emptyMessage.classList.toggle('d-none', barangContainer.children.length > 1);
@@ -401,7 +419,6 @@ document.addEventListener('DOMContentLoaded', function () {
             const selected = s.id == selectedValue ? 'selected' : '';
             opts += `<option value="${s.id}" ${selected}>${s.nama_satuan}</option>`;
         });
-        // if no value is pre-selected, the "Pilih Satuan" is selected
         if (!selectedValue) {
             opts = opts.replace('disabled', 'selected disabled');
         }
@@ -409,7 +426,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function buildJenisBarangOptions() {
-        return '<option value="" selected disabled>Pilih Jenis Barang</option>' + jenisBarangOptions.map(jb => `<option value="${jb.id}" data-nama="${jb.nama_barang}">${jb.nama_barang}</option>`).join('');
+        return '<option value="" selected disabled>Pilih Jenis Barang</option>' + jenisBarangOptions.map((jb, index) => `<option value="${jb.id}" data-nama="${jb.nama_barang}">${index + 1}. ${jb.nama_barang}</option>`).join('');
     }
 
     function defaultFieldsHTML(data = {}) {
@@ -434,40 +451,45 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function getConditionalFieldsHTML(namaBarang, data = {}) {
-        const specialFields = {
-            'Hasil Tembakau': `...`,
-            'Handphone': `...`,
-            'Minuman Mengandung Etil Alkohol': `...`,
-            'Narkotika, Psikotropika, dan Prekursor': `...`
-        };
+        const specialFields = {};
         
-        // Using the full HTML content from the previous, correct implementation
         specialFields['Hasil Tembakau'] = `
-            <div class="mb-3">
-                <label class="form-label">Merek</label>
-                <input type="text" class="form-control" data-field="merek" placeholder="Contoh: Gudang Garam" value="${data.merek || ''}">
-            </div>
-             <div class="row">
+            <div class="row">
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">Jumlah Batang/Bks</label>
-                    <input type="number" class="form-control" data-field="jumlah_batang" min="1" placeholder="20" value="${data.jumlah_batang || ''}">
+                    <label class="form-label">Merek</label>
+                    <input type="text" class="form-control" data-field="merek" placeholder="Contoh: Gudang Garam" value="${data.merek || ''}">
                 </div>
                 <div class="col-md-6 mb-3">
+                    <label class="form-label">Jenis Tarif Cukai</label>
+                    <select class="form-select" data-field="jenis_tarif_cukai">
+                        <option value="" ${!data.jenis_tarif_cukai ? 'selected' : ''}>Pilih Jenis</option>
+                        <option value="SPM GOL I" ${data.jenis_tarif_cukai === 'SPM GOL I' ? 'selected' : ''}>SPM GOL I</option>
+                        <option value="SPM GOL II" ${data.jenis_tarif_cukai === 'SPM GOL II' ? 'selected' : ''}>SPM GOL II</option>
+                        <option value="SKM GOL I" ${data.jenis_tarif_cukai === 'SKM GOL I' ? 'selected' : ''}>SKM GOL I</option>
+                        <option value="SKM GOL II" ${data.jenis_tarif_cukai === 'SKM GOL II' ? 'selected' : ''}>SKM GOL II</option>
+                        <option value="SKT GOL I" ${data.jenis_tarif_cukai === 'SKT GOL I' ? 'selected' : ''}>SKT GOL I</option>
+                        <option value="SKT GOL II" ${data.jenis_tarif_cukai === 'SKT GOL II' ? 'selected' : ''}>SKT GOL II</option>
+                        <option value="SKT GOL III" ${data.jenis_tarif_cukai === 'SKT GOL III' ? 'selected' : ''}>SKT GOL III</option>
+                        <option value="CRT" ${data.jenis_tarif_cukai === 'CRT' ? 'selected' : ''}>CRT</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                 <div class="col-md-4 mb-3">
                     <label class="form-label">Jumlah Bungkus</label>
                     <input type="number" class="form-control" data-field="jumlah_bungkus" min="1" placeholder="10" value="${data.jumlah_bungkus || ''}">
                 </div>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Jenis Rokok</label>
-                <select class="form-select" data-field="jenis_rokok">
-                    <option value="" ${!data.jenis_rokok ? 'selected' : ''}>Pilih Jenis</option>
-                    <option value="SKM" ${data.jenis_rokok === 'SKM' ? 'selected' : ''}>SKM</option>
-                    <option value="SKT" ${data.jenis_rokok === 'SKT' ? 'selected' : ''}>SKT</option>
-                    <option value="Lainnya" ${data.jenis_rokok === 'Lainnya' ? 'selected' : ''}>Lainnya</option>
-                </select>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Jumlah Batang/Bks</label>
+                    <input type="number" class="form-control" data-field="jumlah_batang" min="1" placeholder="20" value="${data.jumlah_batang || ''}">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Total Batang</label>
+                    <input type="number" class="form-control" data-field="total_batang" placeholder="0" readonly>
+                </div>
             </div>
         `;
-        specialFields['Handphone'] = `
+        specialFields['Handphone, Gadget, Part & Accesories'] = `
             <div class="mb-3">
                 <label class="form-label">Merek</label>
                 <input type="text" class="form-control" data-field="merek" placeholder="Contoh: iPhone, Samsung" value="${data.merek || ''}">
@@ -548,6 +570,118 @@ document.addEventListener('DOMContentLoaded', function () {
                 </div>
             </div>
         `;
+        specialFields['Kosmetik'] = `
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Nama Produk</label>
+                    <input type="text" class="form-control" data-field="nama_produk" placeholder="Contoh: Facial Wash" value="${data.nama_produk || ''}">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Merek</label>
+                    <input type="text" class="form-control" data-field="merek" placeholder="Contoh: Scarlett" value="${data.merek || ''}">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Nomor Izin Edar (BPOM)</label>
+                    <input type="text" class="form-control" data-field="no_bpom" placeholder="Contoh: NA18211204238" value="${data.no_bpom || ''}">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Tanggal Kadaluwarsa</label>
+                    <input type="date" class="form-control" data-field="tanggal_kadaluwarsa" value="${data.tanggal_kadaluwarsa || ''}">
+                </div>
+            </div>
+        `;
+        specialFields['Obat-Obatan'] = `
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Nama Obat</label>
+                    <input type="text" class="form-control" data-field="nama_obat" placeholder="Contoh: Paracetamol" value="${data.nama_obat || ''}">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Merek</label>
+                    <input type="text" class="form-control" data-field="merek" placeholder="Contoh: Panadol" value="${data.merek || ''}">
+                </div>
+            </div>
+            <div class="row">
+                 <div class="col-md-4 mb-3">
+                    <label class="form-label">Bentuk Sediaan</label>
+                    <select class="form-select" data-field="bentuk_sediaan">
+                        <option value="" ${!data.bentuk_sediaan ? 'selected' : ''}>Pilih Bentuk</option>
+                        <option value="Tablet" ${data.bentuk_sediaan === 'Tablet' ? 'selected' : ''}>Tablet</option>
+                        <option value="Kapsul" ${data.bentuk_sediaan === 'Kapsul' ? 'selected' : ''}>Kapsul</option>
+                        <option value="Sirup" ${data.bentuk_sediaan === 'Sirup' ? 'selected' : ''}>Sirup</option>
+                        <option value="Lainnya" ${data.bentuk_sediaan === 'Lainnya' ? 'selected' : ''}>Lainnya</option>
+                    </select>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Jumlah</label>
+                    <input type="number" class="form-control" data-field="jumlah" min="1" placeholder="10" value="${data.jumlah || ''}">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Satuan</label>
+                    <select class="form-select" data-field="id_satuan">
+                        ${buildSatuanOptions(data.id_satuan)}
+                    </select>
+                </div>
+            </div>
+        `;
+        specialFields['Elektronik'] = `
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Jenis Elektronik</label>
+                    <input type="text" class="form-control" data-field="jenis_elektronik" placeholder="Contoh: TV, Kulkas" value="${data.jenis_elektronik || ''}">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Merek</label>
+                    <input type="text" class="form-control" data-field="merek" placeholder="Contoh: Samsung" value="${data.merek || ''}">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Model/No. Seri</label>
+                    <input type="text" class="form-control" data-field="model_seri" placeholder="Contoh: UA43AU7000KXXD" value="${data.model_seri || ''}">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Ukuran</label>
+                    <input type="text" class="form-control" data-field="ukuran" placeholder="Contoh: 43 inch" value="${data.ukuran || ''}">
+                </div>
+            </div>
+        `;
+        specialFields['Kendaraan Darat (Bermotor/Tidak), Part & Accessories'] = `
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Jenis Kendaraan</label>
+                     <select class="form-select" data-field="jenis_kendaraan">
+                        <option value="" ${!data.jenis_kendaraan ? 'selected' : ''}>Pilih Jenis</option>
+                        <option value="Mobil" ${data.jenis_kendaraan === 'Mobil' ? 'selected' : ''}>Mobil</option>
+                        <option value="Motor" ${data.jenis_kendaraan === 'Motor' ? 'selected' : ''}>Motor</option>
+                        <option value="Sepeda" ${data.jenis_kendaraan === 'Sepeda' ? 'selected' : ''}>Sepeda</option>
+                        <option value="Lainnya" ${data.jenis_kendaraan === 'Lainnya' ? 'selected' : ''}>Lainnya</option>
+                    </select>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Merek</label>
+                    <input type="text" class="form-control" data-field="merek" placeholder="Contoh: Toyota" value="${data.merek || ''}">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Tipe</label>
+                    <input type="text" class="form-control" data-field="tipe" placeholder="Contoh: Avanza" value="${data.tipe || ''}">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Nomor Rangka</label>
+                    <input type="text" class="form-control" data-field="nomor_rangka" placeholder="Masukkan nomor rangka" value="${data.nomor_rangka || ''}">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Nomor Mesin</label>
+                    <input type="text" class="form-control" data-field="nomor_mesin" placeholder="Masukkan nomor mesin" value="${data.nomor_mesin || ''}">
+                </div>
+            </div>
+        `;
+
+
 
         if (specialFields[namaBarang]) {
             return specialFields[namaBarang];
