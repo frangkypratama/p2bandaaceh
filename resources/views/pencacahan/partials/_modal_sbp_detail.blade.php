@@ -1,8 +1,11 @@
 {{-- Modal Detail SBP --}}
 <div class="modal fade" id="detailSbpModal" tabindex="-1" aria-labelledby="detailSbpModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
-            <div class="modal-header"><h5 class="modal-title" id="detailSbpModalLabel">Detail Barang Cacahan</h5><button type="button" class="btn-close" data-coreui-dismiss="modal" aria-label="Close"></button></div>
+            <div class="modal-header">
+                <h5 class="modal-title" id="detailSbpModalLabel">Detail Barang Cacahan</h5>
+                <button type="button" class="btn-close" data-coreui-dismiss="modal" aria-label="Close"></button>
+            </div>
             <div class="modal-body">
                 {{-- Data SBP Read-only --}}
                 <div class="row mb-3">
@@ -23,15 +26,13 @@
                     <label class="form-label">Uraian Barang</label>
                     <textarea id="detail-uraian-barang" class="form-control-plaintext" readonly rows="2"></textarea>
                 </div>
-                
+
                 <hr>
 
                 {{-- Repeater untuk Detail Barang --}}
                 <h6 class="mb-3">Input Detail Barang</h6>
                 <div id="detailSbpForm">
-                    <div id="barangItemsContainer">
-                        {{-- Item barang dinamis akan ditambahkan di sini oleh JavaScript --}}
-                    </div>
+                    <div id="barangItemsContainer"></div>
                     <div id="emptyBarangMessage" class="text-center text-muted border rounded p-3 my-3">
                         <i class="cil-box" style="font-size: 2rem;"></i>
                         <p class="mb-0 mt-2">Belum ada barang yang ditambahkan.</p>
