@@ -6,6 +6,7 @@ use App\Models\Pencacahan;
 use App\Models\Petugas;
 use App\Models\RefJenisBarang;
 use App\Models\RefSatuan;
+use App\Models\RefTarifCukai;
 use App\Models\Sbp;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -24,13 +25,14 @@ class PencacahanController extends Controller
         $petugasData = Petugas::all();
         $satuanData = RefSatuan::all();
         $jenisBarangData = RefJenisBarang::get();
+        $tarifCukaiData = RefTarifCukai::all();
         $oldSbpData = [];
 
         if (old('id_sbp')) {
             $oldSbpData = Sbp::whereIn('id', old('id_sbp'))->get();
         }
 
-        return view('pencacahan.create', compact('petugasData', 'oldSbpData', 'satuanData', 'jenisBarangData'));
+        return view('pencacahan.create', compact('petugasData', 'oldSbpData', 'satuanData', 'jenisBarangData', 'tarifCukaiData'));
     }
 
     public function store(Request $request)
@@ -66,11 +68,14 @@ class PencacahanController extends Controller
     {
         $pencacahan = Pencacahan::with('sbp')->findOrFail($id);
         $petugasData = Petugas::all();
+        $satuanData = RefSatuan::all();
+        $jenisBarangData = RefJenisBarang::get();
+        $tarifCukaiData = RefTarifCukai::all();
         $sbpDataForView = $pencacahan->sbp;
         if (old('id_sbp')) {
              $sbpDataForView = Sbp::whereIn('id', old('id_sbp'))->get();
         }
-        return view('pencacahan.edit', compact('pencacahan', 'petugasData', 'sbpDataForView'));
+        return view('pencacahan.edit', compact('pencacahan', 'petugasData', 'sbpDataForView', 'satuanData', 'jenisBarangData', 'tarifCukaiData'));
     }
 
     public function update(Request $request, string $id)
