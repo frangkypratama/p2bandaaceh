@@ -164,6 +164,7 @@ Route::get('/api/sbp/{id}', [SbpController::class, 'showApi'])->name('sbp.api.sh
 |--------------------------------------------------------------------------
 */
 Route::get('/pencacahan/search-sbp', [PencacahanController::class, 'searchSbp'])->name('pencacahan.searchSbp');
+Route::post('/pencacahan/get-barang-fields', [PencacahanController::class, 'getBarangFields'])->name('pencacahan.getBarangFields');
 Route::resource('pencacahan', PencacahanController::class);
 
 /*
