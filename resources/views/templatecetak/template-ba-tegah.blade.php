@@ -321,7 +321,7 @@
                 <td class="indent"></td>
                 <td class="label">Alamat</td>
                 <td class="colon">:</td>
-                <td class="value">{{ $sbp->alamat_pelaku ?? '-' }}</td>
+                <td class="value">{{ $sbp->alamat_di_indonesia ?? '-' }}</td>
             </tr>
             <tr>
                 <td class="indent"></td>

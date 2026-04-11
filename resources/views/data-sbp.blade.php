@@ -42,7 +42,7 @@
                                 <td>
                                     <div class="d-flex align-items-center">
                                         <a href="{{ route('sbp.cetak.preview', $sbp->id) }}" class="btn btn-sm btn-info text-white me-2" title="Lihat Pratinjau">
-                                            <i class="cil-search"></i>
+                                            <i class="cil-print"></i>
                                         </a>
                                         <a href="{{ route('sbp.edit', $sbp->id) }}" class="btn btn-sm btn-primary me-2" title="Edit Data">
                                             <i class="cil-pencil"></i>
