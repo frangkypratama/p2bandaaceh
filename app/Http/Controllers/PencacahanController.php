@@ -266,7 +266,7 @@ class PencacahanController extends Controller
             });
         }
 
-        $sbp = $query->paginate(5)->appends(['search' => $search]);
+        $sbp = $query->paginate(10)->appends(['search' => $search]);
 
         if ($request->ajax()) {
             return response()->json([
