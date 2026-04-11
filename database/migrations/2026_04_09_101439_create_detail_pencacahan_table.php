@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('detail_pencacahan', function (Blueprint $table) {
             $table->id();
             $table->foreignId('pencacahan_sbp_id')->constrained('pencacahan_sbp')->onDelete('cascade');
-            $table->foreignId('id_jenis_barang')->constrained('ref_jenis_barangs');
+            $table->foreignId('id_jenis_barang')->constrained('ref_jenis_barang');
             $table->integer('urutan');
 
             // Foreign keys
@@ -31,6 +31,7 @@ return new class extends Migration
             // Hasil Tembakau
             $table->integer('jumlah_bungkus')->nullable();
             $table->integer('jumlah_batang')->nullable();
+            $table->integer('total_batang')->nullable();
 
             // Handphone, Gadget
             $table->string('imei1')->nullable();
@@ -43,6 +44,7 @@ return new class extends Migration
             $table->string('tipe')->nullable();
             $table->string('nomor_rangka')->nullable();
             $table->string('nomor_mesin')->nullable();
+            $table->string('jenis_elektronik')->nullable(); 
 
             // MMEA / Etil Alkohol
             $table->decimal('kadar_alkohol', 5, 2)->nullable();
@@ -67,6 +69,7 @@ return new class extends Migration
             $table->string('nama_produk')->nullable();
             $table->string('no_izin_edar')->nullable();
             $table->date('tanggal_kadaluwarsa')->nullable();
+            $table->string('no_bpom')->nullable();
 
             // Obat-obatan
             $table->string('nama_obat')->nullable();

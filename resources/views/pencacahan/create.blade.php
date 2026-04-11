@@ -119,8 +119,30 @@
                                     <tr id="selected-row-{{ $sbp->id }}">
                                         <td>{{ $sbp->nomor_sbp }}</td>
                                         <td>{{ \Carbon\Carbon::parse($sbp->tanggal_sbp)->translatedFormat('d F Y') }}</td>
-                                        <td class="text-center"><span class="badge bg-secondary" id="status-detail-{{$sbp->id}}">Belum Diisi</span></td>
-                                        <td class="text-center"><span class="badge bg-secondary" id="status-foto-{{$sbp->id}}">Belum Diunggah</span></td>
+                                        @php
+                                            $oldDetailJson = old("detail_barang_json.{$sbp->id}");
+                                            $details = $oldDetailJson ? json_decode($oldDetailJson, true) : [];
+                                            $hasDetails = !empty($details) && count($details) > 0;
+
+                                            $hasOldFile = old("has_file.{$sbp->id}") == '1';
+                                            $hasFileError = $errors->has("foto_barang.{$sbp->id}");
+                                        @endphp
+                                        <td class="text-center">
+                                            <span class="badge {{ $hasDetails ? 'bg-success' : 'bg-secondary' }}" id="status-detail-{{$sbp->id}}">
+                                                {{ $hasDetails ? count($details) . ' barang' : 'Belum Diisi' }}
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge {{ $hasFileError ? 'bg-danger' : ($hasOldFile ? 'bg-warning text-dark' : 'bg-secondary') }}" id="status-foto-{{$sbp->id}}">
+                                                @if($hasFileError)
+                                                    File Error
+                                                @elseif($hasOldFile)
+                                                    Pilih Ulang File
+                                                @else
+                                                    Belum Diunggah
+                                                @endif
+                                            </span>
+                                        </td>
                                         <td class="text-center">
                                             <button type="button" class="btn btn-info btn-sm text-white btn-detail-sbp"
                                                 data-sbp-id="{{ $sbp->id }}"
@@ -140,16 +162,19 @@
                             </tbody>
                         </table>
                     </div>
-                    <div id="hiddenSbpInputs">
+                    {{-- Hidden inputs will be added here by JS or by Blade on validation fail --}}
+                    <div id="hiddenInputsContainer">
                         @if(old('id_sbp'))
                             @foreach(old('id_sbp') as $sbpId)
-                                <input type="hidden" name="id_sbp[]" id="hidden-input-{{ $sbpId }}" value="{{ $sbpId }}">
-                                <input type="hidden" name="detail_barang_json[{{$sbpId}}]" id="hidden-barang-json-{{$sbpId}}" value='{{ old("detail_barang_json.$sbpId") }}'>
-                                <input type="hidden" name="had_a_photo[{{$sbpId}}]" id="hidden-had-photo-{{$sbpId}}" value="{{ old("had_a_photo.$sbpId") }}">
+                            <div id="hidden-inputs-for-{{ $sbpId }}">
+                                <input type="hidden" name="id_sbp[]" value="{{ $sbpId }}">
+                                <input type="hidden" name="detail_barang_json[{{$sbpId}}]" id="hidden-barang-json-{{$sbpId}}" value="{{ old("detail_barang_json.$sbpId") }}">
+                                <input type="file" name="foto_barang[{{$sbpId}}]" id="hidden-file-input-{{$sbpId}}" class="d-none" accept="image/*">
+                                <input type="hidden" name="has_file[{{$sbpId}}]" id="has-file-hidden-{{$sbpId}}" value="{{ old("has_file.$sbpId", '0') }}">
+                            </div>
                             @endforeach
                         @endif
                     </div>
-                    <div id="hiddenFileInputs" style="display:none;"></div>
                 </div>
 
                 <div class="card-footer text-end bg-light">
@@ -194,7 +219,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const barangContainer = document.getElementById('barangItemsContainer');
     const emptyMessage = document.getElementById('emptyBarangMessage');
     const btnTambah = document.getElementById('btnTambahBarang');
-    const fileStore = {};
+    const hiddenInputsContainer = document.getElementById('hiddenInputsContainer');
     const csrfToken = '{{ csrf_token() }}';
 
     // ═══════════════════════════════════════════════════════════════════
@@ -227,7 +252,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ═══════════════════════════════════════════════════════════════════
-    // DYNAMIC FORM FIELDS (NEW)
+    // DYNAMIC FORM FIELDS
     // ═══════════════════════════════════════════════════════════════════
     async function loadConditionalFields(container, jenisBarangId, data = {}) {
         if (!jenisBarangId) {
@@ -247,7 +272,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const formData = new FormData();
             formData.append('id_jenis_barang', jenisBarangId);
             formData.append('_token', csrfToken);
-            formData.append('data', JSON.stringify(data)); // Send data for pre-filling
+            formData.append('data', JSON.stringify(data));
 
             const response = await fetch('{{ route("pencacahan.getBarangFields") }}', {
                 method: 'POST',
@@ -324,9 +349,9 @@ document.addEventListener('DOMContentLoaded', function () {
     sbpModalElement.addEventListener('show.coreui.modal', () => fetchSbp(`{{ route('pencacahan.searchSbp') }}`));
 
     document.getElementById('selectSbpButton').addEventListener('click', () => {
-        document.querySelectorAll('#sbpTableBody .sbp-checkbox:checked').forEach(cb => {
+        document.querySelectorAll('#sbpTableBody .sbp-checkbox:checked:not(:disabled)').forEach(cb => {
             if (!selectedSbpIds.has(cb.value)) {
-                addSbpRow(cb.dataset, cb.value);
+                addSbpRowAndInputs(cb.dataset, cb.value);
                 selectedSbpIds.add(cb.value);
             }
         });
@@ -334,9 +359,9 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // ═══════════════════════════════════════════════════════════════════
-    // SELECTED SBP TABLE
+    // MANAGE SBP TABLE & HIDDEN INPUTS
     // ═══════════════════════════════════════════════════════════════════
-    function addSbpRow(dataset, sbpId) {
+    function addSbpRowAndInputs(dataset, sbpId) {
         const tbody = document.getElementById('selectedSbpTableBody');
         const tr = document.createElement('tr');
         tr.id = `selected-row-${sbpId}`;
@@ -350,71 +375,87 @@ document.addEventListener('DOMContentLoaded', function () {
                 <button type="button" class="btn btn-danger btn-sm text-white btn-hapus-sbp" data-sbp-id="${sbpId}"><i class="cil-trash"></i></button>
             </td>`;
         tbody.appendChild(tr);
-        const hiddenDiv = document.getElementById('hiddenSbpInputs');
-        hiddenDiv.insertAdjacentHTML('beforeend', `<input type="hidden" name="id_sbp[]" id="hidden-input-${sbpId}" value="${sbpId}">`);
-        hiddenDiv.insertAdjacentHTML('beforeend', `<input type="hidden" name="detail_barang_json[${sbpId}]" id="hidden-barang-json-${sbpId}">`);
-        hiddenDiv.insertAdjacentHTML('beforeend', `<input type="hidden" name="had_a_photo[${sbpId}]" id="hidden-had-photo-${sbpId}" value="">`);
+
+        const div = document.createElement('div');
+        div.id = `hidden-inputs-for-${sbpId}`;
+        div.innerHTML = `
+            <input type="hidden" name="id_sbp[]" value="${sbpId}">
+            <input type="hidden" name="detail_barang_json[${sbpId}]" id="hidden-barang-json-${sbpId}">
+            <input type="file" name="foto_barang[${sbpId}]" id="hidden-file-input-${sbpId}" class="d-none" accept="image/*">
+            <input type="hidden" name="has_file[${sbpId}]" id="has-file-hidden-${sbpId}" value="0">
+        `;
+        hiddenInputsContainer.appendChild(div);
+
+        document.getElementById(`hidden-file-input-${sbpId}`).addEventListener('change', handleFileChange);
     }
 
-    // ═══════════════════════════════════════════════════════════════════
-    // TABLE CLICK HANDLER
-    // ═══════════════════════════════════════════════════════════════════
     document.getElementById('selectedSbpTableBody').addEventListener('click', e => {
         const sbpId = e.target.closest('[data-sbp-id]')?.dataset.sbpId;
         if (!sbpId) return;
 
         if (e.target.closest('.btn-hapus-sbp')) {
             document.getElementById(`selected-row-${sbpId}`)?.remove();
-            document.getElementById(`hidden-input-${sbpId}`)?.remove();
-            document.getElementById(`hidden-barang-json-${sbpId}`)?.remove();
-            document.getElementById(`hidden-had-photo-${sbpId}`)?.remove();
-            document.getElementById(`foto_barang_${sbpId}`)?.remove();
-            delete fileStore[sbpId];
+            document.getElementById(`hidden-inputs-for-${sbpId}`)?.remove();
             selectedSbpIds.delete(sbpId);
-
         } else if (e.target.closest('.btn-detail-sbp')) {
-            const ds = e.target.closest('.btn-detail-sbp').dataset;
-            detailSbpModalElement.dataset.currentSbpId = sbpId;
-            document.getElementById('detail-nomor-sbp').value = ds.nomorSbp;
-            document.getElementById('detail-tanggal-sbp').value = formatTanggal(ds.tanggalSbp);
-            document.getElementById('detail-jenis-barang').value = ds.jenisBarang;
-            document.getElementById('detail-uraian-barang').value = ds.uraianBarang;
-
-            barangContainer.innerHTML = '';
-            const jsonStr = document.getElementById(`hidden-barang-json-${sbpId}`)?.value;
-            if (jsonStr) {
-                try {
-                    const arr = JSON.parse(jsonStr);
-                    if (Array.isArray(arr)) arr.forEach(item => addRepeaterItem(item));
-                } catch (err) { console.error('Parse error:', err); }
-            }
-            updateEmptyMessage();
-            renumberBarang();
-
-            const preview = document.getElementById('foto_preview_modal');
-            const placeholder = document.querySelector('.foto-placeholder-modal');
-            const removeBtn = document.getElementById('btn-remove-foto-modal');
-            const modalFileInput = document.getElementById('foto_barang_modal');
-            
-            modalFileInput.value = '';
-
-            if (fileStore[sbpId] && fileStore[sbpId].files[0]) {
-                preview.src = URL.createObjectURL(fileStore[sbpId].files[0]);
-                preview.classList.remove('d-none');
-                placeholder.classList.add('d-none');
-                removeBtn.classList.remove('d-none');
-            } else {
-                preview.src = '';
-                preview.classList.add('d-none');
-                placeholder.classList.remove('d-none');
-                removeBtn.classList.add('d-none');
-            }
-            detailSbpModal.show();
+            openDetailModal(e.target.closest('.btn-detail-sbp').dataset);
         }
     });
 
     // ═══════════════════════════════════════════════════════════════════
-    // REPEATER
+    // DETAIL MODAL LOGIC
+    // ═══════════════════════════════════════════════════════════════════
+    function openDetailModal(dataset) {
+        const sbpId = dataset.sbpId;
+        detailSbpModalElement.dataset.currentSbpId = sbpId;
+
+        document.getElementById('detail-nomor-sbp').value = dataset.nomorSbp;
+        document.getElementById('detail-tanggal-sbp').value = formatTanggal(dataset.tanggalSbp);
+        document.getElementById('detail-jenis-barang').value = dataset.jenisBarang;
+        document.getElementById('detail-uraian-barang').value = dataset.uraianBarang;
+
+        barangContainer.innerHTML = '';
+        const jsonInput = document.getElementById(`hidden-barang-json-${sbpId}`);
+        const jsonStr = jsonInput ? jsonInput.value : '';
+
+        if (jsonStr) {
+            try {
+                const arr = JSON.parse(jsonStr); 
+                if (Array.isArray(arr)) arr.forEach(item => addRepeaterItem(item));
+            } catch (err) { 
+                console.error('Parse error on old JSON:', err, 'Original string:', jsonStr); 
+            }
+        }
+        updateEmptyMessage();
+        renumberBarang();
+
+        updateFotoPreview(sbpId);
+        detailSbpModal.show();
+    }
+
+    document.getElementById('saveSbpDetailButton').addEventListener('click', () => {
+        const sbpId = detailSbpModalElement.dataset.currentSbpId;
+        
+        const barangData = getBarangData();
+        const jsonInput = document.getElementById(`hidden-barang-json-${sbpId}`);
+        if (jsonInput) {
+            jsonInput.value = JSON.stringify(barangData);
+        }
+
+        const statusDetail = document.getElementById(`status-detail-${sbpId}`);
+        if (barangData.length > 0 && barangData.some(d => d.id_jenis_barang)) {
+            statusDetail.textContent = `${barangData.length} barang`;
+            statusDetail.className = 'badge bg-success';
+        } else {
+            statusDetail.textContent = 'Belum Diisi';
+            statusDetail.className = 'badge bg-secondary';
+        }
+
+        detailSbpModal.hide();
+    });
+
+    // ═══════════════════════════════════════════════════════════════════
+    // REPEATER (BARANG ITEMS)
     // ═══════════════════════════════════════════════════════════════════
     barangContainer.addEventListener('input', function (e) {
         if (e.target.matches('[data-field="jumlah_bungkus"]') || e.target.matches('[data-field="jumlah_batang"]')) {
@@ -469,21 +510,35 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     barangContainer.addEventListener('click', (e) => {
-        const btn = e.target.closest('.btn-hapus-barang');
-        if (!btn) return;
-        btn.closest('.barang-item').remove();
-        renumberBarang();
-        updateEmptyMessage();
+        if (e.target.closest('.btn-hapus-barang')) {
+            e.target.closest('.barang-item').remove();
+            renumberBarang();
+            updateEmptyMessage();
+        }
     });
 
     function getBarangData() {
         const data = [];
         barangContainer.querySelectorAll('.barang-item').forEach((item, i) => {
             const jenis = item.querySelector('.input-jenis-barang');
-            if (!jenis.value) return;
-            const entry = { urutan: i + 1, id_jenis_barang: jenis.value };
+            if (!jenis || !jenis.value) {
+                return; // Skip item if no type is selected
+            }
+
+            const entry = {
+                urutan: i + 1,
+                id_jenis_barang: jenis.value
+            };
+
             item.querySelectorAll('.conditional-fields-container [data-field]').forEach(f => {
-                entry[f.dataset.field] = f.value.trim();
+                const fieldName = f.dataset.field;
+                
+                // CRITICAL FIX: Ensure fieldName is a valid, non-empty string before assigning.
+                if (fieldName && typeof fieldName === 'string' && fieldName.trim() !== '') {
+                    const fieldValue = f.value;
+                    // Assign the value, ensuring null/undefined becomes an empty string.
+                    entry[fieldName.trim()] = (fieldValue != null) ? fieldValue.toString().trim() : '';
+                }
             });
             data.push(entry);
         });
@@ -491,109 +546,86 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ═══════════════════════════════════════════════════════════════════
-    // SIMPAN DETAIL
+    // FOTO HANDLING
     // ═══════════════════════════════════════════════════════════════════
-    document.getElementById('saveSbpDetailButton').addEventListener('click', () => {
+    document.getElementById('foto-upload-modal-trigger').addEventListener('click', () => {
         const sbpId = detailSbpModalElement.dataset.currentSbpId;
-
-        const barangData = getBarangData();
-        document.getElementById(`hidden-barang-json-${sbpId}`).value = JSON.stringify(barangData);
-
-        const statusDetail = document.getElementById(`status-detail-${sbpId}`);
-        if (barangData.length > 0 && barangData.some(d => d.id_jenis_barang)) {
-            statusDetail.textContent = `${barangData.length} barang`;
-            statusDetail.className = 'badge bg-success';
-        } else {
-            statusDetail.textContent = 'Belum Diisi';
-            statusDetail.className = 'badge bg-secondary';
-        }
-
-        const hadPhotoInput = document.getElementById(`hidden-had-photo-${sbpId}`);
-        let fileInput = document.getElementById(`foto_barang_${sbpId}`);
-        if (!fileInput) {
-            fileInput = document.createElement('input');
-            fileInput.type = 'file';
-            fileInput.name = `foto_barang[${sbpId}]`;
-            fileInput.id = `foto_barang_${sbpId}`;
-            document.getElementById('hiddenFileInputs').appendChild(fileInput);
-        }
-
-        if (fileStore[sbpId] && fileStore[sbpId].files.length > 0) {
-            fileInput.files = fileStore[sbpId].files;
-            if (hadPhotoInput) hadPhotoInput.value = '1';
-        } else {
-            fileInput.value = '';
-            if (hadPhotoInput) hadPhotoInput.value = '';
-        }
-
-        const statusFoto = document.getElementById(`status-foto-${sbpId}`);
-        const fileIsSelected = fileInput.files && fileInput.files.length > 0;
-        statusFoto.textContent = fileIsSelected ? 'Siap Diunggah' : 'Belum Diunggah';
-        statusFoto.className = `badge bg-${fileIsSelected ? 'success' : 'secondary'}`;
-
-        detailSbpModal.hide();
+        document.getElementById(`hidden-file-input-${sbpId}`)?.click();
     });
 
+    function handleFileChange(event) {
+        const sbpId = event.target.id.replace('hidden-file-input-', '');
+        const fileInput = event.target;
+        const hasFileInput = document.getElementById(`has-file-hidden-${sbpId}`);
+        if (hasFileInput) {
+            hasFileInput.value = fileInput.files.length > 0 ? '1' : '0';
+        }
+        updateFotoPreview(sbpId);
+        updateFotoStatus(sbpId);
+    }
 
-    // ═══════════════════════════════════════════════════════════════════
-    // FOTO HANDLERS
-    // ═══════════════════════════════════════════════════════════════════
-    document.getElementById('foto-upload-modal-trigger').addEventListener('click', () => document.getElementById('foto_barang_modal').click());
-
-    document.getElementById('foto_barang_modal').addEventListener('change', function () {
-        const sbpId = detailSbpModalElement.dataset.currentSbpId;
+    function updateFotoPreview(sbpId) {
+        const fileInput = document.getElementById(`hidden-file-input-${sbpId}`);
         const preview = document.getElementById('foto_preview_modal');
         const placeholder = document.querySelector('.foto-placeholder-modal');
         const removeBtn = document.getElementById('btn-remove-foto-modal');
 
-        if (this.files && this.files[0] && sbpId) {
-            const dataTransfer = new DataTransfer();
-            dataTransfer.items.add(this.files[0]);
-            fileStore[sbpId] = dataTransfer;
-            
-            preview.src = URL.createObjectURL(this.files[0]);
+        if (fileInput && fileInput.files && fileInput.files[0]) {
+            preview.src = URL.createObjectURL(fileInput.files[0]);
             preview.classList.remove('d-none');
             placeholder.classList.add('d-none');
             removeBtn.classList.remove('d-none');
         } else {
-            if (sbpId) delete fileStore[sbpId];
-            
             preview.src = '';
             preview.classList.add('d-none');
             placeholder.classList.remove('d-none');
             removeBtn.classList.add('d-none');
         }
-    });
-
-    document.getElementById('btn-remove-foto-modal').addEventListener('click', () => {
-        const modalFileInput = document.getElementById('foto_barang_modal');
-        modalFileInput.value = '';
-        modalFileInput.dispatchEvent(new Event('change'));
-    });
-
-    // ═══════════════════════════════════════════════════════════════════
-    // RESTORE OLD INPUT
-    // ═══════════════════════════════════════════════════════════════════
-    selectedSbpIds.forEach(sbpId => {
-        const jsonStr = document.getElementById(`hidden-barang-json-${sbpId}`)?.value;
-        const statusDetail = document.getElementById(`status-detail-${sbpId}`);
-        if (jsonStr && statusDetail) {
-            try {
-                const arr = JSON.parse(jsonStr);
-                if (Array.isArray(arr) && arr.length > 0 && arr.some(d => d.id_jenis_barang)) {
-                    statusDetail.textContent = `${arr.length} barang`;
-                    statusDetail.className = 'badge bg-success';
-                }
-            } catch (e) { console.error('Restore error:', e); }
-        }
-
-        const hadPhoto = document.getElementById(`hidden-had-photo-${sbpId}`)?.value;
+    }
+    
+    function updateFotoStatus(sbpId) {
+        const fileInput = document.getElementById(`hidden-file-input-${sbpId}`);
         const statusFoto = document.getElementById(`status-foto-${sbpId}`);
-        if (hadPhoto === '1' && statusFoto) {
+        if (!statusFoto) return;
+
+        // Check old input first
+        const hasOldFile = document.getElementById(`has-file-hidden-${sbpId}`)?.value == '1';
+        const fileIsSelected = fileInput && fileInput.files.length > 0;
+
+        if(fileIsSelected) {
+            statusFoto.textContent = 'Siap Diunggah';
+            statusFoto.className = 'badge bg-success';
+        } else if (hasOldFile) {
             statusFoto.textContent = 'Pilih Ulang File';
             statusFoto.className = 'badge bg-warning text-dark';
+        } else {
+            statusFoto.textContent = 'Belum Diunggah';
+            statusFoto.className = 'badge bg-secondary';
+        }
+    }
+
+    document.getElementById('btn-remove-foto-modal').addEventListener('click', () => {
+        const sbpId = detailSbpModalElement.dataset.currentSbpId;
+        const fileInput = document.getElementById(`hidden-file-input-${sbpId}`);
+        if (fileInput) {
+            fileInput.value = ''; // Clear the file input
+            fileInput.dispatchEvent(new Event('change', { bubbles: true }));
         }
     });
+
+    // ═══════════════════════════════════════════════════════════════════
+    // ATTACH HANDLERS ON PAGE LOAD (FOR VALIDATION FAILURE)
+    // ═══════════════════════════════════════════════════════════════════
+    function attachInitialHandlers() {
+        document.querySelectorAll('[id^=hidden-file-input-]').forEach(input => {
+            input.addEventListener('change', handleFileChange);
+            // Trigger status update on page load for old inputs
+            const sbpId = input.id.replace('hidden-file-input-', '');
+            updateFotoStatus(sbpId);
+        });
+    }
+
+    attachInitialHandlers();
 });
 </script>
 @endpush

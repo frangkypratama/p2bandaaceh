@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class DetailPencacahan extends Model
 {
@@ -24,6 +25,7 @@ class DetailPencacahan extends Model
         'volume',
         'jumlah_bungkus',
         'jumlah_batang',
+        'total_batang',
         'imei1',
         'imei2',
         'warna',
@@ -47,5 +49,23 @@ class DetailPencacahan extends Model
         'no_izin_edar',
         'tanggal_kadaluwarsa',
         'nama_obat',
+        'jenis_elektronik',
+        'no_bpom',
     ];
+
+    /**
+     * Get the parent pivot record.
+     */
+    public function pencacahanSbp(): BelongsTo
+    {
+        return $this->belongsTo(PencacahanSbp::class, 'pencacahan_sbp_id');
+    }
+
+    /**
+     * Get the type of the item (jenis barang).
+     */
+    public function jenisBarang(): BelongsTo
+    {
+        return $this->belongsTo(RefJenisBarang::class, 'id_jenis_barang');
+    }
 }

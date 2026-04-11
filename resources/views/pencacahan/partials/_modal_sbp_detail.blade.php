@@ -55,7 +55,6 @@
                         </div>
                     </div>
                 </div>
-                <input type="file" id="foto_barang_modal" class="d-none" accept="image/*">
                 <div class="text-center mt-2">
                     <button type="button" class="btn btn-sm btn-danger d-none" id="btn-remove-foto-modal">
                         <i class="cil-trash me-1"></i>Hapus Foto

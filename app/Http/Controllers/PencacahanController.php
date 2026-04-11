@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\DetailPencacahan;
 use App\Models\Pencacahan;
 use App\Models\PencacahanPhoto;
+use App\Models\PencacahanSbp;
 use App\Models\Petugas;
 use App\Models\RefJenisBarang;
 use App\Models\RefSatuan;
@@ -14,7 +15,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\View;
 use Illuminate\Validation\Rule;
 
 class PencacahanController extends Controller
@@ -69,38 +69,45 @@ class PencacahanController extends Controller
         DB::beginTransaction();
         try {
             $pencacahan = Pencacahan::create($validatedData);
-            $pencacahan->sbp()->attach($validatedData['id_sbp']);
+            $pencacahan->sbp()->sync($validatedData['id_sbp']);
+
+            $PencacahanSbp = PencacahanSbp::where('pencacahan_id', $pencacahan->id)->get()->keyBy('sbp_id');
+            $fillableAttributes = (new DetailPencacahan())->getFillable();
 
             foreach ($validatedData['id_sbp'] as $sbpId) {
-                $pencacahanSbp = DB::table('pencacahan_sbp')
-                    ->where('pencacahan_id', $pencacahan->id)
-                    ->where('sbp_id', $sbpId)
-                    ->first();
-                
+                $pencacahanSbp = $PencacahanSbp->get($sbpId);
                 if (!$pencacahanSbp) continue;
 
                 if (isset($request->detail_barang_json[$sbpId])) {
                     $detailBarangArray = json_decode($request->detail_barang_json[$sbpId], true);
                     if (is_array($detailBarangArray)) {
-                        foreach ($detailBarangArray as $item) {
-                            $item['pencacahan_sbp_id'] = $pencacahanSbp->id;
-                            DetailPencacahan::create($item);
+                        $detailsToCreate = array_map(function ($item) use ($pencacahanSbp, $fillableAttributes) {
+                            // Filter only fillable attributes
+                            $filteredItem = array_intersect_key($item, array_flip($fillableAttributes));
+                            $filteredItem['pencacahan_sbp_id'] = $pencacahanSbp->id;
+                            return $filteredItem;
+                        }, $detailBarangArray);
+                        
+                        $detailsToCreate = array_filter($detailsToCreate);
+                        if(!empty($detailsToCreate)){
+                            foreach ($detailsToCreate as $detail) {
+                                DetailPencacahan::create($detail); // Individual insert
+                            }
                         }
                     }
                 }
 
                 if ($request->hasFile("foto_barang.$sbpId")) {
                     $file = $request->file("foto_barang.$sbpId");
-                    $filename = $file->getClientOriginalName();
                     $path = $file->store('public/pencacahan_photos');
-
                     PencacahanPhoto::create([
                         'pencacahan_sbp_id' => $pencacahanSbp->id,
                         'path' => $path,
-                        'filename' => $filename,
+                        'filename' => $file->hashName(),
                     ]);
                 }
             }
+            
             DB::commit();
             return redirect()->route('pencacahan.index')->with('success', 'Data Pencacahan berhasil ditambahkan.');
 
@@ -110,9 +117,10 @@ class PencacahanController extends Controller
         }
     }
 
+
     public function show(string $id)
     {
-        $pencacahan = Pencacahan::with('petugas1', 'petugas2', 'sbp')->findOrFail($id);
+        $pencacahan = Pencacahan::with('petugas1', 'petugas2', 'sbp', 'details', 'photos')->findOrFail($id);
         return view('pencacahan.show', compact('pencacahan'));
     }
 
@@ -123,12 +131,26 @@ class PencacahanController extends Controller
         $satuanData = RefSatuan::all();
         $jenisBarangData = RefJenisBarang::get();
         $tarifCukaiData = RefTarifCukai::all();
-        $sbpDataForView = $pencacahan->sbp;
+        
+        $sbpDataForView = $pencacahan->sbp()->withPivot('id')->get();
+        
         if (old('id_sbp')) {
              $sbpDataForView = Sbp::whereIn('id', old('id_sbp'))->get();
+        } else {
+            $pencacahanSbpIds = $sbpDataForView->pluck('pivot.id');
+            $existingDetails = DetailPencacahan::whereIn('pencacahan_sbp_id', $pencacahanSbpIds)->get()->groupBy('pencacahan_sbp_id');
+            $existingPhotos = PencacahanPhoto::whereIn('pencacahan_sbp_id', $pencacahanSbpIds)->get()->keyBy('pencacahan_sbp_id');
+
+            $sbpDataForView->each(function($sbp) use ($existingDetails, $existingPhotos) {
+                $pivotId = $sbp->pivot->id;
+                $sbp->details_json = $existingDetails->get($pivotId) ? $existingDetails->get($pivotId)->toJson() : '[]';
+                $sbp->has_file = $existingPhotos->has($pivotId) ? '1' : '0';
+            });
         }
+
         return view('pencacahan.edit', compact('pencacahan', 'petugasData', 'sbpDataForView', 'satuanData', 'jenisBarangData', 'tarifCukaiData'));
     }
+
 
     public function update(Request $request, string $id)
     {
@@ -146,10 +168,7 @@ class PencacahanController extends Controller
             'detail_barang_json.*' => 'nullable|json',
             'foto_barang' => 'nullable|array',
             'foto_barang.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
-        ], [
-            'foto_barang.*.image' => 'File yang diunggah harus berupa gambar.',
-            'foto_barang.*.mimes' => 'Format gambar harus jpeg, png, jpg, gif, atau webp.',
-            'foto_barang.*.max' => 'Ukuran gambar maksimal 5MB.',
+            'deleted_photos' => 'nullable|array', // To handle photo deletion
         ]);
 
         if ($validator->fails()) {
@@ -163,35 +182,43 @@ class PencacahanController extends Controller
             $pencacahan->update($validatedData);
             $pencacahan->sbp()->sync($validatedData['id_sbp']);
 
-            $pencacahanSbps = DB::table('pencacahan_sbp')->where('pencacahan_id', $pencacahan->id)->get();
+            $PencacahanSbp = PencacahanSbp::where('pencacahan_id', $pencacahan->id)->get()->keyBy('sbp_id');
+            $fillableAttributes = (new DetailPencacahan())->getFillable();
 
-            foreach ($pencacahanSbps as $pencacahanSbp) {
-                DetailPencacahan::where('pencacahan_sbp_id', $pencacahanSbp->id)->delete();
-                $oldPhotos = PencacahanPhoto::where('pencacahan_sbp_id', $pencacahanSbp->id)->get();
-                foreach ($oldPhotos as $photo) {
-                    Storage::delete($photo->path);
-                    $photo->delete();
+            foreach ($PencacahanSbp as $sbpId => $pencacahanSbp) {
+                $pencacahanSbp->details()->delete();
+                
+                $existingPhoto = $pencacahanSbp->photos()->first();
+                if ($existingPhoto) {
+                    Storage::delete($existingPhoto->path);
+                    $existingPhoto->delete();
                 }
 
-                if (isset($request->detail_barang_json[$pencacahanSbp->sbp_id])) {
-                    $detailBarangArray = json_decode($request->detail_barang_json[$pencacahanSbp->sbp_id], true);
+                if (isset($request->detail_barang_json[$sbpId])) {
+                    $detailBarangArray = json_decode($request->detail_barang_json[$sbpId], true);
                     if (is_array($detailBarangArray)) {
-                        foreach ($detailBarangArray as $item) {
-                            $item['pencacahan_sbp_id'] = $pencacahanSbp->id;
-                            DetailPencacahan::create($item);
+                         $detailsToCreate = array_map(function ($item) use ($pencacahanSbp, $fillableAttributes) {
+                            $filteredItem = array_intersect_key($item, array_flip($fillableAttributes));
+                            $filteredItem['pencacahan_sbp_id'] = $pencacahanSbp->id;
+                            return $filteredItem;
+                        }, $detailBarangArray);
+                        
+                        $detailsToCreate = array_filter($detailsToCreate);
+                        if(!empty($detailsToCreate)){
+                            foreach ($detailsToCreate as $detail) {
+                                DetailPencacahan::create($detail); // Individual insert
+                            }
                         }
                     }
                 }
 
-                if ($request->hasFile("foto_barang.{$pencacahanSbp->sbp_id}")) {
-                    $file = $request->file("foto_barang.{$pencacahanSbp->sbp_id}");
-                    $filename = $file->getClientOriginalName();
+                if ($request->hasFile("foto_barang.$sbpId")) {
+                    $file = $request->file("foto_barang.$sbpId");
                     $path = $file->store('public/pencacahan_photos');
-
                     PencacahanPhoto::create([
                         'pencacahan_sbp_id' => $pencacahanSbp->id,
                         'path' => $path,
-                        'filename' => $filename,
+                        'filename' => $file->hashName(),
                     ]);
                 }
             }
@@ -207,12 +234,26 @@ class PencacahanController extends Controller
 
     public function destroy(string $id)
     {
-        $pencacahan = Pencacahan::findOrFail($id);
-        $pencacahan->sbp()->detach();
-        $pencacahan->delete();
-        return redirect()->route('pencacahan.index')->with('success', 'Data Pencacahan berhasil dihapus.');
-    }
+        DB::beginTransaction();
+        try {
+            $pencacahan = Pencacahan::findOrFail($id);
 
+            // Hapus record dari tabel pivot
+            PencacahanSbp::where('pencacahan_id', $pencacahan->id)->delete();
+
+            // Hapus record utama
+            $pencacahan->delete();
+
+            DB::commit();
+
+            return redirect()->route('pencacahan.index')->with('success', 'Data Pencacahan berhasil dihapus.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->route('pencacahan.index')->with('error', 'Gagal menghapus data: ' . $e->getMessage());
+        }
+    }
+    
     public function searchSbp(Request $request)
     {
         $search = $request->input('search', '');
@@ -281,7 +322,7 @@ class PencacahanController extends Controller
 
         $satuanData = RefSatuan::all();
         $tarifCukaiData = RefTarifCukai::all();
-        $data = $request->input('data', []);
+        $data = json_decode($request->input('data', '{}'), true);
         $nama_barang = $jenisBarang->nama_barang;
 
         return view($viewName, compact('satuanData', 'tarifCukaiData', 'data', 'nama_barang'))->render();
