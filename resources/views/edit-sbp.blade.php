@@ -287,8 +287,8 @@
                         <input type="hidden" name="delete_bast" id="hidden_delete_bast" value="0">
 
                         {{-- Hidden BA Musnah Fields --}}
-                        <input type="hidden" name="flag_ba_musnah" id="hidden_flag_ba_musnah" value="{{ old('flag_ba_musnah', $sbp->baMusnah ? 1 : 0) }}">
-                        <input type="hidden" name="nomor_ba_musnah" id="hidden_nomor_ba_musnah" value="{{ old('nomor_ba_musnah', $sbp->baMusnah?->nomor_ba_musnah ?? '') }}">
+                        <input type="hidden" name="flag_ba_musnah" id="hidden_flag_ba_musnah" value="{{ old('flag_ba_musnah', $sbp->flag_ba_musnah ?? 0) }}">
+                        <input type="hidden" name="nomor_ba_musnah" id="hidden_nomor_ba_musnah" value="{{ old('nomor_ba_musnah', $sbp->nomor_ba_musnah ?? '') }}">
                         <input type="hidden" name="delete_ba_musnah" id="hidden_delete_ba_musnah" value="0">
 
                         <div class="col-12 text-center">
