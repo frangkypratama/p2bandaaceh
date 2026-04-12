@@ -10,7 +10,7 @@
                 <input type="hidden" name="nomor_ba_musnah" id="hidden_nomor_ba_musnah" value="{{ old('nomor_ba_musnah') }}">
                 <div class="mb-3">
                     <label for="modal_nomor_ba_musnah" class="form-label">Nomor BA Musnah</label>
-                    <input type="text" class="form-control" id="modal_nomor_ba_musnah" placeholder="Contoh: BA-1/MUSNAH/KBC.010202/2026">
+                    <input type="text" class="form-control" id="modal_nomor_ba_musnah" placeholder="Contoh: BA-1/Musnah/KBC.010202/2026">
                 </div>
             </div>
             <div class="modal-footer">

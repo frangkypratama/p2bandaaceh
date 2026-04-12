@@ -1,11 +1,10 @@
-{{-- Detail Penindakan --}}
 <div class="col-md-12">
-    <div class="card mb-4">
-        <div class="card-header">
-            <h5 class="card-title mb-0">3. Detail Penindakan</h5>
+    <div class="card h-100 border-light shadow-sm">
+        <div class="card-header bg-light">
+            <h5 class="card-title mb-0 d-flex align-items-center"><i class="cil-magnifying-glass me-2"></i>Detail Penindakan</h5>
         </div>
         <div class="card-body">
-            <div class="row g-3 mb-3">
+            <div class="row g-3">
                 <div class="col-md-6">
                     <label for="lokasi_penindakan" class="form-label">Lokasi Penindakan</label>
                     <div class="input-group">
@@ -20,9 +19,7 @@
                         <input id="waktu_penindakan" type="time" class="form-control" name="waktu_penindakan" value="{{ old('waktu_penindakan') }}" required>
                     </div>
                 </div>
-            </div>
-            <div class="row g-3 mb-3">
-                <div class="col-md-3">
+                <div class="col-md-6">
                     <label for="kota" class="form-label">Kota</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="cil-building"></i></span>
@@ -35,22 +32,21 @@
                         </select>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-6">
                     <label for="kecamatan" class="form-label">Kecamatan</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="cil-map"></i></span>
                         <input id="kecamatan" type="text" class="form-control" name="kecamatan" value="{{ old('kecamatan') }}" placeholder="Contoh: Jaya Baru">
                     </div>
                 </div>
-                <div class="col-md-6"></div>
-            </div>
-            <div class="col-12">
-                <label for="alasan_penindakan" class="form-label">Alasan Penindakan / Dugaan Pelanggaran</label>
-                <div class="input-group">
-                    <button class="btn btn-outline-secondary" type="button" data-coreui-toggle="modal" data-coreui-target="#pelanggaranModal">
-                        <i class="cil-list"></i> Pilih dari Daftar
-                    </button>
-                    <textarea id="alasan_penindakan" class="form-control" name="alasan_penindakan" rows="3" placeholder="Jelaskan secara singkat alasan penindakan atau dugaan pelanggaran. Anda juga bisa memilih dari daftar." required>{{ old('alasan_penindakan') }}</textarea>
+                <div class="col-12">
+                    <label for="alasan_penindakan" class="form-label">Alasan Penindakan / Dugaan Pelanggaran</label>
+                    <div class="input-group">
+                        <button class="btn btn-outline-secondary" type="button" data-coreui-toggle="modal" data-coreui-target="#pelanggaranModal">
+                            <i class="cil-list"></i> Pilih dari Daftar
+                        </button>
+                        <textarea id="alasan_penindakan" class="form-control" name="alasan_penindakan" rows="3" placeholder="Jelaskan secara singkat alasan penindakan atau dugaan pelanggaran. Anda juga bisa memilih dari daftar." required>{{ old('alasan_penindakan') }}</textarea>
+                    </div>
                 </div>
             </div>
         </div>
