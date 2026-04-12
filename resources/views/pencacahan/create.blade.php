@@ -2,203 +2,208 @@
 
 @section('content')
 <div class="container-lg">
-    <div class="card mb-4">
-        <div class="card-header">
-            <h5 class="card-title mb-0">Tambah Pencacahan</h5>
-        </div>
-        <div class="card-body">
-            @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul class="mb-0">
-                    @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
+    <form action="{{ route('pencacahan.store') }}" method="POST" id="createPencacahanForm" enctype="multipart/form-data">
+        @csrf
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0"><i class="cil-plus-circle me-2"></i>Tambah Pencacahan Baru</h5>
             </div>
-            @endif
+            <div class="card-body">
+                @if ($errors->any())
+                <div class="alert alert-danger border-0 shadow-sm">
+                    <h6 class="alert-heading"><i class="cil-warning me-2"></i>Terjadi Kesalahan</h6>
+                    <ul class="mb-0">
+                        @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+                @endif
 
-            <form action="{{ route('pencacahan.store') }}" method="POST" id="createPencacahanForm" enctype="multipart/form-data">
-                @csrf
-
-                {{-- Penomoran --}}
-                <h5 class="mb-3">Penomoran</h5>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="no_ba_cacah_nomor" class="form-label">Nomor BA Cacah</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="cil-notes"></i></span>
-                                <input type="text" class="form-control" id="no_ba_cacah_nomor" placeholder="Masukkan hanya angka" required oninput="this.value = this.value.replace(/[^0-9]/g, '')" value="{{ old('no_ba_cacah_nomor', old('no_ba_cacah') ? preg_replace('/[^0-9]/', '', explode('/', old('no_ba_cacah'))[0]) : '') }}">
-                            </div>
-                            <input type="hidden" name="no_ba_cacah" id="no_ba_cacah" value="{{ old('no_ba_cacah') }}">
-                        </div>
+                {{-- Card Penomoran --}}
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h6 class="card-title mb-0"><i class="cil-notes me-2"></i>Penomoran</h6>
                     </div>
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="tanggal_ba_cacah" class="form-label">Tanggal BA Cacah</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="cil-calendar"></i></span>
-                                <input type="date" class="form-control" id="tanggal_ba_cacah" name="tanggal_ba_cacah" value="{{ old('tanggal_ba_cacah') }}" required>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="no_ba_cacah_nomor" class="form-label">Nomor BA Cacah</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="cil-barcode"></i></span>
+                                        <input type="text" class="form-control" id="no_ba_cacah_nomor" placeholder="Masukkan hanya angka" required oninput="this.value = this.value.replace(/[^0-9]/g, '')" value="{{ old('no_ba_cacah_nomor', old('no_ba_cacah') ? preg_replace('/[^0-9]/', '', explode('/', old('no_ba_cacah'))[0]) : '') }}">
+                                    </div>
+                                    <input type="hidden" name="no_ba_cacah" id="no_ba_cacah" value="{{ old('no_ba_cacah') }}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="tanggal_ba_cacah" class="form-label">Tanggal BA Cacah</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="cil-calendar"></i></span>
+                                        <input type="date" class="form-control" id="tanggal_ba_cacah" name="tanggal_ba_cacah" value="{{ old('tanggal_ba_cacah') }}" required>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <hr>
-                {{-- Detail Cacah --}}
-                <h5 class="mb-3">Detail Cacah</h5>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="lokasi_cacah" class="form-label">Lokasi Cacah</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="cil-location-pin"></i></span>
-                                <input type="text" class="form-control" id="lokasi_cacah" name="lokasi_cacah" value="{{ old('lokasi_cacah') }}">
+                {{-- Card Detail Cacah & Petugas --}}
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h6 class="card-title mb-0"><i class="cil-settings me-2"></i>Detail & Petugas</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <label for="lokasi_cacah" class="form-label">Lokasi Cacah</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="cil-location-pin"></i></span>
+                                        <input type="text" class="form-control" id="lokasi_cacah" name="lokasi_cacah" value="{{ old('lokasi_cacah') }}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="id_petugas_1" class="form-label">Petugas 1</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="cil-user"></i></span>
+                                        <select id="id_petugas_1" class="form-select" name="id_petugas_1" required>
+                                            <option value="" selected disabled>Pilih Petugas 1</option>
+                                            @foreach($petugasData as $petugas)
+                                            <option value="{{ $petugas->id }}" {{ old('id_petugas_1') == $petugas->id ? 'selected' : '' }}>{{ $petugas->nama }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="id_petugas_2" class="form-label">Petugas 2</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="cil-user-follow"></i></span>
+                                        <select id="id_petugas_2" class="form-select" name="id_petugas_2">
+                                            <option value="">Pilih Petugas 2 (Opsional)</option>
+                                            @foreach($petugasData as $petugas)
+                                            <option value="{{ $petugas->id }}" {{ old('id_petugas_2') == $petugas->id ? 'selected' : '' }}>{{ $petugas->nama }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <hr>
-                {{-- Petugas --}}
-                <h5 class="mb-3">Petugas</h5>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="id_petugas_1" class="form-label">Petugas 1</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="cil-user"></i></span>
-                                <select id="id_petugas_1" class="form-select" name="id_petugas_1" required>
-                                    <option value="" selected disabled>Pilih Petugas 1</option>
-                                    @foreach($petugasData as $petugas)
-                                    <option value="{{ $petugas->id }}" {{ old('id_petugas_1') == $petugas->id ? 'selected' : '' }}>{{ $petugas->nama }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
+                {{-- Card Dokumen SBP Terkait --}}
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="card-title mb-0"><i class="cil-link-alt me-2"></i>Dokumen SBP Terkait</h6>
                     </div>
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="id_petugas_2" class="form-label">Petugas 2</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="cil-user"></i></span>
-                                <select id="id_petugas_2" class="form-select" name="id_petugas_2">
-                                    <option value="">Pilih Petugas 2</option>
-                                    @foreach($petugasData as $petugas)
-                                    <option value="{{ $petugas->id }}" {{ old('id_petugas_2') == $petugas->id ? 'selected' : '' }}>{{ $petugas->nama }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                    <div class="card-body">
+                        <button type="button" class="btn btn-primary mb-3" data-coreui-toggle="modal" data-coreui-target="#sbpModal">
+                            <i class="cil-file me-2"></i> Pilih Dokumen SBP
+                        </button>
 
-                <hr>
-                {{-- Dokumen SBP Terkait --}}
-                <h5 class="mb-3">Dokumen Terkait</h5>
-                <div class="mb-3">
-                    <label class="form-label">Dokumen SBP Terkait</label><br>
-                    <button type="button" class="btn btn-primary" data-coreui-toggle="modal" data-coreui-target="#sbpModal">
-                        <i class="cil-file-plus me-2"></i> Tambah SBP
-                    </button>
-
-                    <div class="table-responsive mt-3">
-                        <table class="table table-bordered table-striped table-hover" id="selectedSbpTable">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Nomor SBP</th>
-                                    <th>Tanggal SBP</th>
-                                    <th class="text-center">Status Detail</th>
-                                    <th class="text-center">Status Foto</th>
-                                    <th class="text-center">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody id="selectedSbpTableBody">
-                                @if(old('id_sbp') && isset($oldSbpData))
-                                    @foreach($oldSbpData as $sbp)
-                                    <tr id="selected-row-{{ $sbp->id }}">
-                                        <td>{{ $sbp->nomor_sbp }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($sbp->tanggal_sbp)->translatedFormat('d F Y') }}</td>
-                                        @php
-                                            $oldDetailJson = old("detail_barang_json.{$sbp->id}");
-                                            $details = $oldDetailJson ? json_decode($oldDetailJson, true) : [];
-                                            $hasDetails = !empty($details) && count($details) > 0;
-
-                                            $hasOldFile = old("has_file.{$sbp->id}") == '1';
-                                            $hasFileError = $errors->has("foto_barang.{$sbp->id}");
-                                        @endphp
-                                        <td class="text-center">
-                                            <span class="badge {{ $hasDetails ? 'bg-success' : 'bg-secondary' }}" id="status-detail-{{$sbp->id}}">
-                                                {{ $hasDetails ? count($details) . ' barang' : 'Belum Diisi' }}
-                                            </span>
-                                        </td>
-                                        <td class="text-center">
-                                            <span class="badge {{ $hasFileError ? 'bg-danger' : ($hasOldFile ? 'bg-warning text-dark' : 'bg-secondary') }}" id="status-foto-{{$sbp->id}}">
-                                                @if($hasFileError)
-                                                    File Error
-                                                @elseif($hasOldFile)
-                                                    Pilih Ulang File
-                                                @else
-                                                    Belum Diunggah
-                                                @endif
-                                            </span>
-                                        </td>
-                                        <td class="text-center">
-                                            <button type="button" class="btn btn-info btn-sm text-white btn-detail-sbp"
-                                                data-sbp-id="{{ $sbp->id }}"
-                                                data-nomor-sbp="{{ $sbp->nomor_sbp }}"
-                                                data-tanggal-sbp="{{ $sbp->tanggal_sbp }}"
-                                                data-jenis-barang="{{ $sbp->jenis_barang ?? '' }}"
-                                                data-uraian-barang="{{ $sbp->uraian_barang ?? '' }}">
-                                                <i class="cil-search me-1"></i> Detail
-                                            </button>
-                                            <button type="button" class="btn btn-danger btn-sm text-white btn-hapus-sbp" data-sbp-id="{{ $sbp->id }}">
-                                                <i class="cil-trash"></i>
-                                            </button>
-                                        </td>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped table-hover" id="selectedSbpTable">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Nomor SBP</th>
+                                        <th>Tanggal SBP</th>
+                                        <th class="text-center">Status Detail</th>
+                                        <th class="text-center">Status Foto</th>
+                                        <th class="text-center">Aksi</th>
                                     </tr>
-                                    @endforeach
-                                @endif
-                            </tbody>
-                        </table>
-                    </div>
-                    {{-- Hidden inputs will be added here by JS or by Blade on validation fail --}}
-                    <div id="hiddenInputsContainer">
-                        @if(old('id_sbp'))
-                            @foreach(old('id_sbp') as $sbpId)
-                            <div id="hidden-inputs-for-{{ $sbpId }}">
-                                <input type="hidden" name="id_sbp[]" value="{{ $sbpId }}">
-                                <input type="hidden" name="detail_barang_json[{{$sbpId}}]" id="hidden-barang-json-{{$sbpId}}" value="{{ old("detail_barang_json.$sbpId") }}">
-                                <input type="file" name="foto_barang[{{$sbpId}}]" id="hidden-file-input-{{$sbpId}}" class="d-none" accept="image/*">
-                                <input type="hidden" name="has_file[{{$sbpId}}]" id="has-file-hidden-{{$sbpId}}" value="{{ old("has_file.$sbpId", '0') }}">
-                            </div>
-                            @endforeach
-                        @endif
-                    </div>
-                </div>
+                                </thead>
+                                <tbody id="selectedSbpTableBody">
+                                    @if(old('id_sbp') && isset($oldSbpData))
+                                        @foreach($oldSbpData as $sbp)
+                                        <tr id="selected-row-{{ $sbp->id }}">
+                                            <td>{{ $sbp->nomor_sbp }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($sbp->tanggal_sbp)->translatedFormat('d F Y') }}</td>
+                                            @php
+                                                $oldDetailJson = old("detail_barang_json.{$sbp->id}");
+                                                $details = $oldDetailJson ? json_decode($oldDetailJson, true) : [];
+                                                $hasDetails = !empty($details) && count($details) > 0;
 
-                <div class="card-footer text-end bg-light">
-                    <button type="submit" class="btn btn-primary"><i class="cil-save me-2"></i>Simpan Pencacahan</button>
-                    <a href="{{ route('pencacahan.index') }}" class="btn btn-secondary"><i class="cil-x-circle me-2"></i>Batal</a>
+                                                $hasOldFile = old("has_file.{$sbp->id}") == '1';
+                                                $hasFileError = $errors->has("foto_barang.{$sbp->id}");
+                                            @endphp
+                                            <td class="text-center">
+                                                <span class="badge {{ $hasDetails ? 'bg-success' : 'bg-secondary' }}" id="status-detail-{{$sbp->id}}">
+                                                    {{ $hasDetails ? count($details) . ' barang' : 'Belum Diisi' }}
+                                                </span>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="badge {{ $hasFileError ? 'bg-danger' : ($hasOldFile ? 'bg-warning text-dark' : 'bg-secondary') }}" id="status-foto-{{$sbp->id}}">
+                                                    @if($hasFileError)
+                                                        File Error
+                                                    @elseif($hasOldFile)
+                                                        Pilih Ulang
+                                                    @else
+                                                        Kosong
+                                                    @endif
+                                                </span>
+                                            </td>
+                                            <td class="text-center">
+                                                <button type="button" class="btn btn-info btn-sm text-white btn-detail-sbp"
+                                                    data-sbp-id="{{ $sbp->id }}"
+                                                    data-nomor-sbp="{{ $sbp->nomor_sbp }}"
+                                                    data-tanggal-sbp="{{ $sbp->tanggal_sbp }}"
+                                                    data-jenis-barang="{{ $sbp->jenis_barang ?? '' }}"
+                                                    data-uraian-barang="{{ $sbp->uraian_barang ?? '' }}">
+                                                    <i class="cil-search me-1"></i> Detail
+                                                </button>
+                                                <button type="button" class="btn btn-danger btn-sm text-white btn-hapus-sbp" data-sbp-id="{{ $sbp->id }}">
+                                                    <i class="cil-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        @endforeach
+                                    @endif
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="hiddenInputsContainer">
+                            @if(old('id_sbp'))
+                                @foreach(old('id_sbp') as $sbpId)
+                                <div id="hidden-inputs-for-{{ $sbpId }}">
+                                    <input type="hidden" name="id_sbp[]" value="{{ $sbpId }}">
+                                    <input type="hidden" name="detail_barang_json[{{$sbpId}}]" id="hidden-barang-json-{{$sbpId}}" value="{{ old("detail_barang_json.$sbpId") }}">
+                                    <input type="file" name="foto_barang[{{$sbpId}}]" id="hidden-file-input-{{$sbpId}}" class="d-none" accept="image/*">
+                                    <input type="hidden" name="has_file[{{$sbpId}}]" id="has-file-hidden-{{$sbpId}}" value="{{ old("has_file.$sbpId", '0') }}">
+                                </div>
+                                @endforeach
+                            @endif
+                        </div>
+                    </div>
                 </div>
-            </form>
+            </div>
+            <div class="card-footer text-end bg-light">
+                <button type="submit" class="btn btn-primary"><i class="cil-save me-2"></i>Simpan Pencacahan</button>
+                <a href="{{ route('pencacahan.index') }}" class="btn btn-secondary"><i class="cil-x-circle me-2"></i>Batal</a>
+            </div>
         </div>
-    </div>
+    </form>
 </div>
 
 @include('pencacahan.partials._modal_sbp_selection')
 @include('pencacahan.partials._modal_sbp_detail')
-
 @endsection
 
 @push('styles')
 <style>
-    .foto-upload-wrapper { border: 2px dashed #ced4da; border-radius: .375rem; padding: 1.5rem; background-color: #f8f9fa; min-height: 200px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .foto-upload-wrapper { border: 2px dashed #c4c9d0; border-radius: .25rem; padding: 1.5rem; background-color: #f8f9fa; min-height: 200px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background-color 0.2s; }
+    .foto-upload-wrapper:hover { background-color: #e9ecef; }
     #foto_preview_modal { max-height: 250px; object-fit: contain; }
     .row-dicacah { background-color: #e9ecef !important; color: #6c757d; cursor: not-allowed; }
+    .row-dicacah:hover { background-color: #e0e5e9 !important; }
     #sbpPagination .pagination { cursor: pointer; }
     #selectedSbpTable .btn-sm { padding: 0.2rem 0.5rem; font-size: 0.8rem; }
-    .form-control-plaintext { padding-top: 0; padding-bottom: 0; }
     .conditional-fields-container { animation: fadeIn 0.3s; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 </style>
@@ -314,7 +319,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const tbody = document.getElementById('sbpTableBody');
                 tbody.innerHTML = '';
                 if (data.data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Data tidak ditemukan.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted p-4"><div class="text-center text-muted p-4"><i class="cil-ban" style="font-size: 2.5rem;"></i><p class="mb-0 mt-2 fw-bold">Data tidak ditemukan</p></div></td></tr>';
                 } else {
                     data.data.forEach(sbp => {
                         const tr = document.createElement('tr');
@@ -369,7 +374,7 @@ document.addEventListener('DOMContentLoaded', function () {
             <td>${esc(dataset.nomorSbp)}</td>
             <td>${formatTanggal(dataset.tanggalSbp)}</td>
             <td class="text-center"><span class="badge bg-secondary" id="status-detail-${sbpId}">Belum Diisi</span></td>
-            <td class="text-center"><span class="badge bg-secondary" id="status-foto-${sbpId}">Belum Diunggah</span></td>
+            <td class="text-center"><span class="badge bg-secondary" id="status-foto-${sbpId}">Kosong</span></td>
             <td class="text-center">
                 <button type="button" class="btn btn-info btn-sm text-white btn-detail-sbp" data-sbp-id="${sbpId}" data-nomor-sbp="${esc(dataset.nomorSbp)}" data-tanggal-sbp="${dataset.tanggalSbp}" data-jenis-barang="${esc(dataset.jenisBarang)}" data-uraian-barang="${esc(dataset.uraianBarang)}"><i class="cil-search me-1"></i> Detail</button>
                 <button type="button" class="btn btn-danger btn-sm text-white btn-hapus-sbp" data-sbp-id="${sbpId}"><i class="cil-trash"></i></button>
@@ -533,10 +538,8 @@ document.addEventListener('DOMContentLoaded', function () {
             item.querySelectorAll('.conditional-fields-container [data-field]').forEach(f => {
                 const fieldName = f.dataset.field;
                 
-                // CRITICAL FIX: Ensure fieldName is a valid, non-empty string before assigning.
                 if (fieldName && typeof fieldName === 'string' && fieldName.trim() !== '') {
                     const fieldValue = f.value;
-                    // Assign the value, ensuring null/undefined becomes an empty string.
                     entry[fieldName.trim()] = (fieldValue != null) ? fieldValue.toString().trim() : '';
                 }
             });
@@ -588,7 +591,6 @@ document.addEventListener('DOMContentLoaded', function () {
         const statusFoto = document.getElementById(`status-foto-${sbpId}`);
         if (!statusFoto) return;
 
-        // Check old input first
         const hasOldFile = document.getElementById(`has-file-hidden-${sbpId}`)?.value == '1';
         const fileIsSelected = fileInput && fileInput.files.length > 0;
 
@@ -596,10 +598,10 @@ document.addEventListener('DOMContentLoaded', function () {
             statusFoto.textContent = 'Siap Diunggah';
             statusFoto.className = 'badge bg-success';
         } else if (hasOldFile) {
-            statusFoto.textContent = 'Pilih Ulang File';
+            statusFoto.textContent = 'Pilih Ulang';
             statusFoto.className = 'badge bg-warning text-dark';
         } else {
-            statusFoto.textContent = 'Belum Diunggah';
+            statusFoto.textContent = 'Kosong';
             statusFoto.className = 'badge bg-secondary';
         }
     }
@@ -608,7 +610,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const sbpId = detailSbpModalElement.dataset.currentSbpId;
         const fileInput = document.getElementById(`hidden-file-input-${sbpId}`);
         if (fileInput) {
-            fileInput.value = ''; // Clear the file input
+            fileInput.value = '';
             fileInput.dispatchEvent(new Event('change', { bubbles: true }));
         }
     });
@@ -619,7 +621,6 @@ document.addEventListener('DOMContentLoaded', function () {
     function attachInitialHandlers() {
         document.querySelectorAll('[id^=hidden-file-input-]').forEach(input => {
             input.addEventListener('change', handleFileChange);
-            // Trigger status update on page load for old inputs
             const sbpId = input.id.replace('hidden-file-input-', '');
             updateFotoStatus(sbpId);
         });
