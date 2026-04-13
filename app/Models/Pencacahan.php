@@ -22,6 +22,8 @@ class Pencacahan extends Model
     protected $fillable = [
         'no_ba_cacah',
         'tanggal_ba_cacah',
+        'no_surat_tugas_pencacahan',
+        'tanggal_surat_tugas_pencacahan',
         'lokasi_cacah',
         'id_petugas_1',
         'id_petugas_2',
@@ -34,6 +36,7 @@ class Pencacahan extends Model
      */
     protected $casts = [
         'tanggal_ba_cacah' => 'date',
+        'tanggal_surat_tugas_pencacahan' => 'date',
     ];
 
     /**

@@ -32,7 +32,7 @@
                                     <label for="no_ba_cacah_nomor" class="form-label">Nomor BA Cacah</label>
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="cil-barcode"></i></span>
-                                        <input type="text" class="form-control" id="no_ba_cacah_nomor" placeholder="Masukkan hanya angka" required oninput="this.value = this.value.replace(/[^0-9]/g, '')" value="{{ old('no_ba_cacah_nomor', old('no_ba_cacah') ? preg_replace('/[^0-9]/', '', explode('/', old('no_ba_cacah'))[0]) : '') }}">
+                                        <input type="text" class="form-control" id="no_ba_cacah_nomor" placeholder="Masukkan hanya angka" required oninput="this.value = this.value.replace(/[^0-9]/g, \'\')" value="{{ old('no_ba_cacah_nomor', old('no_ba_cacah') ? preg_replace('/[^0-9]/', '', explode('/', old('no_ba_cacah'))[0]) : '') }}">
                                     </div>
                                     <input type="hidden" name="no_ba_cacah" id="no_ba_cacah" value="{{ old('no_ba_cacah') }}">
                                 </div>
@@ -43,6 +43,24 @@
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="cil-calendar"></i></span>
                                         <input type="date" class="form-control" id="tanggal_ba_cacah" name="tanggal_ba_cacah" value="{{ old('tanggal_ba_cacah') }}" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="no_surat_tugas_pencacahan" class="form-label">Nomor Surat Tugas Pencacahan</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="cil-description"></i></span>
+                                        <input type="text" class="form-control" id="no_surat_tugas_pencacahan" name="no_surat_tugas_pencacahan" placeholder="Contoh: ST-123/KBC.010202/2024" value="{{ old('no_surat_tugas_pencacahan') }}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="tanggal_surat_tugas_pencacahan" class="form-label">Tanggal Surat Tugas Pencacahan</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="cil-calendar"></i></span>
+                                        <input type="date" class="form-control" id="tanggal_surat_tugas_pencacahan" name="tanggal_surat_tugas_pencacahan" value="{{ old('tanggal_surat_tugas_pencacahan') }}">
                                     </div>
                                 </div>
                             </div>
@@ -86,7 +104,7 @@
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="cil-user-follow"></i></span>
                                         <select id="id_petugas_2" class="form-select" name="id_petugas_2">
-                                            <option value="">Pilih Petugas 2 (Opsional)</option>
+                                            <option value="">Pilih Petugas 2</option>
                                             @foreach($petugasData as $petugas)
                                             <option value="{{ $petugas->id }}" {{ old('id_petugas_2') == $petugas->id ? 'selected' : '' }}>{{ $petugas->nama }}</option>
                                             @endforeach
@@ -184,8 +202,8 @@
                 </div>
             </div>
             <div class="card-footer text-end bg-light">
-                <button type="submit" class="btn btn-primary"><i class="cil-save me-2"></i>Simpan Pencacahan</button>
                 <a href="{{ route('pencacahan.index') }}" class="btn btn-secondary"><i class="cil-x-circle me-2"></i>Batal</a>
+                <button type="submit" class="btn btn-primary"><i class="cil-save me-2"></i>Simpan</button>
             </div>
         </div>
     </form>
@@ -303,7 +321,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const tgl = document.getElementById('tanggal_ba_cacah').value;
         if (nomor && tgl) {
             const year = new Date(tgl).getFullYear();
-            document.getElementById('no_ba_cacah').value = `BA-${nomor}/CACAH/KBC.010202/${year}`;
+            document.getElementById('no_ba_cacah').value = `BA-${nomor}/Cacah/KBC.010202/${year}`;
         }
     });
 

@@ -45,6 +45,8 @@ class PencacahanController extends Controller
         $validator = Validator::make($request->all(), [
             'no_ba_cacah' => 'required|string|max:255|unique:pencacahan,no_ba_cacah',
             'tanggal_ba_cacah' => 'required|date',
+            'no_surat_tugas_pencacahan' => 'nullable|string|max:255',
+            'tanggal_surat_tugas_pencacahan' => 'nullable|date',
             'lokasi_cacah' => 'nullable|string|max:255',
             'id_petugas_1' => 'required|exists:petugas,id',
             'id_petugas_2' => 'nullable|exists:petugas,id|different:id_petugas_1',
@@ -52,7 +54,7 @@ class PencacahanController extends Controller
             'id_sbp.*' => 'required|exists:sbp,id',
             'detail_barang_json' => 'nullable|array',
             'detail_barang_json.*' => 'nullable|json',
-            'foto_barang' => 'nullable|array',
+            'foto_barang' => 'nullable|array|max:1',
             'foto_barang.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120', // 5MB max
         ], [
             'foto_barang.*.image' => 'File yang diunggah harus berupa gambar.',
@@ -159,6 +161,8 @@ class PencacahanController extends Controller
         $validator = Validator::make($request->all(), [
             'no_ba_cacah' => ['required', 'string', 'max:255', Rule::unique('pencacahan')->ignore($pencacahan->id)],
             'tanggal_ba_cacah' => 'required|date',
+            'no_surat_tugas_pencacahan' => 'nullable|string|max:255',
+            'tanggal_surat_tugas_pencacahan' => 'nullable|date',
             'lokasi_cacah' => 'nullable|string|max:255',
             'id_petugas_1' => 'required|exists:petugas,id',
             'id_petugas_2' => 'nullable|exists:petugas,id|different:id_petugas_1',

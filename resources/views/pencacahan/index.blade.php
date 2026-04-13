@@ -53,7 +53,7 @@
                 <table class="table table-bordered table-striped">
                     <thead class="table-light">
                         <tr>
-                            <th class="text-center">No BA Cacah</th>
+                            <th class="text-center">Nomor BA Cacah</th>
                             <th class="text-center">Tanggal</th>
                             <th class="text-center">Aksi</th>
                         </tr>
