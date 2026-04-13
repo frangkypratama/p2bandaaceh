@@ -22,6 +22,11 @@
                     @include('input-sbp.partials._detail_penindakan')
                     @include('input-sbp.partials._barang_bukti')
                     @include('input-sbp.partials._petugas')
+
+                    {{-- Include Modals outside the main card structure for better DOM management --}}
+                    @include('input-sbp.partials._bast_modal')
+                    @include('input-sbp.partials._pelanggaran_modal')
+                    @include('input-sbp.partials._ba_musnah_modal')
                 </div>
             </div>
             <div class="card-footer text-end bg-light">
@@ -36,10 +41,6 @@
     </form>
 </div>
 
-{{-- Include Modals outside the main card structure for better DOM management --}}
-@include('input-sbp.partials._bast_modal')
-@include('input-sbp.partials._pelanggaran_modal')
-@include('input-sbp.partials._ba_musnah_modal')
 @endsection
 
 @push('styles')
