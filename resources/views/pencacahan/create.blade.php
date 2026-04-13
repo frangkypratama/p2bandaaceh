@@ -321,7 +321,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const tgl = document.getElementById('tanggal_ba_cacah').value;
         if (nomor && tgl) {
             const year = new Date(tgl).getFullYear();
-            document.getElementById('no_ba_cacah').value = `BA-${nomor}/Cacah/KBC.010202/Cacah/${year}`;
+            document.getElementById('no_ba_cacah').value = `BA-${nomor}/KBC.010202/Cacah/${year}`;
         }
     });
 
