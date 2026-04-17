@@ -68,4 +68,12 @@ class DetailPencacahan extends Model
     {
         return $this->belongsTo(RefJenisBarang::class, 'id_jenis_barang');
     }
+    
+    /**
+     * Mendapatkan data satuan yang terkait dengan detail pencacahan.
+     */
+    public function satuan(): BelongsTo
+    {
+        return $this->belongsTo(RefSatuan::class, 'id_satuan');
+    }
 }

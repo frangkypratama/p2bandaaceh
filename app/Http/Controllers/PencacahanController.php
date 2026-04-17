@@ -16,6 +16,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
+use setasign\Fpdi\Fpdi;
 
 class PencacahanController extends Controller
 {
@@ -54,7 +57,7 @@ class PencacahanController extends Controller
             'id_sbp.*' => 'required|exists:sbp,id',
             'detail_barang_json' => 'nullable|array',
             'detail_barang_json.*' => 'nullable|json',
-            'foto_barang' => 'nullable|array|max:1',
+            'foto_barang' => 'nullable|array',
             'foto_barang.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120', // 5MB max
         ], [
             'foto_barang.*.image' => 'File yang diunggah harus berupa gambar.',
@@ -84,7 +87,6 @@ class PencacahanController extends Controller
                     $detailBarangArray = json_decode($request->detail_barang_json[$sbpId], true);
                     if (is_array($detailBarangArray)) {
                         $detailsToCreate = array_map(function ($item) use ($pencacahanSbp, $fillableAttributes) {
-                            // Filter only fillable attributes
                             $filteredItem = array_intersect_key($item, array_flip($fillableAttributes));
                             $filteredItem['pencacahan_sbp_id'] = $pencacahanSbp->id;
                             return $filteredItem;
@@ -93,7 +95,7 @@ class PencacahanController extends Controller
                         $detailsToCreate = array_filter($detailsToCreate);
                         if(!empty($detailsToCreate)){
                             foreach ($detailsToCreate as $detail) {
-                                DetailPencacahan::create($detail); // Individual insert
+                                DetailPencacahan::create($detail);
                             }
                         }
                     }
@@ -101,7 +103,8 @@ class PencacahanController extends Controller
 
                 if ($request->hasFile("foto_barang.$sbpId")) {
                     $file = $request->file("foto_barang.$sbpId");
-                    $path = $file->store('public/pencacahan_photos');
+                    $folder = 'pencacahan_photos';
+                    $path = $file->store($folder, 'public');
                     PencacahanPhoto::create([
                         'pencacahan_sbp_id' => $pencacahanSbp->id,
                         'path' => $path,
@@ -194,7 +197,7 @@ class PencacahanController extends Controller
                 
                 $existingPhoto = $pencacahanSbp->photos()->first();
                 if ($existingPhoto) {
-                    Storage::delete($existingPhoto->path);
+                    Storage::disk('public')->delete($existingPhoto->path);
                     $existingPhoto->delete();
                 }
 
@@ -210,7 +213,7 @@ class PencacahanController extends Controller
                         $detailsToCreate = array_filter($detailsToCreate);
                         if(!empty($detailsToCreate)){
                             foreach ($detailsToCreate as $detail) {
-                                DetailPencacahan::create($detail); // Individual insert
+                                DetailPencacahan::create($detail);
                             }
                         }
                     }
@@ -218,7 +221,8 @@ class PencacahanController extends Controller
 
                 if ($request->hasFile("foto_barang.$sbpId")) {
                     $file = $request->file("foto_barang.$sbpId");
-                    $path = $file->store('public/pencacahan_photos');
+                    $folder = 'pencacahan_photos';
+                    $path = $file->store($folder, 'public');
                     PencacahanPhoto::create([
                         'pencacahan_sbp_id' => $pencacahanSbp->id,
                         'path' => $path,
@@ -330,5 +334,82 @@ class PencacahanController extends Controller
         $nama_barang = $jenisBarang->nama_barang;
 
         return view($viewName, compact('satuanData', 'tarifCukaiData', 'data', 'nama_barang'))->render();
+    }
+
+    public function cetak(string $id)
+    {
+        $pencacahan = Pencacahan::with([
+            'petugas1',
+            'petugas2',
+            'sbp' => function ($query) {
+                $query->withPivot('id');
+            },
+            'details' => function ($query) {
+                $query->with(['jenisBarang', 'satuan']);
+            },
+            'photos'
+        ])->findOrFail($id);
+
+        Carbon::setLocale('id');
+        $filename = 'BA-CACAH-' . str_replace('/', '-', $pencacahan->no_ba_cacah) . '.pdf';
+        $tempPath = storage_path('app/temp');
+        if (!file_exists($tempPath)) {
+            mkdir($tempPath, 0777, true);
+        }
+
+        // 1. Buat PDF Potret & simpan
+        $pdfPotret = Pdf::loadView('templatecetak.template-ba-cacah', compact('pencacahan'));
+        $potretPath = $tempPath . '/' . uniqid('potret_') . '.pdf';
+        $pdfPotret->save($potretPath);
+
+        // 2. Buat PDF Lanskap & simpan
+        $pdfLanskap = Pdf::loadView('templatecetak.template-ba-cacah-lampiran', compact('pencacahan'));
+        $lanskapPath = $tempPath . '/' . uniqid('lanskap_') . '.pdf';
+        $pdfLanskap->save($lanskapPath);
+
+        // 3. Gabungkan dengan FPDI dalam urutan yang benar
+        $fpdi = new Fpdi();
+
+        // Ambil Halaman 1 (Berita Acara) dari PDF Potret
+        $pageCountPotret = $fpdi->setSourceFile($potretPath);
+        $templateId = $fpdi->importPage(1);
+        $size = $fpdi->getTemplateSize($templateId);
+        $fpdi->AddPage($size['orientation'], $size);
+        $fpdi->useTemplate($templateId);
+
+        // Ambil semua halaman dari PDF Lanskap (Lampiran)
+        $pageCountLanskap = $fpdi->setSourceFile($lanskapPath);
+        for ($pageNo = 1; $pageNo <= $pageCountLanskap; $pageNo++) {
+            $templateId = $fpdi->importPage($pageNo);
+            $size = $fpdi->getTemplateSize($templateId);
+            $fpdi->AddPage($size['orientation'], $size);
+            $fpdi->useTemplate($templateId);
+        }
+
+        // Jika ada halaman kedua di PDF Potret (Foto), tambahkan di akhir
+        if ($pageCountPotret > 1) {
+            $fpdi->setSourceFile($potretPath); // Set ulang source file ke potret
+            for ($pageNo = 2; $pageNo <= $pageCountPotret; $pageNo++) {
+                $templateId = $fpdi->importPage($pageNo);
+                $size = $fpdi->getTemplateSize($templateId);
+                $fpdi->AddPage($size['orientation'], $size);
+                $fpdi->useTemplate($templateId);
+            }
+        }
+
+        // 4. Kirim output & hapus file sementara
+        try {
+            $output = $fpdi->Output('S', $filename);
+            unlink($potretPath);
+            unlink($lanskapPath);
+            return response($output, 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="' . $filename . '"',
+            ]);
+        } catch (\Exception $e) {
+            if (file_exists($potretPath)) unlink($potretPath);
+            if (file_exists($lanskapPath)) unlink($lanskapPath);
+            throw $e;
+        }
     }
 }
