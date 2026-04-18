@@ -99,7 +99,7 @@
                                 <td rowspan="{{ $detailCount }}">{{ $sbpIndex + 1 }}</td>
                                 <td rowspan="{{ $detailCount }}">{{ $sbp->nomor_sbp }}</td>
                             @endif
-                            <td>{{ optional($detail->jenisBarang)->kode_komoditi ?? '-' }}</td>
+                            <td>{{ optional($detail->jenisBarang)->nomor_urut ?? '-' }}</td>
                             <td class="text-left">{{ optional($detail->jenisBarang)->nama_barang ?? '-' }}</td>
                             <td>{{ $detail->merek ?? '-' }}</td>
                             <td>{{ $detail->tipe ?? '-' }}</td>
