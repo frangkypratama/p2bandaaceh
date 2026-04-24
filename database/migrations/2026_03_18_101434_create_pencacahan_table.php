@@ -16,6 +16,9 @@ return new class extends Migration
                 $table->id();
                 $table->string('no_ba_cacah')->unique();
                 $table->date('tanggal_ba_cacah');
+                $table->string('no_surat_tugas_pencacahan')->nullable();
+                $table->date('tanggal_surat_tugas_pencacahan')->nullable();
+                $table->string('giat')->nullable();
                 $table->string('lokasi_cacah')->nullable();
                 $table->unsignedBigInteger('id_petugas_1');
                 $table->unsignedBigInteger('id_petugas_2')->nullable();
