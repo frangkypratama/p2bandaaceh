@@ -38,8 +38,12 @@ Aplikasi ini adalah aplikasi web berbasis Laravel untuk mengelola Surat Bukti Pe
 *   **Manajemen Pencacahan:**
     *   Membuat dokumen Berita Acara Pencacahan baru.
     *   Formulir pencacahan memungkinkan pengguna untuk memilih satu atau lebih dokumen SBP yang sudah ada melalui sebuah modal pencarian.
-    *   Data SBP yang dipilih (seperti nama pelaku, jenis barang, dll.) akan ditampilkan dalam bentuk kartu-kartu informatif di halaman pembuatan pencacahan.
-    *   Menyimpan relasi antara dokumen pencacahan dan SBP yang dipilih.
+    *   Logika pencarian SBP yang dinamis:
+        *   Saat membuat pencacahan baru, SBP yang sudah pernah dicacah akan dinonaktifkan.
+        *   Saat mengedit pencacahan, SBP yang sudah dicacah di BA *lain* akan dinonaktifkan, tetapi SBP yang terikat pada BA yang sedang diedit tetap dapat dipilih/dihapus.
+    *   Menyimpan relasi antara dokumen pencacahan dan SBP yang dipilih, termasuk detail barang dan foto.
+    *   Mengedit data pencacahan yang sudah ada.
+    *   Mencetak dokumen BA Pencacahan beserta lampiran dan foto dalam satu file PDF gabungan.
 *   **Cetak & Pratinjau Dokumen:**
     *   Mencetak SBP dan dokumen terkait (Berita Acara Pemeriksaan, Penegahan, Penyegelan, LPT) dalam format PDF.
     *   Menampilkan pratinjau PDF dari semua dokumen yang dapat dicetak langsung di browser.
@@ -47,9 +51,8 @@ Aplikasi ini adalah aplikasi web berbasis Laravel untuk mengelola Surat Bukti Pe
 
 ## Rencana Perubahan Saat Ini
 
-**Tugas:** Mengimplementasikan fitur "Manajemen Pencacahan".
+**Tugas:** Tidak ada perubahan yang sedang berlangsung.
 
 **Langkah-langkah:**
-1.  Membuat dan memperbaiki Model, View, dan Controller untuk fitur "Pencacahan".
-2.  Memastikan form pembuatan Pencacahan dapat mengambil dan menampilkan data dari SBP yang sudah ada.
-3.  Menyelesaikan proses penyimpanan data Pencacahan beserta relasinya ke SBP.
+
+-

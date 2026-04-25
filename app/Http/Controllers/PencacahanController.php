@@ -59,7 +59,7 @@ class PencacahanController extends Controller
             'detail_barang_json' => 'nullable|array',
             'detail_barang_json.*' => 'nullable|json',
             'foto_barang' => 'nullable|array',
-            'foto_barang.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120', // 5MB max
+            'foto_barang.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
         ], [
             'foto_barang.*.image' => 'File yang diunggah harus berupa gambar.',
             'foto_barang.*.mimes' => 'Format gambar harus jpeg, png, jpg, gif, atau webp.',
@@ -94,7 +94,7 @@ class PencacahanController extends Controller
                         }, $detailBarangArray);
                         
                         $detailsToCreate = array_filter($detailsToCreate);
-                        if(!empty($detailsToCreate)){
+                        if (!empty($detailsToCreate)) {
                             foreach ($detailsToCreate as $detail) {
                                 DetailPencacahan::create($detail);
                             }
@@ -123,7 +123,6 @@ class PencacahanController extends Controller
         }
     }
 
-
     public function show(string $id)
     {
         $pencacahan = Pencacahan::with('petugas1', 'petugas2', 'sbp', 'details', 'photos')->findOrFail($id);
@@ -141,22 +140,24 @@ class PencacahanController extends Controller
         $sbpDataForView = $pencacahan->sbp()->withPivot('id')->get();
         
         if (old('id_sbp')) {
-             $sbpDataForView = Sbp::whereIn('id', old('id_sbp'))->get();
+            $sbpDataForView = Sbp::whereIn('id', old('id_sbp'))->get();
         } else {
             $pencacahanSbpIds = $sbpDataForView->pluck('pivot.id');
             $existingDetails = DetailPencacahan::whereIn('pencacahan_sbp_id', $pencacahanSbpIds)->get()->groupBy('pencacahan_sbp_id');
             $existingPhotos = PencacahanPhoto::whereIn('pencacahan_sbp_id', $pencacahanSbpIds)->get()->keyBy('pencacahan_sbp_id');
 
-            $sbpDataForView->each(function($sbp) use ($existingDetails, $existingPhotos) {
+            $sbpDataForView->each(function ($sbp) use ($existingDetails, $existingPhotos) {
                 $pivotId = $sbp->pivot->id;
                 $sbp->details_json = $existingDetails->get($pivotId) ? $existingDetails->get($pivotId)->toJson() : '[]';
-                $sbp->has_file = $existingPhotos->has($pivotId) ? '1' : '0';
+                
+                $photo = $existingPhotos->get($pivotId);
+                $sbp->has_file = $photo ? '1' : '0';
+                $sbp->photo_path = $photo ? $photo->path : null;
             });
         }
 
         return view('pencacahan.edit', compact('pencacahan', 'petugasData', 'sbpDataForView', 'satuanData', 'jenisBarangData', 'tarifCukaiData'));
     }
-
 
     public function update(Request $request, string $id)
     {
@@ -177,7 +178,8 @@ class PencacahanController extends Controller
             'detail_barang_json.*' => 'nullable|json',
             'foto_barang' => 'nullable|array',
             'foto_barang.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
-            'deleted_photos' => 'nullable|array', // To handle photo deletion
+            'remove_foto' => 'nullable|array',
+            'remove_foto.*' => 'in:0,1',
         ]);
 
         if ($validator->fails()) {
@@ -195,25 +197,20 @@ class PencacahanController extends Controller
             $fillableAttributes = (new DetailPencacahan())->getFillable();
 
             foreach ($PencacahanSbp as $sbpId => $pencacahanSbp) {
+                // ── Detail Barang: hapus lama, insert baru ──
                 $pencacahanSbp->details()->delete();
-                
-                $existingPhoto = $pencacahanSbp->photos()->first();
-                if ($existingPhoto) {
-                    Storage::disk('public')->delete($existingPhoto->path);
-                    $existingPhoto->delete();
-                }
 
                 if (isset($request->detail_barang_json[$sbpId])) {
                     $detailBarangArray = json_decode($request->detail_barang_json[$sbpId], true);
                     if (is_array($detailBarangArray)) {
-                         $detailsToCreate = array_map(function ($item) use ($pencacahanSbp, $fillableAttributes) {
+                        $detailsToCreate = array_map(function ($item) use ($pencacahanSbp, $fillableAttributes) {
                             $filteredItem = array_intersect_key($item, array_flip($fillableAttributes));
                             $filteredItem['pencacahan_sbp_id'] = $pencacahanSbp->id;
                             return $filteredItem;
                         }, $detailBarangArray);
                         
                         $detailsToCreate = array_filter($detailsToCreate);
-                        if(!empty($detailsToCreate)){
+                        if (!empty($detailsToCreate)) {
                             foreach ($detailsToCreate as $detail) {
                                 DetailPencacahan::create($detail);
                             }
@@ -221,7 +218,18 @@ class PencacahanController extends Controller
                     }
                 }
 
-                if ($request->hasFile("foto_barang.$sbpId")) {
+                // ── Foto: 3 kemungkinan ──
+                $existingPhoto = $pencacahanSbp->photos()->first();
+                $hasNewUpload = $request->hasFile("foto_barang.$sbpId");
+                $wantRemove = $request->input("remove_foto.$sbpId") == '1';
+
+                if ($hasNewUpload) {
+                    // Kasus 1: Ada upload baru → hapus foto lama, simpan foto baru
+                    if ($existingPhoto) {
+                        Storage::disk('public')->delete($existingPhoto->path);
+                        $existingPhoto->delete();
+                    }
+
                     $file = $request->file("foto_barang.$sbpId");
                     $folder = 'pencacahan_photos';
                     $path = $file->store($folder, 'public');
@@ -230,7 +238,12 @@ class PencacahanController extends Controller
                         'path' => $path,
                         'filename' => $file->hashName(),
                     ]);
+                } elseif ($wantRemove && $existingPhoto) {
+                    // Kasus 2: User eksplisit hapus foto (tanpa upload pengganti)
+                    Storage::disk('public')->delete($existingPhoto->path);
+                    $existingPhoto->delete();
                 }
+                // Kasus 3: Tidak ada upload baru, tidak minta hapus → foto lama tetap ada
             }
 
             DB::commit();
@@ -247,13 +260,8 @@ class PencacahanController extends Controller
         DB::beginTransaction();
         try {
             $pencacahan = Pencacahan::findOrFail($id);
-
-            // Hapus record dari tabel pivot
             PencacahanSbp::where('pencacahan_id', $pencacahan->id)->delete();
-
-            // Hapus record utama
             $pencacahan->delete();
-
             DB::commit();
 
             return redirect()->route('pencacahan.index')->with('success', 'Data Pencacahan berhasil dihapus.');
@@ -264,10 +272,25 @@ class PencacahanController extends Controller
         }
     }
     
+    /**
+     * Unified SBP search untuk create dan edit.
+     * - Tanpa pencacahan_id: mode create, semua SBP yang sudah dicacah di-disable.
+     * - Dengan pencacahan_id: mode edit, hanya SBP yang dicacah oleh pencacahan LAIN yang di-disable.
+     */
     public function searchSbp(Request $request)
     {
         $search = $request->input('search', '');
-        $query = Sbp::withExists('pencacahan')->latest();
+        $pencacahanId = $request->input('pencacahan_id');
+
+        $query = Sbp::latest();
+
+        if ($pencacahanId) {
+            $query->withExists(['pencacahan as is_disabled' => function ($q) use ($pencacahanId) {
+                $q->where('pencacahan.id', '!=', $pencacahanId);
+            }]);
+        } else {
+            $query->withExists(['pencacahan as is_disabled']);
+        }
 
         if (!empty($search)) {
             $query->where(function ($q) use ($search) {
@@ -276,7 +299,7 @@ class PencacahanController extends Controller
             });
         }
 
-        $sbp = $query->paginate(10)->appends(['search' => $search]);
+        $sbp = $query->paginate(10)->appends($request->only(['search', 'pencacahan_id']));
 
         if ($request->ajax()) {
             return response()->json([
@@ -359,27 +382,22 @@ class PencacahanController extends Controller
             mkdir($tempPath, 0777, true);
         }
 
-        // 1. Buat PDF Potret & simpan
         $pdfPotret = Pdf::loadView('templatecetak.template-ba-cacah', compact('pencacahan'));
         $potretPath = $tempPath . '/' . uniqid('potret_') . '.pdf';
         $pdfPotret->save($potretPath);
 
-        // 2. Buat PDF Lanskap & simpan
         $pdfLanskap = Pdf::loadView('templatecetak.template-ba-cacah-lampiran', compact('pencacahan'));
         $lanskapPath = $tempPath . '/' . uniqid('lanskap_') . '.pdf';
         $pdfLanskap->save($lanskapPath);
 
-        // 3. Gabungkan dengan FPDI dalam urutan yang benar
         $fpdi = new Fpdi();
 
-        // Ambil Halaman 1 (Berita Acara) dari PDF Potret
         $pageCountPotret = $fpdi->setSourceFile($potretPath);
         $templateId = $fpdi->importPage(1);
         $size = $fpdi->getTemplateSize($templateId);
         $fpdi->AddPage($size['orientation'], $size);
         $fpdi->useTemplate($templateId);
 
-        // Ambil semua halaman dari PDF Lanskap (Lampiran)
         $pageCountLanskap = $fpdi->setSourceFile($lanskapPath);
         for ($pageNo = 1; $pageNo <= $pageCountLanskap; $pageNo++) {
             $templateId = $fpdi->importPage($pageNo);
@@ -388,9 +406,8 @@ class PencacahanController extends Controller
             $fpdi->useTemplate($templateId);
         }
 
-        // Jika ada halaman kedua di PDF Potret (Foto), tambahkan di akhir
         if ($pageCountPotret > 1) {
-            $fpdi->setSourceFile($potretPath); // Set ulang source file ke potret
+            $fpdi->setSourceFile($potretPath);
             for ($pageNo = 2; $pageNo <= $pageCountPotret; $pageNo++) {
                 $templateId = $fpdi->importPage($pageNo);
                 $size = $fpdi->getTemplateSize($templateId);
@@ -399,7 +416,6 @@ class PencacahanController extends Controller
             }
         }
 
-        // 4. Kirim output & hapus file sementara
         try {
             $output = $fpdi->Output('S', $filename);
             unlink($potretPath);

@@ -32,7 +32,7 @@
                                     <label for="no_ba_cacah_nomor" class="form-label">Nomor BA Cacah</label>
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="cil-barcode"></i></span>
-                                        <input type="text" class="form-control" id="no_ba_cacah_nomor" placeholder="Masukkan hanya angka" required oninput="this.value = this.value.replace(/[^0-9]/g, \'\')" value="{{ old('no_ba_cacah_nomor', old('no_ba_cacah') ? preg_replace('/[^0-9]/', '', explode('/', old('no_ba_cacah'))[0]) : '') }}">
+                                        <input type="text" class="form-control" id="no_ba_cacah_nomor" placeholder="Masukkan hanya angka" required oninput="this.value = this.value.replace(/[^0-9]/g, '')" value="{{ old('no_ba_cacah_nomor', old('no_ba_cacah') ? preg_replace('/[^0-9]/', '', explode('/', old('no_ba_cacah'))[0]) : '') }}">
                                     </div>
                                     <input type="hidden" name="no_ba_cacah" id="no_ba_cacah" value="{{ old('no_ba_cacah') }}">
                                 </div>
@@ -254,6 +254,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const hiddenInputsContainer = document.getElementById('hiddenInputsContainer');
     const csrfToken = '{{ csrf_token() }}';
 
+    // Temporary storage untuk SBP yang dicentang di modal tapi belum dikonfirmasi
+    // Menyimpan data checkbox agar persist saat pindah halaman pagination
+    // Format: { 'sbp_id': { nomorSbp, tanggalSbp, jenisBarang, uraianBarang } }
+    const pendingSelections = new Map();
+
     // ═══════════════════════════════════════════════════════════════════
     // UTILITY
     // ═══════════════════════════════════════════════════════════════════
@@ -335,8 +340,16 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // ═══════════════════════════════════════════════════════════════════
-    // SBP SEARCH MODAL
+    // SBP SEARCH MODAL (mode create: tanpa pencacahan_id)
     // ═══════════════════════════════════════════════════════════════════
+    function getSearchUrl(searchTerm = '') {
+        const url = new URL('{{ route("pencacahan.searchSbp") }}', window.location.origin);
+        if (searchTerm) {
+            url.searchParams.append('search', searchTerm);
+        }
+        return url.toString();
+    }
+
     function fetchSbp(url) {
         document.getElementById('sbpLoadingIndicator').classList.remove('d-none');
         document.getElementById('sbpErrorAlert').classList.add('d-none');
@@ -350,12 +363,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 } else {
                     data.data.forEach(sbp => {
                         const tr = document.createElement('tr');
-                        if (sbp.pencacahan_exists) tr.classList.add('row-dicacah');
+                        const sbpIdStr = sbp.id.toString();
+                        // Checked jika: sudah confirmed (selectedSbpIds) ATAU pending di modal
+                        const isChecked = selectedSbpIds.has(sbpIdStr) || pendingSelections.has(sbpIdStr);
+                        if (sbp.is_disabled) tr.classList.add('row-dicacah');
                         tr.innerHTML = `
-                            <td class="text-center"><input class="form-check-input sbp-checkbox" type="checkbox" value="${sbp.id}" ${selectedSbpIds.has(sbp.id.toString()) ? 'checked' : ''} ${sbp.pencacahan_exists ? 'disabled' : ''} data-nomor-sbp="${esc(sbp.nomor_sbp)}" data-tanggal-sbp="${sbp.tanggal_sbp || ''}" data-jenis-barang="${esc(sbp.jenis_barang)}" data-uraian-barang="${esc(sbp.uraian_barang)}"></td>
+                            <td class="text-center"><input class="form-check-input sbp-checkbox" type="checkbox" value="${sbp.id}" ${isChecked ? 'checked' : ''} ${sbp.is_disabled ? 'disabled' : ''} data-nomor-sbp="${esc(sbp.nomor_sbp)}" data-tanggal-sbp="${sbp.tanggal_sbp || ''}" data-jenis-barang="${esc(sbp.jenis_barang)}" data-uraian-barang="${esc(sbp.uraian_barang)}"></td>
                             <td>${esc(sbp.nomor_sbp) || '-'}</td>
                             <td>${formatTanggal(sbp.tanggal_sbp)}</td>
-                            <td><span class="badge bg-${sbp.pencacahan_exists ? 'success' : 'secondary'}">${sbp.pencacahan_exists ? 'Sudah dicacah' : 'Belum dicacah'}</span></td>`;
+                            <td><span class="badge bg-${sbp.is_disabled ? 'success' : 'secondary'}">${sbp.is_disabled ? 'Sudah dicacah' : 'Belum dicacah'}</span></td>`;
                         tbody.appendChild(tr);
                     });
                 }
@@ -365,10 +381,32 @@ document.addEventListener('DOMContentLoaded', function () {
             .finally(() => document.getElementById('sbpLoadingIndicator').classList.add('d-none'));
     }
 
+    // Saat checkbox diklik di modal, langsung simpan/hapus dari pendingSelections
+    document.getElementById('sbpTableBody').addEventListener('change', (e) => {
+        const cb = e.target.closest('.sbp-checkbox');
+        if (!cb || cb.disabled) return;
+
+        const sbpIdStr = cb.value.toString();
+
+        if (cb.checked) {
+            // Jangan tambahkan ke pending jika sudah ada di confirmed
+            if (!selectedSbpIds.has(sbpIdStr)) {
+                pendingSelections.set(sbpIdStr, {
+                    nomorSbp: cb.dataset.nomorSbp,
+                    tanggalSbp: cb.dataset.tanggalSbp,
+                    jenisBarang: cb.dataset.jenisBarang,
+                    uraianBarang: cb.dataset.uraianBarang,
+                });
+            }
+        } else {
+            pendingSelections.delete(sbpIdStr);
+        }
+    });
+
     let searchTimeout;
     document.getElementById('sbpSearchInput').addEventListener('keyup', (e) => {
         clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => fetchSbp(`{{ route('pencacahan.searchSbp') }}?search=${encodeURIComponent(e.target.value)}`), 300);
+        searchTimeout = setTimeout(() => fetchSbp(getSearchUrl(e.target.value)), 300);
     });
 
     document.getElementById('sbpPagination').addEventListener('click', (e) => {
@@ -378,15 +416,32 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    sbpModalElement.addEventListener('show.coreui.modal', () => fetchSbp(`{{ route('pencacahan.searchSbp') }}`));
+    sbpModalElement.addEventListener('show.coreui.modal', () => {
+        // Reset pending saat modal dibuka
+        pendingSelections.clear();
+        fetchSbp(getSearchUrl());
+    });
 
+    // Saat klik "Pilih", proses semua pending selections
     document.getElementById('selectSbpButton').addEventListener('click', () => {
-        document.querySelectorAll('#sbpTableBody .sbp-checkbox:checked:not(:disabled)').forEach(cb => {
-            if (!selectedSbpIds.has(cb.value)) {
-                addSbpRowAndInputs(cb.dataset, cb.value);
-                selectedSbpIds.add(cb.value);
+        // Proses semua yang ada di pendingSelections
+        pendingSelections.forEach((dataset, sbpId) => {
+            if (!selectedSbpIds.has(sbpId)) {
+                addSbpRowAndInputs(dataset, sbpId);
+                selectedSbpIds.add(sbpId);
             }
         });
+        pendingSelections.clear();
+
+        // Juga cek checkbox yang visible di halaman saat ini (untuk backward compat)
+        document.querySelectorAll('#sbpTableBody .sbp-checkbox:checked:not(:disabled)').forEach(cb => {
+            const sbpIdStr = cb.value.toString();
+            if (!selectedSbpIds.has(sbpIdStr)) {
+                addSbpRowAndInputs(cb.dataset, sbpIdStr);
+                selectedSbpIds.add(sbpIdStr);
+            }
+        });
+
         coreui.Modal.getInstance(sbpModalElement).hide();
     });
 
@@ -553,9 +608,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const data = [];
         barangContainer.querySelectorAll('.barang-item').forEach((item, i) => {
             const jenis = item.querySelector('.input-jenis-barang');
-            if (!jenis || !jenis.value) {
-                return; // Skip item if no type is selected
-            }
+            if (!jenis || !jenis.value) return;
 
             const entry = {
                 urutan: i + 1,
@@ -564,7 +617,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
             item.querySelectorAll('.conditional-fields-container [data-field]').forEach(f => {
                 const fieldName = f.dataset.field;
-                
                 if (fieldName && typeof fieldName === 'string' && fieldName.trim() !== '') {
                     const fieldValue = f.value;
                     entry[fieldName.trim()] = (fieldValue != null) ? fieldValue.toString().trim() : '';
@@ -621,7 +673,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const hasOldFile = document.getElementById(`has-file-hidden-${sbpId}`)?.value == '1';
         const fileIsSelected = fileInput && fileInput.files.length > 0;
 
-        if(fileIsSelected) {
+        if (fileIsSelected) {
             statusFoto.textContent = 'Siap Diunggah';
             statusFoto.className = 'badge bg-success';
         } else if (hasOldFile) {
