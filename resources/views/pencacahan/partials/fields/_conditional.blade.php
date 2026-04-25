@@ -1,3 +1,12 @@
+<div class="mb-3">
+    <label class="form-label">Kondisi Barang</label>
+    <select class="form-select" data-field="kondisi_barang">
+        <option value="" selected disabled>Pilih Kondisi</option>
+        <option value="Baru" {{ old('kondisi_barang', $data['kondisi_barang'] ?? '') == 'Baru' ? 'selected' : '' }}>Baru</option>
+        <option value="Bukan Baru" {{ old('kondisi_barang', $data['kondisi_barang'] ?? '') == 'Bukan Baru' ? 'selected' : '' }}>Bukan Baru</option>
+    </select>
+</div>
+
 @switch($nama_barang)
 
     @case('Hasil Tembakau')

@@ -110,7 +110,7 @@
                             <td>{{ $detail->tarif_cukai ?? '-' }}</td>
                             <td>{{ $detail->volume_pita_cukai ?? '-' }}</td>
                             <td class="text-left">{{ $detail->jumlah ?? '-' }} {{ optional($detail->satuan)->nama_satuan ?? '' }}</td>
-                            <td>{{ $detail->kondisi ?? '-' }}</td>
+                            <td>{{ $detail->kondisi_barang ?? '-' }}</td>
                             <td>{{ $detail->keterangan ?? '-' }}</td>
                         </tr>
                     @endforeach

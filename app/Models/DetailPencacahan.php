@@ -15,6 +15,7 @@ class DetailPencacahan extends Model
     protected $fillable = [
         'pencacahan_sbp_id',
         'id_jenis_barang',
+        'kondisi_barang',
         'urutan',
         'id_satuan',
         'id_ref_tarif_cukai',
