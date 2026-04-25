@@ -1,6 +1,10 @@
 <div class="mb-3">
-    <label class="form-label">Uraian / Nama Barang</label>
-    <input type="text" class="form-control" data-field="merek" placeholder="Contoh: Bawang Merah Brebes, Nike Air Jordan, dll" value="{{ old('merek', $data['merek'] ?? '') }}">
+    <label class="form-label">Uraian</label>
+    <input type="text" class="form-control" data-field="uraian" placeholder="Contoh: Bawang Merah Brebes, Rokok, dll" value="{{ old('uraian', $data['uraian'] ?? '') }}">
+</div>
+<div class="mb-3">
+    <label class="form-label">Merek</label>
+    <input type="text" class="form-control" data-field="merek" placeholder="Contoh: Gudang Garam, Dji Sam Soe, dll" value="{{ old('merek', $data['merek'] ?? '') }}">
 </div>
 <div class="row">
     <div class="col-md-6 mb-3">

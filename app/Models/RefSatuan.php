@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Class RefSatuan
@@ -24,11 +25,17 @@ class RefSatuan extends Model
     protected $table = 'ref_satuan';
 
     /**
-     * The attributes that are mass assignable.
+     * The attributes that are not mass assignable.
      *
-     * @var array<int, string>
+     * @var array
      */
-    protected $fillable = [
-        'nama_satuan',
-    ];
+    protected $guarded = [];
+
+    /**
+     * Get the jenis barang that belong to the satuan.
+     */
+    public function jenisBarangs(): HasMany
+    {
+        return $this->hasMany(RefJenisBarang::class, 'id_satuan_default');
+    }
 }

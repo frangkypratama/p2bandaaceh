@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\RefJenisBarang;
+use App\Models\RefSatuan;
 use Illuminate\Http\Request;
 
 class RefJenisBarangController extends Controller
@@ -12,9 +13,14 @@ class RefJenisBarangController extends Controller
      */
     public function index()
     {
-        $jenisBarang = RefJenisBarang::orderBy('nomor_urut', 'asc')->get();
-        // Mengarahkan ke view baru di root folder views
-        return view('ref-jenis-barang', compact('jenisBarang'));
+        // Eager load the 'satuan' relationship and get all data
+        $jenisBarang = RefJenisBarang::with('satuan')->orderBy('id', 'asc')->get();
+        
+        // Get all 'satuan' for the modal form
+        $satuans = RefSatuan::orderBy('nama_satuan', 'asc')->get();
+
+        // Pass both datasets to the view
+        return view('ref-jenis-barang', compact('jenisBarang', 'satuans'));
     }
 
     /**
@@ -23,8 +29,8 @@ class RefJenisBarangController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nomor_urut' => 'required|integer|unique:ref_jenis_barang,nomor_urut',
             'nama_barang' => 'required|string|max:255',
+            'id_satuan_default' => 'required|exists:ref_satuan,id'
         ]);
 
         RefJenisBarang::create($request->all());
@@ -39,8 +45,8 @@ class RefJenisBarangController extends Controller
     public function update(Request $request, RefJenisBarang $refJenisBarang)
     {
         $request->validate([
-            'nomor_urut' => 'required|integer|unique:ref_jenis_barang,nomor_urut,' . $refJenisBarang->id,
             'nama_barang' => 'required|string|max:255',
+            'id_satuan_default' => 'required|exists:ref_satuan,id'
         ]);
 
         $refJenisBarang->update($request->all());

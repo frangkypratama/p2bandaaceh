@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class RefJenisBarang extends Model
 {
@@ -17,9 +18,17 @@ class RefJenisBarang extends Model
     protected $table = 'ref_jenis_barang';
 
     /**
-     * The attributes that are mass assignable.
+     * The attributes that are not mass assignable.
      *
-     * @var array<int, string>
+     * @var array
      */
-    protected $fillable = ['nama_barang'];
+    protected $guarded = [];
+
+    /**
+     * Get the default satuan for the jenis barang.
+     */
+    public function satuan(): BelongsTo
+    {
+        return $this->belongsTo(RefSatuan::class, 'id_satuan_default');
+    }
 }
