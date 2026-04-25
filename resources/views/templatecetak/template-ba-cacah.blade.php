@@ -276,7 +276,7 @@
             <tr><td colspan="4"><br></td></tr>
             <tr>
                 <td colspan="4" class="full-width">
-                    telah melakukan pencacahan terhadap Barang Hasil Penindakan yang berasal dari penindakan {{ $pencacahan->giat ?? '' }} di wilayah {{ $pencacahan->wilayah_operasi ?? '-' }} dengan surat bukti penindakan nomor {{ $pencacahan->sbp->pluck('nomor_sbp')->implode(', ') }}. Hasil pencacahan sebagaimana terlampir.
+                    telah melakukan pencacahan terhadap Barang Hasil Penindakan yang berasal dari penindakan {{ $pencacahan->giat ?? '' }} di wilayah {{ $pencacahan->sbp->pluck('kota_penindakan')->unique()->implode(', ') }} dengan surat bukti penindakan nomor {{ $pencacahan->sbp->pluck('nomor_sbp')->implode(', ') }}. Hasil pencacahan sebagaimana terlampir.
                 </td>
             </tr>
 

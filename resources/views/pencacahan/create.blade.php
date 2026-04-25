@@ -6,7 +6,7 @@
         @csrf
         <div class="card mb-4 shadow-sm">
             <div class="card-header bg-primary text-white">
-                <h5 class="card-title mb-0"><i class="cil-plus-circle me-2"></i>Tambah Pencacahan Baru</h5>
+                <h5 class="card-title mb-0"><i class="cil-plus me-2"></i>Tambah Pencacahan Baru</h5>
             </div>
             <div class="card-body">
                 @if ($errors->any())
