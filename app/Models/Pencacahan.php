@@ -27,6 +27,7 @@ class Pencacahan extends Model
         'lokasi_cacah',
         'id_petugas_1',
         'id_petugas_2',
+        'giat',
     ];
 
     /**

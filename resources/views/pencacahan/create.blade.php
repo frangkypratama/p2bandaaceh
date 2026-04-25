@@ -75,12 +75,21 @@
                     </div>
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-md-12">
+                            <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="lokasi_cacah" class="form-label">Lokasi Cacah</label>
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="cil-location-pin"></i></span>
                                         <input type="text" class="form-control" id="lokasi_cacah" name="lokasi_cacah" value="{{ old('lokasi_cacah') }}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="giat" class="form-label">Giat</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="cil-thumb-up"></i></span>
+                                        <input type="text" class="form-control" id="giat" name="giat" value="{{ old('giat') }}">
                                     </div>
                                 </div>
                             </div>
