@@ -35,7 +35,7 @@
                                             data-coreui-target="#previewModal"
                                             data-pdf-url="{{ route('pemeriksaan-badan.cetak', [$item->id, 'is_preview' => true]) }}"
                                             data-pdf-title="Pemeriksaan Badan {{ $item->nama }}">
-                                            <i class="cil-search"></i>
+                                            <i class="cil-print"></i>
                                         </button>
                                         <a href="{{ route('pemeriksaan-badan.edit', $item->id) }}" class="btn btn-warning btn-sm"><i class="cil-pencil"></i></a>
                                         <button type="button" class="btn btn-danger btn-sm"

@@ -39,7 +39,7 @@
                                             <button type="button" class="btn btn-sm btn-info text-white preview-btn"
                                                     data-pdf-url="{{ route('lpt.preview', $item->id) }}"
                                                     data-pdf-title="{{ $item->nomor_lpt }}">
-                                                <i class="cil-magnifying-glass"></i>
+                                                <i class="cil-print"></i>
                                             </button>
                                             <a href="{{ route('lpt.edit', $item->id) }}" class="btn btn-sm btn-warning text-white">
                                                 <i class="cil-pencil"></i>
