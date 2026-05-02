@@ -9,7 +9,7 @@
                     <label for="lokasi_penindakan" class="form-label">Lokasi Penindakan</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="cil-location-pin"></i></span>
-                        <input id="lokasi_penindakan" type="text" class="form-control" name="lokasi_penindakan" value="{{ old('lokasi_penindakan') }}" placeholder="Contoh: Bandara Internasional Sultan Iskandar Muda" required>
+                        <input id="lokasi_penindakan" type="text" class="form-control" name="lokasi_penindakan" value="{{ old('lokasi_penindakan') }}" placeholder="Contoh: Bandara Internasional Sultan Iskandar Muda/Toko Jaya" required>
                     </div>
                 </div>
                 <div class="col-md-6">
