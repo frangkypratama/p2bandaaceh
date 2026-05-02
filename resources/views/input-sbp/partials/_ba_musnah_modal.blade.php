@@ -14,7 +14,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                @isset($sbp)
+            @if(isset($sbp) && $sbp->flag_ba_musnah)
                     <button type="button" class="btn btn-danger me-auto" id="modalDeleteBaMusnahBtn">
                         <i class="cil-trash"></i> Hapus BA Musnah
                     </button>
