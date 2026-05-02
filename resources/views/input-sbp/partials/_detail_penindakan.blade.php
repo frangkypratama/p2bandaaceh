@@ -20,7 +20,7 @@
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <label for="kota" class="form-label">Kota</label>
+                    <label for="kota" class="form-label">Kota/Kabupaten</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="cil-building"></i></span>
                         <select id="kota" class="form-select" name="kota">
