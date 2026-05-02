@@ -13,6 +13,7 @@ use App\Http\Controllers\BariksaBadanController;
 use App\Http\Controllers\PemeriksaanBadanController;
 use App\Http\Controllers\LptController;
 use App\Http\Controllers\RefJenisBarangController;
+use App\Http\Controllers\LokasiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,6 +22,13 @@ use App\Http\Controllers\RefJenisBarangController;
 */
 Route::get('/', fn () => view('dashboard'))->name('dashboard');
 Route::get('/dashboard', fn () => view('dashboard'));
+
+/*
+|--------------------------------------------------------------------------
+| Lokasi
+|--------------------------------------------------------------------------
+*/
+Route::get('/lokasi/kecamatan', [LokasiController::class, 'getKecamatan'])->name('lokasi.kecamatan');
 
 /*
 |--------------------------------------------------------------------------

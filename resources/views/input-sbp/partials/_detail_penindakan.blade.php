@@ -36,7 +36,9 @@
                     <label for="kecamatan" class="form-label">Kecamatan</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="cil-map"></i></span>
-                        <input id="kecamatan" type="text" class="form-control" name="kecamatan" value="{{ old('kecamatan') }}" placeholder="Contoh: Jaya Baru">
+                        <select id="kecamatan" class="form-select" name="kecamatan" disabled>
+                            <option selected disabled>Pilih Kecamatan</option>
+                        </select>
                     </div>
                 </div>
                 <div class="col-12">
