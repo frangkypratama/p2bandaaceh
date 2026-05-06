@@ -11,24 +11,55 @@
             </li>
         @endif
 
-        {{-- Pagination Elements --}}
-        @foreach ($elements as $element)
-            {{-- "Three Dots" Separator --}}
-            @if (is_string($element))
-                <li class="page-item disabled" aria-disabled="true"><span class="page-link">{{ $element }}</span></li>
-            @endif
+        @php
+            // Logic to create a sliding window of links.
+            $window = 2; // The number of links shown on each side of the current page.
+            $currentPage = $paginator->currentPage();
+            $lastPage = $paginator->lastPage();
 
-            {{-- Array Of Links --}}
-            @if (is_array($element))
-                @foreach ($element as $page => $url)
-                    @if ($page == $paginator->currentPage())
-                        <li class="page-item active" aria-current="page"><span class="page-link">{{ $page }}</span></li>
-                    @else
-                        <li class="page-item"><a class="page-link" href="{{ $url }}">{{ $page }}</a></li>
-                    @endif
-                @endforeach
+            // The start of the window
+            $start = $currentPage - $window;
+            if ($start < 1) {
+                $start = 1;
+            }
+
+            // The end of the window
+            $end = $currentPage + $window;
+            if ($end > $lastPage) {
+                $end = $lastPage;
+            }
+        @endphp
+
+        {{-- First page link --}}
+        @if($start > 1)
+            <li class="page-item">
+                <a class="page-link" href="{{ $paginator->url(1) }}">1</a>
+            </li>
+            @if($start > 2)
+                 <li class="page-item disabled" aria-disabled="true"><span class="page-link">...</span></li>
             @endif
-        @endforeach
+        @endif
+
+
+        {{-- Links for the window --}}
+        @for ($page = $start; $page <= $end; $page++)
+            @if ($page == $currentPage)
+                <li class="page-item active" aria-current="page"><span class="page-link">{{ $page }}</span></li>
+            @else
+                <li class="page-item"><a class="page-link" href="{{ $paginator->url($page) }}">{{ $page }}</a></li>
+            @endif
+        @endfor
+
+        {{-- Last page link --}}
+        @if($end < $lastPage)
+            @if($end < $lastPage - 1)
+                 <li class="page-item disabled" aria-disabled="true"><span class="page-link">...</span></li>
+            @endif
+            <li class="page-item">
+                <a class="page-link" href="{{ $paginator->url($lastPage) }}">{{ $lastPage }}</a>
+            </li>
+        @endif
+
 
         {{-- Next Page Link --}}
         @if ($paginator->hasMorePages())
