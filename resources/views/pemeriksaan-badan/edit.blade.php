@@ -18,6 +18,9 @@
                             <div class="input-group">
                                 <span class="input-group-text"><i class="cil-notes"></i></span>
                                 <input type="text" class="form-control" id="no_ba_riksa_nomor" placeholder="Masukkan hanya angka" required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                <button class="btn btn-outline-secondary" type="button" id="fetch-last-number">
+                                    <i class="cil-loop-circular"></i> Ambil Nomor
+                                </button>
                             </div>
                             <input type="hidden" name="no_ba_riksa" id="no_ba_riksa" value="{{ old('no_ba_riksa', $pemeriksaanBadan->no_ba_riksa) }}">
                         </div>
@@ -76,7 +79,7 @@
                                 <select class="form-select" id="jenis_identitas" name="jenis_identitas">
                                     <option value="" disabled>Pilih...</option>
                                     <option value="Paspor" {{ old('jenis_identitas', $pemeriksaanBadan->jenis_identitas) == 'Paspor' ? 'selected' : '' }}>Paspor</option>
-                                    <option value="Kartu Tanda Penduduk" {{ old('jenis_identitas', $pemeriksaanBadan->jenis_identitas) == 'Kartu Tanda Penduduk' ? 'selected' : '' }}>Kartu Tanda Penduduk</option>
+                                    <option value="KTP" {{ old('jenis_identitas', $pemeriksaanBadan->jenis_identitas) == 'KTP' ? 'selected' : '' }}>KTP</option>
                                     <option value="KITAS" {{ old('jenis_identitas', $pemeriksaanBadan->jenis_identitas) == 'KITAS' ? 'selected' : '' }}>KITAS</option>
                                     <option value="Kartu Keluarga" {{ old('jenis_identitas', $pemeriksaanBadan->jenis_identitas) == 'Kartu Keluarga' ? 'selected' : '' }}>Kartu Keluarga</option>
                                 </select>
@@ -310,6 +313,7 @@
         const form = document.getElementById('editPemeriksaanForm');
         const noBaRiksaNomorInput = document.getElementById('no_ba_riksa_nomor');
         const noBaRiksaHiddenInput = document.getElementById('no_ba_riksa');
+        const fetchButton = document.getElementById('fetch-last-number');
 
         function extractBaNumber(fullString) {
             const match = fullString.match(/BA-(\d+)\/BADAN/);
@@ -332,6 +336,37 @@
                 noBaRiksaHiddenInput.value = ''; 
             }
         });
+
+        if (fetchButton) {
+            fetchButton.addEventListener('click', function() {
+                const originalHtml = this.innerHTML;
+                this.disabled = true;
+                this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+
+                fetch("{{ route('pemeriksaan-badan.get-last-number') }}")
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Gagal mengambil data. Status: ' + response.status);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.next_number) {
+                            noBaRiksaNomorInput.value = data.next_number;
+                        } else {
+                            alert('Tidak dapat menemukan nomor berikutnya.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Terjadi kesalahan: ' + error.message);
+                    })
+                    .finally(() => {
+                        this.disabled = false;
+                        this.innerHTML = originalHtml;
+                    });
+            });
+        }
 
         // --- Script untuk Surat Perintah ---
         const suratPerintahData = @json($suratPerintahData);
