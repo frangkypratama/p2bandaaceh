@@ -13,7 +13,7 @@
             @endif
 
             @php
-                $window = 2;
+                $window = 1;
                 $currentPage = $paginator->currentPage();
                 $lastPage = $paginator->lastPage();
 
