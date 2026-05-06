@@ -302,28 +302,24 @@ class SbpController extends Controller
     /**
      * Remove the specified resource from storage.
      */
+    public function destroy(Sbp $sbp)
+    {
+        try {
+            // The 'deleting' event on the Sbp model automatically handles the deletion 
+            // of the related BAST record. No need for transactions or manual deletion here.
+            $sbp->delete();
 
-     public function destroy(Sbp $sbp)
-     {
-         // Menggunakan transaksi untuk memastikan integritas data
-         DB::transaction(function () use ($sbp) {
-             // Memuat relasi BAST secara eksplisit
-             $sbp->load('bast');
-             
-             // Jika ada BAST terkait, hapus terlebih dahulu
-             if ($sbp->bast) {
-                 $sbp->bast->delete();
-             }
-     
-             // Hapus record SBP itu sendiri
-             $sbp->delete();
-         });
-         $sbp->delete();
- 
-         // Redirect kembali dengan pesan sukses. Front-end akan me-reload halaman.
-         return redirect()->back()->with('success', 'Data SBP dan dokumen terkait berhasil dihapus.');
-         return redirect()->route('sbp.index')->with('success', 'Data SBP dan dokumen terkait berhasil dihapus.');
-     }
+            // Redirect to the index page with a success message.
+            return redirect()->route('sbp.index')->with('success', 'Data SBP dan dokumen terkait berhasil dihapus.');
+
+        } catch (\Exception $e) {
+            // Log the error for debugging purposes.
+            Log::error("Gagal menghapus SBP #{$sbp->id}: " . $e->getMessage());
+
+            // Redirect back with an error message.
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat menghapus data SBP.');
+        }
+    }
 
     /**
      * Preview cetak SBP (iframe).
