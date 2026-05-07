@@ -56,3 +56,35 @@
 }
 </style>
 @endpush
+
+@push('scripts')
+<script>
+    $(document).ready(function() {
+        // Initialize Select2 on the kecamatan dropdown
+        $('#kecamatan').select2({
+            theme: "bootstrap-5",
+            placeholder: 'Pilih Kecamatan'
+        });
+
+        $('#kota').on('change', function() {
+            var kota = this.value;
+            var $kecamatanSelect = $('#kecamatan');
+            $kecamatanSelect.prop('disabled', true).html('<option selected disabled>Pilih Kecamatan</option>');
+
+            if (kota) {
+                fetch('{{ route("lokasi.kecamatan") }}?kota=' + kota)
+                    .then(response => response.json())
+                    .then(data => {
+                        $kecamatanSelect.prop('disabled', false);
+                        data.forEach(function(kecamatan) {
+                            var option = new Option(kecamatan, kecamatan, false, false);
+                            $kecamatanSelect.append(option);
+                        });
+                        // Refresh Select2 to show the new options
+                        $kecamatanSelect.trigger('change');
+                    });
+            }
+        });
+    });
+</script>
+@endpush

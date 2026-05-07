@@ -10,6 +10,7 @@ class TerbilangHelper
 
     public static function terbilang($n)
     {
+        $n = (int) $n; 
         if ($n < 12) {
             return trim(static::$angka[$n]);
         }

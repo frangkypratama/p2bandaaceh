@@ -106,7 +106,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                @if(isset($sbp))
+            @if(isset($sbp) && $sbp->flag_bast)
                 <button type="button" class="btn btn-danger me-auto" id="modalDeleteBastBtn">
                     <i class="cil-trash"></i> Hapus BAST
                 </button>

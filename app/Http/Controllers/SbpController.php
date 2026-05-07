@@ -8,7 +8,7 @@ use App\Models\Lpt;
 use App\Models\Bast;
 use App\Models\RefPelanggaran;
 use App\Models\RefSatuan;
-use App\Models\RefJenisBarang; // DIIMPOR
+use App\Models\RefJenisBarang;
 use App\Models\SuratPerintah;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -64,9 +64,9 @@ class SbpController extends Controller
         $refPelanggaranData = RefPelanggaran::all();
         $refSatuanData = RefSatuan::orderBy('nama_satuan', 'asc')->get();
         $suratPerintahData = SuratPerintah::orderBy('tanggal_prin', 'desc')->get();
-        $jenisBarang = RefJenisBarang::orderBy('nomor_urut', 'asc')->get(); // DIGANTI
+        $jenisBarang = RefJenisBarang::orderBy('nomor_urut', 'asc')->get();
 
-        return view('input-sbp', compact('petugasData', 'refPelanggaranData', 'refSatuanData', 'suratPerintahData', 'jenisBarang')); // DIGANTI
+        return view('input-sbp', compact('petugasData', 'refPelanggaranData', 'refSatuanData', 'suratPerintahData', 'jenisBarang'));
     }
 
     /**
@@ -104,7 +104,12 @@ class SbpController extends Controller
 
         if ($request->boolean('flag_bast')) {
             $request->validate([
-                'nomor_bast' => 'required|string|max:255|unique:bast,nomor_bast',
+                'nomor_bast' => [
+                    'required',
+                    'string',
+                    'max:255',
+                    Rule::unique('bast', 'nomor_bast')->whereNull('deleted_at')
+                ],
                 'tanggal_bast' => 'required|date',
                 'jenis_dokumen' => 'nullable|string|max:255',
                 'tanggal_dokumen' => 'nullable|date',
@@ -139,7 +144,6 @@ class SbpController extends Controller
 
             // ===== SIMPAN SBP =====
             $dataToStore = $validated;
-            // $dataToStore['jenis_barang'] = preg_replace('/^\d+\.\s*/', '', $validated['jenis_barang']); // DIHAPUS
             $dataToStore['kota_penindakan'] = $validated['kota'];
             $dataToStore['kecamatan_penindakan'] = $validated['kecamatan'];
             $dataToStore['nama_petugas_1'] = $petugas1->nama;
@@ -191,9 +195,9 @@ class SbpController extends Controller
         $refPelanggaranData = RefPelanggaran::all();
         $refSatuanData = RefSatuan::orderBy('nama_satuan', 'asc')->get();
         $suratPerintahData = SuratPerintah::orderBy('tanggal_prin', 'desc')->get();
-        $jenisBarang = RefJenisBarang::orderBy('nomor_urut', 'asc')->get(); // DIGANTI
+        $jenisBarang = RefJenisBarang::orderBy('nomor_urut', 'asc')->get();
 
-        return view('edit-sbp', compact('sbp', 'petugasData', 'refPelanggaranData', 'refSatuanData', 'suratPerintahData', 'jenisBarang')); // DIGANTI
+        return view('edit-sbp', compact('sbp', 'petugasData', 'refPelanggaranData', 'refSatuanData', 'suratPerintahData', 'jenisBarang'));
     }
 
     /**
@@ -231,8 +235,14 @@ class SbpController extends Controller
         ]);
 
         if ($request->boolean('flag_bast')) {
+            $bastId = $sbp->bast ? $sbp->bast->id : null;
             $request->validate([
-                'nomor_bast' => 'required|string|max:255|unique:bast,nomor_bast,' . ($sbp->bast->id ?? 'NULL') . ',id',
+                'nomor_bast' => [
+                    'required',
+                    'string',
+                    'max:255',
+                    Rule::unique('bast', 'nomor_bast')->ignore($bastId)->whereNull('deleted_at')
+                ],
                 'tanggal_bast' => 'required|date',
                 'jenis_dokumen' => 'nullable|string|max:255',
                 'tanggal_dokumen' => 'nullable|date',
@@ -263,7 +273,6 @@ class SbpController extends Controller
             $petugas2 = Petugas::find($validated['id_petugas_2']);
 
             $dataToUpdate = $validated;
-            // $dataToUpdate['jenis_barang'] = preg_replace('/^\d+\.\s*/', '', $validated['jenis_barang']); // DIHAPUS
             $dataToUpdate['kota_penindakan'] = $validated['kota'];
             $dataToUpdate['kecamatan_penindakan'] = $validated['kecamatan'];
             $dataToUpdate['nama_petugas_1'] = $petugas1->nama;
@@ -302,28 +311,24 @@ class SbpController extends Controller
     /**
      * Remove the specified resource from storage.
      */
+    public function destroy(Sbp $sbp)
+    {
+        try {
+            // The 'deleting' event on the Sbp model automatically handles the deletion 
+            // of the related BAST record. No need for transactions or manual deletion here.
+            $sbp->delete();
 
-     public function destroy(Sbp $sbp)
-     {
-         // Menggunakan transaksi untuk memastikan integritas data
-         DB::transaction(function () use ($sbp) {
-             // Memuat relasi BAST secara eksplisit
-             $sbp->load('bast');
-             
-             // Jika ada BAST terkait, hapus terlebih dahulu
-             if ($sbp->bast) {
-                 $sbp->bast->delete();
-             }
-     
-             // Hapus record SBP itu sendiri
-             $sbp->delete();
-         });
-         $sbp->delete();
- 
-         // Redirect kembali dengan pesan sukses. Front-end akan me-reload halaman.
-         return redirect()->back()->with('success', 'Data SBP dan dokumen terkait berhasil dihapus.');
-         return redirect()->route('sbp.index')->with('success', 'Data SBP dan dokumen terkait berhasil dihapus.');
-     }
+            // Redirect to the index page with a success message.
+            return redirect()->route('sbp.index')->with('success', 'Data SBP dan dokumen terkait berhasil dihapus.');
+
+        } catch (\Exception $e) {
+            // Log the error for debugging purposes.
+            Log::error("Gagal menghapus SBP #{$sbp->id}: " . $e->getMessage());
+
+            // Redirect back with an error message.
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat menghapus data SBP.');
+        }
+    }
 
     /**
      * Preview cetak SBP (iframe).
