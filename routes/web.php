@@ -14,14 +14,15 @@ use App\Http\Controllers\PemeriksaanBadanController;
 use App\Http\Controllers\LptController;
 use App\Http\Controllers\RefJenisBarangController;
 use App\Http\Controllers\LokasiController;
+use App\Http\Controllers\DashboardController;
 
 /*
 |--------------------------------------------------------------------------
 | Dashboard
 |--------------------------------------------------------------------------
 */
-Route::get('/', fn () => view('dashboard'))->name('dashboard');
-Route::get('/dashboard', fn () => view('dashboard'));
+Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index']);
 
 /*
 |--------------------------------------------------------------------------

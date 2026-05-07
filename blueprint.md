@@ -8,7 +8,7 @@ Aplikasi ini adalah aplikasi web berbasis Laravel untuk mengelola Surat Bukti Pe
 
 ### Skema Warna
 
-*   **Primer:** Biru (misalnya, `#0d6efd`)
+*   **Primer:** Biru (misalnya, `#007bff`)
 *   **Sekunder:** Abu-abu (misalnya, `#6c757d`)
 *   **Success:** Hijau (misalnya, `#198754`)
 *   **Warning:** Kuning (misalnya, `#ffc107`)
@@ -42,4 +42,19 @@ Aplikasi ini adalah aplikasi web berbasis Laravel untuk mengelola Surat Bukti Pe
 
 ## Rencana Perubahan Saat Ini
 
-(Tidak ada perubahan yang sedang berlangsung)
+### Menambahkan Visualisasi Data Tambahan ke Dasbor
+
+**Tujuan:** Memperkaya dasbor dengan menambahkan tiga grafik baru untuk memberikan wawasan yang lebih dalam mengenai distribusi penindakan.
+
+**Langkah-langkah:**
+
+1.  **Memperbarui Controller:** Modifikasi `DashboardController` untuk mengambil dan mengagregasi data berikut:
+    *   Distribusi penindakan berdasarkan **Jenis Barang**.
+    *   Agregasi jumlah penindakan berdasarkan **Kota**.
+    *   Agregasi jumlah penindakan berdasarkan **Kecamatan**.
+2.  **Menambahkan Kartu Grafik Baru:** Tambahkan baris baru di `dashboard.blade.php` yang berisi tiga kartu grafik:
+    *   Satu kartu untuk **Grafik Jenis Barang** (disarankan *Pie* atau *Doughnut Chart*).
+    *   Satu kartu untuk **Grafik Kota Penindakan** (disarankan *Horizontal Bar Chart*).
+    *   Satu kartu untuk **Grafik Kecamatan Penindakan** (disarankan *Horizontal Bar Chart*).
+3.  **Implementasi Skrip Grafik:** Tulis logika JavaScript yang diperlukan menggunakan Chart.js untuk membuat dan mengisi tiga grafik baru dengan data yang disediakan oleh controller.
+4.  **Menyesuaikan Tata Letak:** Pastikan tata letak dasbor tetap rapi dan responsif setelah penambahan grafik-grafik baru.
