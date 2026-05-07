@@ -11,13 +11,14 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        // Define Cukai-related items
+        $cukaiItems = ['Hasil Tembakau', 'MMEA', 'Etil Alkohol'];
+
         // Widget Counts
         $sbpCount = Sbp::count();
         $petugasCount = Petugas::count();
-        // Menjumlahkan total kuantitas barang dengan satuan 'batang'
-        $hasilTembakauCount = Sbp::where('jenis_barang', 'Hasil Tembakau')
-                                   ->where('jumlah_satuan', 'batang')
-                                   ->sum('jumlah_barang');
+        $cukaiCount = Sbp::whereIn('jenis_barang', $cukaiItems)->count();
+        $kepabeananCount = Sbp::whereNotIn('jenis_barang', $cukaiItems)->count();
 
         // Pie Chart: Jenis Barang
         $jenisBarangResult = Sbp::select('jenis_barang', DB::raw('count(*) as total'))
@@ -50,7 +51,8 @@ class DashboardController extends Controller
         return view('dashboard', compact(
             'sbpCount',
             'petugasCount',
-            'hasilTembakauCount',
+            'kepabeananCount',
+            'cukaiCount',
             'jenisBarangLabels',
             'jenisBarangCounts',
             'kotaLabels',

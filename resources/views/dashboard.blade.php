@@ -7,12 +7,27 @@
     .stat-card { border-radius: 0.75rem; border: none; color: white; transition: transform 0.3s ease, box-shadow 0.3s ease; overflow: hidden; margin-bottom: 1.5rem; }
     .stat-card:hover { transform: translateY(-5px); box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2); }
     .stat-card .card-body { position: relative; z-index: 2; padding: 1.5rem; }
-    .stat-card .stat-number { font-size: 2.5rem; font-weight: 700; text-shadow: 1px 1px 3px rgba(0,0,0,0.2); }
-    .stat-card .stat-title { font-size: 0.9rem; text-transform: uppercase; font-weight: 600; }
-    .stat-card .icon { font-size: 4rem; opacity: 0.2; position: absolute; right: 15px; bottom: 0px; }
+    .stat-card .stat-number { font-size: 2.2rem; font-weight: 700; text-shadow: 1px 1px 3px rgba(0,0,0,0.2); }
+    .stat-card .stat-title { font-size: 0.8rem; text-transform: uppercase; font-weight: 600; }
+    
+    .stat-card .icon {
+        font-size: 3.5rem;
+        opacity: 0.2;
+        position: absolute;
+        right: 15px;
+        bottom: 5px;
+        transition: transform 0.4s ease-out;
+    }
+    .stat-card:hover .icon {
+        transform: scale(1.1) rotate(-5deg);
+    }
+    
+    /* Card Colors */
     .stat-card-sbp { background: linear-gradient(45deg, #007bff, #1e90ff); }
     .stat-card-petugas { background: linear-gradient(45deg, #28a745, #20c997); }
-    .stat-card-tembakau { background: linear-gradient(45deg, #ffc107, #fd7e14); }
+    .stat-card-kepabeanan { background: linear-gradient(45deg, #6f42c1, #8a5cf5); }
+    .stat-card-cukai { background: linear-gradient(45deg, #4c589e, #6673d3); }
+
     .chart-card { border-radius: 0.75rem; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-bottom: 1.5rem; height: calc(100% - 1.5rem); }
     .fade-in { padding-top: 1.5rem; }
 </style>
@@ -24,22 +39,23 @@
 
         <!-- Widget Cards -->
         <div class="row">
-            <div class="col-lg-4"><a href="{{ route('sbp.index') }}" class="text-decoration-none"><div class="card stat-card stat-card-sbp"><div class="card-body"><div class="stat-number">{{ $sbpCount }}</div><div class="stat-title">Total SBP</div><i class="c-icon icon cil-file"></i></div></div></a></div>
-            <div class="col-lg-4"><a href="{{ route('petugas.index') }}" class="text-decoration-none"><div class="card stat-card stat-card-petugas"><div class="card-body"><div class="stat-number">{{ $petugasCount }}</div><div class="stat-title">Total Petugas</div><i class="c-icon icon cil-user"></i></div></div></a></div>
-            <div class="col-lg-4"><div class="card stat-card stat-card-tembakau"><div class="card-body"><div class="stat-number">{{ $hasilTembakauCount }}</div><div class="stat-title">Hasil Tembakau</div><i class="c-icon icon cil-smoking"></i></div></div></div>
+            <div class="col-lg-3 col-md-6 mb-4"><a href="{{ route('sbp.index') }}" class="text-decoration-none"><div class="card stat-card stat-card-sbp h-100"><div class="card-body"><div class="stat-number">{{ $sbpCount }}</div><div class="stat-title">Total SBP</div><i class="c-icon icon cil-description"></i></div></div></a></div>
+            <div class="col-lg-3 col-md-6 mb-4"><a href="{{ route('petugas.index') }}" class="text-decoration-none"><div class="card stat-card stat-card-petugas h-100"><div class="card-body"><div class="stat-number">{{ $petugasCount }}</div><div class="stat-title">Total Petugas</div><i class="c-icon icon cil-shield-alt"></i></div></div></a></div>
+            <div class="col-lg-3 col-md-6 mb-4"><div class="card stat-card stat-card-kepabeanan h-100"><div class="card-body"><div class="stat-number">{{ $kepabeananCount }}</div><div class="stat-title">Kepabeanan</div><i class="c-icon icon cil-building"></i></div></div></div>
+            <div class="col-lg-3 col-md-6 mb-4"><div class="card stat-card stat-card-cukai h-100"><div class="card-body"><div class="stat-number">{{ $cukaiCount }}</div><div class="stat-title">Cukai</div><i class="c-icon icon cil-wallet"></i></div></div></div>
         </div>
 
         <!-- Charts Row 1 -->
         <div class="row">
             <div class="col-lg-8">
                 <div class="card chart-card">
-                    <div class="card-header"><h5>Grafik Aktivitas Penindakan (Bulanan)</h5></div>
+                    <div class="card-header"><h5>Jumlah Penindakan Per Bulan </h5></div>
                     <div class="card-body"><canvas id="main-chart" height="350"></canvas></div>
                 </div>
             </div>
             <div class="col-lg-4">
                 <div class="card chart-card">
-                    <div class="card-header"><h5>Distribusi Jenis Barang</h5></div>
+                    <div class="card-header"><h5>Jenis Barang Hasil Penindakan</h5></div>
                     <div class="card-body"><canvas id="jenisBarangChart" height="350"></canvas></div>
                 </div>
             </div>
@@ -49,7 +65,7 @@
         <div class="row">
             <div class="col-md-6">
                 <div class="card chart-card">
-                    <div class="card-header"><h5>Top 5 Kota Penindakan</h5></div>
+                    <div class="card-header"><h5>Jumlah Penindakan Berdasarkan Kota</h5></div>
                     <div class="card-body"><canvas id="kotaChart" height="300"></canvas></div>
                 </div>
             </div>
