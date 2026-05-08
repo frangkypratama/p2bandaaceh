@@ -49,7 +49,7 @@
         <div class="row">
             <div class="col-lg-8">
                 <div class="card chart-card">
-                    <div class="card-header"><h5>Jumlah Penindakan Per Bulan </h5></div>
+                    <div class="card-header"><h5>Jumlah Penindakan Per Bulan</h5></div>
                     <div class="card-body"><canvas id="main-chart" height="350"></canvas></div>
                 </div>
             </div>
@@ -96,6 +96,8 @@
         };
 
         // Data from Controller
+        const monthlyLabels = @json($monthlyLabels);
+        const monthlyCounts = @json($monthlyCounts);
         const jenisBarangLabels = @json($jenisBarangLabels);
         const jenisBarangCounts = @json($jenisBarangCounts);
         const kotaLabels = @json($kotaLabels);
@@ -103,10 +105,38 @@
         const kecamatanLabels = @json($kecamatanLabels);
         const kecamatanCounts = @json($kecamatanCounts);
 
-        // Main Bar Chart
-        new Chart(document.getElementById('main-chart').getContext('2d'), {
-            type: 'bar', data: { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul'], datasets: [{ label: 'Jumlah Dokumen', backgroundColor: 'rgba(52, 152, 219, 0.7)', borderColor: 'rgba(52, 152, 219, 1)', borderRadius: 4, data: [12, 19, 3, 5, 2, 3, 9] }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { beginAtZero: true } } }
+        // Main Line Chart
+        const mainChartCanvas = document.getElementById('main-chart').getContext('2d');
+        const mainChartGradient = mainChartCanvas.createLinearGradient(0, 0, 0, 350);
+        mainChartGradient.addColorStop(0, 'rgba(52, 152, 219, 0.6)');
+        mainChartGradient.addColorStop(1, 'rgba(52, 152, 219, 0)');
+
+        new Chart(mainChartCanvas, {
+            type: 'line',
+            data: {
+                labels: monthlyLabels,
+                datasets: [{
+                    label: 'Jumlah Dokumen',
+                    backgroundColor: mainChartGradient,
+                    borderColor: 'rgba(52, 152, 219, 1)',
+                    pointBackgroundColor: 'rgba(52, 152, 219, 1)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(52, 152, 219, 1)',
+                    data: monthlyCounts,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { grid: { display: false } },
+                    y: { beginAtZero: true }
+                }
+            }
         });
 
         // Jenis Barang Pie Chart
