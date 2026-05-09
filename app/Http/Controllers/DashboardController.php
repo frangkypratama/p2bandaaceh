@@ -12,7 +12,7 @@ class DashboardController extends Controller
     public function index()
     {
         // Define Cukai-related items
-        $cukaiItems = ['Hasil Tembakau', 'MMEA', 'Etil Alkohol'];
+        $cukaiItems = ['Hasil Tembakau', 'Minuman Mengandung Etil Alkohol', 'Etil Alkohol'];
 
         // Widget Counts
         $sbpCount = Sbp::count();
