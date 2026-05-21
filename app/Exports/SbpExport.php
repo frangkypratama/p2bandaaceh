@@ -7,10 +7,12 @@ use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Maatwebsite\Excel\Concerns\WithStyles;
+use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Events\AfterSheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class SbpExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoSize, WithStyles
+class SbpExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoSize, WithStyles, WithEvents
 {
     protected $search;
     protected $startDate;
@@ -85,7 +87,7 @@ class SbpExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoSize,
             optional($sbp->tanggal_surat_perintah)->format('d-m-Y'),
             $sbp->nama_pelaku,
             $sbp->jenis_identitas,
-            (string) $sbp->nomor_identitas,
+            $sbp->nomor_identitas, // Data is passed as is, formatting is handled by the event
             $sbp->no_hp,
             $sbp->jenis_kelamin,
             $sbp->alamat_di_indonesia,
@@ -105,6 +107,21 @@ class SbpExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoSize,
             $sbp->nomor_ba_segel,
             $sbp->nomor_ba_musnah,
             $sbp->alasan_penindakan,
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function registerEvents(): array
+    {
+        return [
+            AfterSheet::class => function(AfterSheet $event) {
+                // Set the number format for column G (Nomor Identitas) to Text.
+                $event->sheet->getDelegate()->getStyle('G:G')
+                                ->getNumberFormat()
+                                ->setFormatCode('@');
+            },
         ];
     }
 
