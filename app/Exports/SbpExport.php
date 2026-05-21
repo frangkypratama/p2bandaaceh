@@ -11,6 +11,7 @@ use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Events\AfterSheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
 
 class SbpExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoSize, WithStyles, WithEvents
 {
@@ -30,12 +31,12 @@ class SbpExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoSize,
         $query = Sbp::query();
 
         if ($this->search) {
-             $query->where(function($q) {
+            $query->where(function ($q) {
                 $q->where('nomor_sbp', 'like', '%' . $this->search . '%')
-                  ->orWhere('nama_pelaku', 'like', '%' . $this->search . '%')
-                  ->orWhere('jenis_identitas', 'like', '%' . $this->search . '%')
-                  ->orWhere('nomor_identitas', 'like', '%' . $this->search . '%')
-                  ->orWhere('jenis_barang', 'like', '%' . $this->search . '%');
+                    ->orWhere('nama_pelaku', 'like', '%' . $this->search . '%')
+                    ->orWhere('jenis_identitas', 'like', '%' . $this->search . '%')
+                    ->orWhere('nomor_identitas', 'like', '%' . $this->search . '%')
+                    ->orWhere('jenis_barang', 'like', '%' . $this->search . '%');
             });
         }
 
@@ -87,7 +88,7 @@ class SbpExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoSize,
             optional($sbp->tanggal_surat_perintah)->format('d-m-Y'),
             $sbp->nama_pelaku,
             $sbp->jenis_identitas,
-            $sbp->nomor_identitas, // Data is passed as is, formatting is handled by the event
+            $sbp->nomor_identitas,
             $sbp->no_hp,
             $sbp->jenis_kelamin,
             $sbp->alamat_di_indonesia,
@@ -110,17 +111,43 @@ class SbpExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoSize,
         ];
     }
 
-    /**
-     * @return array
-     */
     public function registerEvents(): array
     {
         return [
-            AfterSheet::class => function(AfterSheet $event) {
-                // Set the number format for column G (Nomor Identitas) to Text.
-                $event->sheet->getDelegate()->getStyle('G:G')
-                                ->getNumberFormat()
-                                ->setFormatCode('@');
+            AfterSheet::class => function (AfterSheet $event) {
+                $sheet = $event->sheet->getDelegate();
+                $highestRow = $sheet->getHighestRow();
+
+                // Kolom G = Nomor Identitas, Kolom H = No HP
+                // Set format kolom ke Text dulu
+                $sheet->getStyle('G:G')
+                    ->getNumberFormat()
+                    ->setFormatCode('@');
+
+                $sheet->getStyle('H:H')
+                    ->getNumberFormat()
+                    ->setFormatCode('@');
+
+                // Lalu paksa setiap cell jadi string explicit
+                for ($i = 2; $i <= $highestRow; $i++) {
+                    // Nomor Identitas (kolom G)
+                    $valG = $sheet->getCell("G{$i}")->getValue();
+                    if ($valG !== null && $valG !== '') {
+                        $sheet->getCell("G{$i}")->setValueExplicit(
+                            trim((string) $valG),
+                            DataType::TYPE_STRING
+                        );
+                    }
+
+                    // No HP (kolom H)
+                    $valH = $sheet->getCell("H{$i}")->getValue();
+                    if ($valH !== null && $valH !== '') {
+                        $sheet->getCell("H{$i}")->setValueExplicit(
+                            trim((string) $valH),
+                            DataType::TYPE_STRING
+                        );
+                    }
+                }
             },
         ];
     }
@@ -128,8 +155,7 @@ class SbpExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoSize,
     public function styles(Worksheet $sheet)
     {
         return [
-            // Style the first row as bold text.
-            1    => ['font' => ['bold' => true]],
+            1 => ['font' => ['bold' => true]],
         ];
     }
 }
