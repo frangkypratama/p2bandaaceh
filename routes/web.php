@@ -40,6 +40,9 @@ Route::get('/lokasi/kecamatan', [LokasiController::class, 'getKecamatan'])->name
 // Get Last SBP Number
 Route::get('/sbp/get-last-number', [SbpController::class, 'getLastNumber'])->name('sbp.get-last-number');
 
+// Excel Export
+Route::get('/data-sbp/export/excel', [SbpController::class, 'exportExcel'])->name('sbp.export.excel');
+
 // Preview & PDF (HARUS DI ATAS)
 Route::get('/data-sbp/cetak-preview/{id}', [SbpController::class, 'cetakPreview'])
     ->name('sbp.cetak.preview');

@@ -9,10 +9,41 @@
             <h5 class="mb-0"><strong>Data Surat Bukti Penindakan (SBP)</strong></h5>
             <a href="{{ route('sbp.create') }}" class="btn btn-primary">
                 <i class="cil-plus"></i>
-                Tambah Data
+                <span class="d-none d-md-inline">Tambah Data</span>
             </a>
         </div>
         <div class="card-body">
+            <form id="filterForm" action="{{ route('sbp.index') }}" method="GET">
+                <div class="row mb-3 align-items-center">
+                    {{-- Filter Pencarian --}}
+                    <div class="col-md-5 mb-2 mb-md-0">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="cil-search"></i></span>
+                            <input type="text" name="search" class="form-control" placeholder="Cari nomor, pelaku, identitas..." value="{{ request('search') }}" autocomplete="off">
+                        </div>
+                    </div>
+                    
+                    {{-- Filter Tanggal --}}
+                    <div class="col-md-4 mb-2 mb-md-0">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="cil-calendar"></i></span>
+                            <input type="text" id="dateRangePicker" name="date_range" class="form-control" placeholder="Pilih rentang tanggal" value="{{ request('date_range') }}" autocomplete="off">
+                            <span id="clearDateFilter" class="input-group-text" style="display: none; cursor: pointer;" title="Hapus filter tanggal">
+                                <i class="cil-x"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    {{-- Tombol Aksi --}}
+                    <div class="col-md-3 d-flex justify-content-md-end">
+                        <a href="{{ route('sbp.export.excel', request()->query()) }}" class="btn btn-success">
+                            <i class="cil-cloud-download"></i>
+                            <span class="d-none d-lg-inline">Download Excel</span>
+                        </a>
+                    </div>
+                </div>
+            </form>
+
             <div class="table-responsive">
                 <table class="table table-striped table-bordered table-hover">
                     <thead class="thead-dark">
@@ -53,16 +84,85 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center py-4">Belum ada data SBP.</td>
+                                <td colspan="6" class="text-center py-4">
+                                    <i class="cil-warning" style="font-size: 2rem;"></i>
+                                    <p class="mt-2 mb-1">Tidak ada data yang ditemukan.</p>
+                                    <p class="text-muted">Coba ubah kata kunci pencarian atau rentang tanggal Anda.</p>
+                                    <a href="{{ route('sbp.index') }}" class="btn btn-primary btn-sm mt-1">Reset Semua Filter</a>
+                                </td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
+
+            {{-- Pagination --}}
+            @if ($sbpData->hasPages())
             <div class="d-flex justify-content-start">
                 {{ $sbpData->links() }}
             </div>
+            @endif
         </div>
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/litepicker/dist/litepicker.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('filterForm');
+    const searchInput = form.querySelector('input[name="search"]');
+    const dateInput = document.getElementById('dateRangePicker');
+    const clearDateBtn = document.getElementById('clearDateFilter');
+    let timeout = null;
+
+    // Function to toggle clear button visibility
+    const toggleClearButton = () => {
+        if (dateInput.value) {
+            clearDateBtn.style.display = 'flex'; // Use flex to center the icon
+        } else {
+            clearDateBtn.style.display = 'none';
+        }
+    };
+
+    // Debounced form submission for search input
+    searchInput.addEventListener('keyup', function () {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+            form.submit();
+        }, 500); // 500ms delay
+    });
+
+    // Initialize Litepicker
+    const picker = new Litepicker({
+        element: dateInput,
+        singleMode: false,
+        numberOfMonths: 2,
+        format: 'YYYY-MM-DD',
+        delimiter: ' - ',
+        setup: (picker) => {
+            picker.on('selected', (date1, date2) => {
+                toggleClearButton();
+                form.submit();
+            });
+        }
+    });
+
+    // Clear button functionality
+    clearDateBtn.addEventListener('click', () => {
+        // picker.clearSelection(); // This would also work
+        dateInput.value = '';
+        toggleClearButton();
+        form.submit();
+    });
+
+    // Initial check on page load
+    toggleClearButton();
+});
+</script>
+@endpush
+
+@push('styles')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/litepicker/dist/css/litepicker.css"/>
+@endpush
