@@ -7,10 +7,12 @@ use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Maatwebsite\Excel\Concerns\WithStyles;
+use Maatwebsite\Excel\Concerns\WithColumnFormatting;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
-class SbpExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoSize, WithStyles
+class SbpExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoSize, WithStyles, WithColumnFormatting
 {
     protected $search;
     protected $startDate;
@@ -23,9 +25,6 @@ class SbpExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoSize,
         $this->endDate = $endDate;
     }
 
-    /**
-     * @return \Illuminate\Database\Query\Builder
-     */
     public function query()
     {
         $query = Sbp::query();
@@ -47,9 +46,6 @@ class SbpExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoSize,
         return $query->orderBy('tanggal_sbp', 'desc')->orderBy('nomor_sbp_int', 'desc');
     }
 
-    /**
-     * @return array
-     */
     public function headings(): array
     {
         return [
@@ -82,11 +78,6 @@ class SbpExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoSize,
         ];
     }
 
-    /**
-     * @param mixed $sbp
-     *
-     * @return array
-     */
     public function map($sbp): array
     {
         return [
@@ -116,6 +107,14 @@ class SbpExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoSize,
             $sbp->nomor_ba_segel,
             $sbp->nomor_ba_musnah,
             $sbp->alasan_penindakan,
+        ];
+    }
+
+    public function columnFormats(): array
+    {
+        return [
+            // We format the G column (Nomor Identitas) as Text.
+            'G' => NumberFormat::FORMAT_TEXT,
         ];
     }
 
