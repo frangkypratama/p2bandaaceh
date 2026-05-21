@@ -44,7 +44,7 @@
                                             <a href="{{ route('lpt.edit', $item->id) }}" class="btn btn-sm btn-warning text-white">
                                                 <i class="cil-pencil"></i>
                                             </a>
-                                            <button class="btn btn-sm btn-danger"
+                                            <button class="btn btn-sm btn-danger text-white me-2"
                                                     data-coreui-toggle="modal"
                                                     data-coreui-target="#deleteConfirmationModal"
                                                     data-url="{{ route('lpt.destroy', $item->id) }}">
