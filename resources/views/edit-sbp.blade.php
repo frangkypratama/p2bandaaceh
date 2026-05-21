@@ -9,12 +9,12 @@
         @method('PUT')
 
         <div class="card shadow-sm">
-            <div class="card-header bg-primary text-white">
+            <div class="card-header bg-warning text-dark">
                 <h4 class="card-title mb-0 d-flex align-items-center">
                     <i class="cil-pencil me-2"></i>
                     <span><strong>Edit Surat Bukti Penindakan (SBP)</strong></span>
                 </h4>
-                <small class="text-medium-emphasis-white">Perbarui informasi yang diperlukan di bawah ini.</small>
+                <small class="text-muted">Perbarui informasi yang diperlukan di bawah ini.</small>
             </div>
 
             <div class="card-body p-4">
@@ -328,7 +328,7 @@
                  <a href="{{ route('sbp.index') }}" class="btn btn-secondary">
                     <i class="cil-x-circle me-2"></i>Batal
                 </a>
-                <button type="submit" class="btn btn-primary">
+                <button type="submit" class="btn btn-warning">
                     <i class="cil-save me-2"></i>Perbarui Data SBP
                 </button>
             </div>
