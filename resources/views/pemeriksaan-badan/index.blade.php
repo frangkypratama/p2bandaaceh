@@ -30,15 +30,15 @@
                                 <td class="text-center">{{ $item->kewarganegaraan }}</td>
                                 <td class="text-center">
                                     <div class="d-flex justify-content-center gap-2" role="group" aria-label="Aksi">
-                                        <button type="button" class="btn btn-info btn-sm preview-btn"
+                                        <button type="button" class="btn btn-info btn-sm preview-btn text-white me-2"
                                             data-coreui-toggle="modal"
                                             data-coreui-target="#previewModal"
                                             data-pdf-url="{{ route('pemeriksaan-badan.cetak', [$item->id, 'is_preview' => true]) }}"
                                             data-pdf-title="Pemeriksaan Badan {{ $item->nama }}">
                                             <i class="cil-print"></i>
                                         </button>
-                                        <a href="{{ route('pemeriksaan-badan.edit', $item->id) }}" class="btn btn-warning btn-sm"><i class="cil-pencil"></i></a>
-                                        <button type="button" class="btn btn-danger btn-sm"
+                                        <a href="{{ route('pemeriksaan-badan.edit', $item->id) }}" class="btn btn-warning btn-sm text-white me-2"><i class="cil-pencil"></i></a>
+                                        <button type="button" class="btn btn-danger btn-sm text-white me-2"
                                                 data-coreui-toggle="modal"
                                                 data-coreui-target="#deleteConfirmationModal"
                                                 data-url="{{ route('pemeriksaan-badan.destroy', $item->id) }}">

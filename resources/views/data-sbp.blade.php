@@ -5,13 +5,17 @@
 @section('content')
 <div class="container-lg">
     <div class="card mb-4">
-        <div class="card-header">
+        <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0"><strong>Data Surat Bukti Penindakan (SBP)</strong></h5>
+            <a href="{{ route('sbp.create') }}" class="btn btn-primary">
+                <i class="cil-plus"></i>
+                Tambah Data
+            </a>
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead>
+                <table class="table table-striped table-bordered table-hover">
+                    <thead class="thead-dark">
                         <tr>
                             <th>Nomor SBP</th>
                             <th>Tanggal SBP</th>
@@ -24,31 +28,21 @@
                     <tbody>
                         @forelse ($sbpData as $sbp)
                             <tr>
-                                <td>
-                                    <div>{{ $sbp->nomor_sbp }}</div>
-                                </td>
-                                <td>
-                                    <div>{{ \Carbon\Carbon::parse($sbp->tanggal_sbp)->translatedFormat('d F Y') }}</div>
-                                </td>
-                                <td>
-                                    <div>{{ $sbp->nama_pelaku }}</div>
-                                </td>
-                                <td>
-                                    <div>{{ $sbp->jenis_identitas }} / {{ $sbp->nomor_identitas }}</div>
-                                </td>
-                                <td>
-                                    <div>{{ $sbp->jenis_barang }}</div>
-                                </td>
+                                <td>{{ $sbp->nomor_sbp }}</td>
+                                <td>{{ \Carbon\Carbon::parse($sbp->tanggal_sbp)->translatedFormat('d F Y') }}</td>
+                                <td>{{ $sbp->nama_pelaku }}</td>
+                                <td>{{ $sbp->jenis_identitas }} / {{ $sbp->nomor_identitas }}</td>
+                                <td>{{ $sbp->jenis_barang }}</td>
                                 <td>
                                     <div class="d-flex align-items-center">
                                         <a href="{{ route('sbp.cetak.preview', $sbp->id) }}" class="btn btn-sm btn-info text-white me-2" title="Lihat Pratinjau">
                                             <i class="cil-print"></i>
                                         </a>
-                                        <a href="{{ route('sbp.edit', $sbp->id) }}" class="btn btn-sm btn-primary me-2" title="Edit Data">
+                                        <a href="{{ route('sbp.edit', $sbp->id) }}" class="btn btn-sm btn-warning text-white me-2" title="Edit Data">
                                             <i class="cil-pencil"></i>
                                         </a>
-                                        <button type="button" class="btn btn-sm btn-danger" 
-                                                data-coreui-toggle="modal" 
+                                        <button type="button" class="btn btn-sm btn-danger text-white me-2"
+                                                data-coreui-toggle="modal"
                                                 data-coreui-target="#deleteConfirmationModal"
                                                 data-url="{{ route('sbp.destroy', $sbp->id) }}"
                                                 title="Hapus Data">
@@ -65,7 +59,7 @@
                     </tbody>
                 </table>
             </div>
-            <div class="mt-3">
+            <div class="d-flex justify-content-start">
                 {{ $sbpData->links() }}
             </div>
         </div>
