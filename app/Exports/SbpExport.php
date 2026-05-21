@@ -7,12 +7,10 @@ use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
-use Maatwebsite\Excel\Concerns\WithStyles;
-use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
+use Maatwebsite\Excel\Concerns\WithStyles;
 
-class SbpExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoSize, WithStyles, WithColumnFormatting
+class SbpExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoSize, WithStyles
 {
     protected $search;
     protected $startDate;
@@ -87,7 +85,7 @@ class SbpExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoSize,
             optional($sbp->tanggal_surat_perintah)->format('d-m-Y'),
             $sbp->nama_pelaku,
             $sbp->jenis_identitas,
-            $sbp->nomor_identitas,
+            (string) $sbp->nomor_identitas,
             $sbp->no_hp,
             $sbp->jenis_kelamin,
             $sbp->alamat_di_indonesia,
@@ -107,14 +105,6 @@ class SbpExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoSize,
             $sbp->nomor_ba_segel,
             $sbp->nomor_ba_musnah,
             $sbp->alasan_penindakan,
-        ];
-    }
-
-    public function columnFormats(): array
-    {
-        return [
-            // We format the G column (Nomor Identitas) as Text.
-            'G' => NumberFormat::FORMAT_TEXT,
         ];
     }
 
