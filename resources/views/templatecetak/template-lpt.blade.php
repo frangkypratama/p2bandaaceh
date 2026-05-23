@@ -326,10 +326,10 @@
                     <tr>
                         @foreach ($chunk as $photo)
                             <td>
-                                @if(isset($photo->file_path) && Illuminate\Support\Facades\Storage::disk('public')->exists($photo->file_path))
+                                @if(isset($photo->file_path) && Illuminate\Support\Facades\Storage::disk('local')->exists($photo->file_path))
                                     @php
-                                        $imageData = base64_encode(Illuminate\Support\Facades\Storage::disk('public')->get($photo->file_path));
-                                        $imageMime = Illuminate\Support\Facades\Storage::disk('public')->mimeType($photo->file_path);
+                                        $imageData = base64_encode(Illuminate\Support\Facades\Storage::disk('local')->get($photo->file_path));
+                                        $imageMime = Illuminate\Support\Facades\Storage::disk('local')->mimeType($photo->file_path);
                                     @endphp
                                     <img src="data:{{ $imageMime }};base64,{{ $imageData }}" alt="Foto Dokumentasi">
                                 @else

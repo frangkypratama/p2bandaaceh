@@ -277,7 +277,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         allPhotos.forEach((photo, index) => {
             const isExisting = !!photo.id;
-            const url  = isExisting ? `{{ asset('storage') }}/${photo.file_path}` : URL.createObjectURL(photo);
+            const url = isExisting ? `{{ url('/lpt/photos') }}/${photo.id}` : URL.createObjectURL(photo);
             const name = isExisting ? photo.file_path.split('/').pop() : photo.name;
 
             const tile = document.createElement('div');

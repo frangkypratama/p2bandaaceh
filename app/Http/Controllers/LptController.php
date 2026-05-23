@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Intervention\Image\ImageManagerStatic as Image;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Response;
 
 class LptController extends Controller
 {
@@ -27,24 +28,28 @@ class LptController extends Controller
 
     private function compressPhoto(string $storedPath): void
     {
+        // Menggunakan disk 'local' (private) untuk kompresi
+        $disk = Storage::disk('local');
         $threshold = 300 * 1024;
-        $fullPath  = storage_path('app/public/' . $storedPath);
-
-        if (filesize($fullPath) > $threshold) {
-            $image = Image::make($fullPath);
+        
+        if ($disk->size($storedPath) > $threshold) {
+            // Baca file dari disk, proses, dan simpan kembali
+            $image = Image::make($disk->get($storedPath));
 
             $image->resize(1200, null, function ($constraint) {
                 $constraint->aspectRatio();
                 $constraint->upsize();
             });
-            $image->save($fullPath, 70);
+            $imageStream = (string) $image->encode(null, 70);
+            $disk->put($storedPath, $imageStream);
 
-            if (filesize($fullPath) > $threshold) {
+            if ($disk->size($storedPath) > $threshold) {
                 $image->resize(800, null, function ($constraint) {
                     $constraint->aspectRatio();
                     $constraint->upsize();
                 });
-                $image->save($fullPath, 65);
+                $imageStream = (string) $image->encode(null, 65);
+                $disk->put($storedPath, $imageStream);
             }
         }
     }
@@ -78,7 +83,6 @@ class LptController extends Controller
     {
         $jenis_lpt_options = $this->getJenisLptOptions();
         $validatedData = $request->validate([
-            // [PERBAIKAN] rule unique yang benar
             'nomor_lpt_int' => ['required', 'integer', Rule::unique('lpt', 'nomor_lpt_int')->whereNull('deleted_at')],
             'tanggal_lpt'   => 'required|date',
             'jenis_lpt'     => 'required|in:' . implode(',', array_keys($jenis_lpt_options)),
@@ -99,7 +103,8 @@ class LptController extends Controller
 
                 if ($request->hasFile('photos')) {
                     foreach ($request->file('photos') as $photo) {
-                        $path = $photo->store('lpt-photos', 'public');
+                        // Simpan ke disk 'local' (private)
+                        $path = $photo->store('lpt-photos', 'local');
                         $this->compressPhoto($path);
                         LptPhoto::create([
                             'lpt_id'    => $lpt->id,
@@ -164,7 +169,8 @@ class LptController extends Controller
                                               ->get();
 
                     foreach ($photosToDelete as $photo) {
-                        Storage::disk('public')->delete($photo->file_path);
+                        // Hapus dari disk 'local' (private)
+                        Storage::disk('local')->delete($photo->file_path);
                         $photo->delete();
                     }
                 }
@@ -179,7 +185,8 @@ class LptController extends Controller
 
                 if ($request->hasFile('photos')) {
                     foreach ($request->file('photos') as $photo) {
-                        $path = $photo->store('lpt-photos', 'public');
+                        // Simpan ke disk 'local' (private)
+                        $path = $photo->store('lpt-photos', 'local');
                         $this->compressPhoto($path);
                         LptPhoto::create([
                             'lpt_id'    => $lpt->id,
@@ -198,13 +205,39 @@ class LptController extends Controller
 
     public function destroy(Lpt $lpt)
     {
-        foreach ($lpt->photos as $photo) {
-            Storage::disk('public')->delete($photo->file_path);
-            $photo->delete();
-        }
-
-        $lpt->delete();
+        DB::transaction(function () use ($lpt) {
+            foreach ($lpt->photos as $photo) {
+                // Hapus dari disk 'local' (private)
+                Storage::disk('local')->delete($photo->file_path);
+                $photo->delete();
+            }
+    
+            $lpt->delete();
+        });
 
         return redirect()->route('lpt.index')->with('success', 'LPT berhasil dihapus');
+    }
+    
+    /**
+     * Menampilkan foto LPT dari penyimpanan privat.
+     *
+     * @param LptPhoto $photo
+     * @return Response
+     */
+    public function showPhoto(LptPhoto $photo)
+    {
+        // Disarankan: Tambahkan pengecekan otorisasi di sini
+        // $this->authorize('view', $photo);
+
+        $disk = Storage::disk('local');
+
+        if (!$disk->exists($photo->file_path)) {
+            abort(404, 'File tidak ditemukan.');
+        }
+
+        $file = $disk->get($photo->file_path);
+        $type = $disk->mimeType($photo->file_path);
+
+        return new Response($file, 200, ['Content-Type' => $type]);
     }
 }

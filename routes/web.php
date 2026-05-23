@@ -156,6 +156,7 @@ Route::resource('pemeriksaan-badan', PemeriksaanBadanController::class)->except(
 | LPT
 |--------------------------------------------------------------------------
 */
+Route::get('/lpt/photos/{photo}', [LptController::class, 'showPhoto'])->name('lpt.showPhoto');
 Route::resource('lpt', LptController::class)->except(['show']);
 Route::get('/lpt/{id}/preview', [LptController::class, 'preview'])->name('lpt.preview');
 Route::delete('/lpt/photo/{photo}', [LptController::class, 'destroyPhoto'])->name('lpt.photo.destroy');
