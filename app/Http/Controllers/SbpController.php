@@ -397,10 +397,20 @@ class SbpController extends Controller
     /**
      * Preview cetak SBP (iframe).
      */
-    public function cetakPreview($id)
+    public function cetakPreview(Request $request, $id)
     {
         $sbp = Sbp::with(['petugas1', 'petugas2', 'bast'])->findOrFail($id);
-        return view('preview-sbp', compact('sbp'));
+
+        $back = $request->query('back');
+
+        // Validate the back URL to prevent open redirect vulnerabilities.
+        // It must be a local URL from the same host as the app.
+        $appHost = parse_url(config('app.url'), PHP_URL_HOST);
+        $safeBack = $back && parse_url($back, PHP_URL_HOST) === $appHost
+            ? $back
+            : route('sbp.index');
+
+        return view('preview-sbp', compact('sbp', 'safeBack'));
     }
 
     /**
