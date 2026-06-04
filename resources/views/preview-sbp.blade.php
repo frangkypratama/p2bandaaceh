@@ -89,7 +89,7 @@
 
         {{-- Toolbar Cetak + Kembali --}}
         <div class="pdf-toolbar">
-            <a href="{{ route('sbp.index') }}" class="btn btn-secondary">
+            <a href="{{ url()->previous(fallback: route('sbp.index')) }}" class="btn btn-secondary">
                 <i class="cil-arrow-circle-left"></i> Kembali
             </a>
 
