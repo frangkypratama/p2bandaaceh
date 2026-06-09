@@ -36,7 +36,7 @@
 
                     {{-- Tombol Aksi --}}
                     <div class="col-md-3 d-flex justify-content-md-end">
-                        <a href="{{ route('sbp.export.excel', request()->query()) }}" class="btn btn-success">
+                        <a id="downloadExcelBtn" href="{{ route('sbp.export.excel', request()->query()) }}" class="btn btn-success">
                             <i class="cil-cloud-download"></i>
                             <span class="d-none d-lg-inline">Download Excel</span>
                         </a>
@@ -115,14 +115,28 @@ document.addEventListener('DOMContentLoaded', function () {
     const searchInput = form.querySelector('input[name="search"]');
     const dateInput = document.getElementById('dateRangePicker');
     const clearDateBtn = document.getElementById('clearDateFilter');
+    const downloadBtn = document.getElementById('downloadExcelBtn');
     let timeout = null;
 
     // Function to toggle clear button visibility
     const toggleClearButton = () => {
         if (dateInput.value) {
-            clearDateBtn.style.display = 'flex'; // Use flex to center the icon
+            clearDateBtn.style.display = 'flex';
         } else {
             clearDateBtn.style.display = 'none';
+        }
+    };
+
+    // Function to toggle download button state
+    const toggleDownloadButton = () => {
+        if (dateInput.value) {
+            downloadBtn.classList.remove('disabled');
+            downloadBtn.removeAttribute('aria-disabled');
+            downloadBtn.style.pointerEvents = 'auto';
+        } else {
+            downloadBtn.classList.add('disabled');
+            downloadBtn.setAttribute('aria-disabled', 'true');
+            downloadBtn.style.pointerEvents = 'none';
         }
     };
 
@@ -131,7 +145,7 @@ document.addEventListener('DOMContentLoaded', function () {
         clearTimeout(timeout);
         timeout = setTimeout(() => {
             form.submit();
-        }, 500); // 500ms delay
+        }, 500);
     });
 
     // Initialize Litepicker
@@ -144,6 +158,7 @@ document.addEventListener('DOMContentLoaded', function () {
         setup: (picker) => {
             picker.on('selected', (date1, date2) => {
                 toggleClearButton();
+                toggleDownloadButton();
                 form.submit();
             });
         }
@@ -151,18 +166,25 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Clear button functionality
     clearDateBtn.addEventListener('click', () => {
-        // picker.clearSelection(); // This would also work
         dateInput.value = '';
         toggleClearButton();
+        toggleDownloadButton();
         form.submit();
     });
 
-    // Initial check on page load
+    // Initial checks on page load
     toggleClearButton();
+    toggleDownloadButton();
 });
 </script>
 @endpush
 
 @push('styles')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/litepicker/dist/css/litepicker.css"/>
+<style>
+    .disabled {
+        opacity: 0.65;
+        cursor: not-allowed;
+    }
+</style>
 @endpush
