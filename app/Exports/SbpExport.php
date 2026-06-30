@@ -41,7 +41,8 @@ class SbpExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoSize,
         }
 
         if ($this->startDate && $this->endDate) {
-            $query->whereBetween('tanggal_sbp', [$this->startDate, $this->endDate]);
+            $query->whereDate('tanggal_sbp', '>=', $this->startDate)
+                  ->whereDate('tanggal_sbp', '<=', $this->endDate);
         }
 
         return $query->orderBy('tanggal_sbp', 'desc')->orderBy('nomor_sbp_int', 'desc');
