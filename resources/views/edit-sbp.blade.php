@@ -9,12 +9,12 @@
         @method('PUT')
 
         <div class="card shadow-sm">
-            <div class="card-header bg-primary text-white">
+            <div class="card-header bg-warning text-dark">
                 <h4 class="card-title mb-0 d-flex align-items-center">
                     <i class="cil-pencil me-2"></i>
                     <span><strong>Edit Surat Bukti Penindakan (SBP)</strong></span>
                 </h4>
-                <small class="text-medium-emphasis-white">Perbarui informasi yang diperlukan di bawah ini.</small>
+                <small class="text-muted">Perbarui informasi yang diperlukan di bawah ini.</small>
             </div>
 
             <div class="card-body p-4">
@@ -173,7 +173,7 @@
                                         </div>
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="kota" class="form-label">Kota</label>
+                                        <label for="kota" class="form-label">Kota/Kabupaten</label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="cil-building"></i></span>
                                             <select id="kota" class="form-select" name="kota">
@@ -188,7 +188,9 @@
                                         <label for="kecamatan" class="form-label">Kecamatan</label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="cil-map"></i></span>
-                                            <input id="kecamatan" type="text" class="form-control" name="kecamatan" value="{{ old('kecamatan', $sbp->kecamatan_penindakan) }}" placeholder="Contoh: Jaya Baru">
+                                            <select id="kecamatan" class="form-select" name="kecamatan">
+                                                {{-- Options will be populated by JS --}}
+                                            </select>
                                         </div>
                                     </div>
                                     <div class="col-12">
@@ -326,7 +328,7 @@
                  <a href="{{ route('sbp.index') }}" class="btn btn-secondary">
                     <i class="cil-x-circle me-2"></i>Batal
                 </a>
-                <button type="submit" class="btn btn-primary">
+                <button type="submit" class="btn btn-warning">
                     <i class="cil-save me-2"></i>Perbarui Data SBP
                 </button>
             </div>
@@ -582,6 +584,58 @@
                 tanggalSuratInput.value = dataCocok.tanggal_prin;
             }
         });
+    });
+</script>
+
+<script>
+    $(document).ready(function() {
+        // Initialize Select2
+        $('#kecamatan').select2({
+            theme: "bootstrap-5",
+            placeholder: 'Pilih Kecamatan'
+        });
+
+        const kotaSelect = $('#kota');
+        const kecamatanSelect = $('#kecamatan');
+        const initialKecamatan = "{{ old('kecamatan', $sbp->kecamatan_penindakan) }}";
+
+        function loadKecamatan(selectedKota, selectedKecamatan) {
+            kecamatanSelect.empty().prop('disabled', true);
+
+            if (selectedKota) {
+                fetch('{{ route("lokasi.kecamatan") }}?kota=' + selectedKota)
+                    .then(response => response.json())
+                    .then(data => {
+                        kecamatanSelect.prop('disabled', false);
+                        kecamatanSelect.append(new Option('Pilih Kecamatan...', ''));
+                        
+                        let isInitialKecamatanPresent = false;
+                        data.forEach(function(kecamatan) {
+                            if (kecamatan === selectedKecamatan) {
+                                isInitialKecamatanPresent = true;
+                            }
+                            const option = new Option(kecamatan, kecamatan, false, false);
+                            kecamatanSelect.append(option);
+                        });
+
+                        if (selectedKecamatan && isInitialKecamatanPresent) {
+                        kecamatanSelect.val(selectedKecamatan).trigger('change');
+                        } else {
+                        kecamatanSelect.trigger('change');
+                        }
+                    })
+                    .catch(error => console.error('Error fetching kecamatan:', error));
+            }
+        }
+
+        kotaSelect.on('change', function() {
+            loadKecamatan($(this).val(), null);
+        });
+
+        const initialKota = kotaSelect.val();
+        if (initialKota) {
+            loadKecamatan(initialKota, initialKecamatan);
+        }
     });
 </script>
 @endpush

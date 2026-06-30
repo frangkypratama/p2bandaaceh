@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\SbpExport;
 use App\Models\Sbp;
 use App\Models\Petugas;
 use App\Models\Lpt;
@@ -16,9 +17,42 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Facades\Excel;
 
 class SbpController extends Controller
 {
+    /**
+     * Export SBP data to Excel.
+     */
+    public function exportExcel(Request $request)
+    {
+        $search = $request->input('search');
+        $startDate = null;
+        $endDate = null;
+        $filename = 'Data_SBP_' . now()->format('d-m-Y') . '.xlsx'; // Default filename
+
+        if ($request->filled('date_range')) {
+            $dateRange = explode(' - ', $request->input('date_range'));
+            $startDate = $dateRange[0] ?? null;
+            $endDate = $dateRange[1] ?? $startDate; // Use start date if end date is missing
+
+            if ($startDate && $endDate) {
+                // Parse the dates to format them correctly for the filename
+                $formattedStartDate = Carbon::parse($startDate)->format('d-m-Y');
+                $formattedEndDate = Carbon::parse($endDate)->format('d-m-Y');
+                
+                // If start and end date are the same, just use one date in the name
+                if ($formattedStartDate == $formattedEndDate) {
+                    $filename = 'Data_SBP_' . $formattedStartDate . '.xlsx';
+                } else {
+                    $filename = 'Data_SBP_' . $formattedStartDate . ' - ' . $formattedEndDate . '.xlsx';
+                }
+            }
+        }
+
+        return Excel::download(new SbpExport($search, $startDate, $endDate), $filename);
+    }
+
     /**
      * Get the last SBP number and return the next one.
      */
@@ -47,11 +81,41 @@ class SbpController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $sbpData = Sbp::with(['petugas1', 'petugas2', 'bast'])->orderBy('tanggal_sbp', 'desc')
-                        ->orderBy('nomor_sbp_int', 'desc')
-                        ->paginate(10);
+        $query = Sbp::with(['petugas1', 'petugas2', 'bast']);
+
+        // Apply search filter
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function($q) use ($search) {
+                $q->where('nomor_sbp', 'like', "%{$search}%")
+                  ->orWhere('nama_pelaku', 'like', "%{$search}%")
+                  ->orWhere('jenis_identitas', 'like', "%{$search}%")
+                  ->orWhere('nomor_identitas', 'like', "%{$search}%")
+                  ->orWhere('jenis_barang', 'like', "%{$search}%");
+            });
+        }
+
+        // Apply date range filter
+        if ($request->filled('date_range')) {
+            $dateRange = explode(' - ', $request->input('date_range'));
+            $startDate = $dateRange[0] ?? null;
+            $endDate = $dateRange[1] ?? $startDate; // Use start date if end date is missing
+            
+            if ($startDate) {
+                $query->whereDate('tanggal_sbp', '>=', $startDate);
+            }
+            if ($endDate) {
+                $query->whereDate('tanggal_sbp', '<=', $endDate);
+            }
+        }
+
+        $sbpData = $query->orderBy('tanggal_sbp', 'desc')
+                         ->orderBy('nomor_sbp_int', 'desc')
+                         ->paginate(10)
+                         ->appends($request->query()); // Append all query parameters to pagination links
+
         return view('data-sbp', compact('sbpData'));
     }
 
@@ -333,10 +397,20 @@ class SbpController extends Controller
     /**
      * Preview cetak SBP (iframe).
      */
-    public function cetakPreview($id)
+    public function cetakPreview(Request $request, $id)
     {
         $sbp = Sbp::with(['petugas1', 'petugas2', 'bast'])->findOrFail($id);
-        return view('preview-sbp', compact('sbp'));
+
+        $back = $request->query('back');
+
+        // Validate the back URL to prevent open redirect vulnerabilities.
+        // It must be a local URL from the same host as the app.
+        $appHost = parse_url(config('app.url'), PHP_URL_HOST);
+        $safeBack = $back && parse_url($back, PHP_URL_HOST) === $appHost
+            ? $back
+            : route('sbp.index');
+
+        return view('preview-sbp', compact('sbp', 'safeBack'));
     }
 
     /**
@@ -433,7 +507,7 @@ class SbpController extends Controller
             ['nama' => 'LEMBAR KERJA ANALISIS INTELIJEN (LKAI)', 'status' => false],
             ['nama' => 'NOTA HASIL INTELIJEN (NHI)', 'status' => false],
             ['nama' => 'NOTA INFORMASI (NI)', 'status' => false],
-            ['nama' => 'LEMBAR INFORMASI (LI-1)', 'status' => false],
+            ['nama' => 'LEMBAR INFORMasi (LI-1)', 'status' => false],
             ['nama' => 'LEMBAR ANALISIS PRAPENINDAKAN (LAP)', 'status' => false],
             ['nama' => 'NOTA PENGEMBALIAN INFORMASI (NPI)', 'status' => false],
             ['nama' => 'MEMO PELIMPAHAN PENINDAKAN (MPP)', 'status' => false],
