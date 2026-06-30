@@ -316,7 +316,7 @@
         const fetchButton = document.getElementById('fetch-last-number');
 
         function extractBaNumber(fullString) {
-            const match = fullString.match(/BA-(\d+)\/BADAN/);
+            const match = fullString.match(/BA-(\d+)\/Badan/i);
             return match ? match[1] : '';
         }
 
