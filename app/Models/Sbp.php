@@ -79,12 +79,12 @@ class Sbp extends Model
 
     public function petugas1()
     {
-        return $this->belongsTo(Petugas::class, 'id_petugas_1');
+        return $this->belongsTo(Petugas::class, 'id_petugas_1')->withTrashed();
     }
 
     public function petugas2()
     {
-        return $this->belongsTo(Petugas::class, 'id_petugas_2');
+        return $this->belongsTo(Petugas::class, 'id_petugas_2')->withTrashed();
     }
 
     public function getTanggalSbpTerbilangAttribute()
