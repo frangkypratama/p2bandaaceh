@@ -547,7 +547,23 @@ class SbpController extends Controller
 
         return $pdf->stream($filename);
     }
-    
+
+    /**
+     * Generate PDF Label Barang (12cm x 8cm).
+     */
+    public function generatePdfLabel($id)
+    {
+        $sbp = Sbp::with(['petugas1', 'petugas2'])->findOrFail($id);
+
+        $pdf = Pdf::loadView('templatecetak.template-label-barang', compact('sbp'))
+            // ===== F4 REAL SIZE (pt) =====
+            ->setPaper([0, 0, 595.28, 935.43], 'portrait');
+
+        $filename = 'Label Barang ' . str_replace('/', '-', $sbp->nomor_sbp) . '.pdf';
+
+        return $pdf->stream($filename);
+    }
+
     /**
      * Generate PDF BA Serah Terima (F4 FIX).
      */

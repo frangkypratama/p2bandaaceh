@@ -11,6 +11,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // Percayai header X-Forwarded-* dari reverse proxy (Codespaces, IDX,
+        // atau proxy lain di depan container) agar skema/host URL yang
+        // dihasilkan (asset(), url(), dst.) sesuai dengan yang diakses browser.
+        $middleware->trustProxies(at: '*');
+
         $middleware->web(append: [
             \App\Http\Middleware\VerifyCsrfToken::class,
         ]);
