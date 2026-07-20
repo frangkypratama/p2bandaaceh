@@ -41,8 +41,8 @@ $tanggal = optional($sbp)->tanggal_sbp;
 
         /* ===== BOX ===== */
         .label-box {
-            width: 12cm;
-            height: 8cm;
+            width: 10cm;
+            height: 7cm;
             margin: 0 auto;
             padding: 3mm 5mm 4mm;
             border: 3px double #000000;
@@ -121,14 +121,6 @@ $tanggal = optional($sbp)->tanggal_sbp;
         .value {
             word-wrap: break-word;
         }
-
-        /* ===== FOOTER ===== */
-        .petugas-row td {
-            padding-top: 5px;
-            border-top: 1px dashed #000000;
-            font-style: italic;
-            background: #ffffff !important;
-        }
     </style>
 </head>
 
@@ -154,6 +146,11 @@ $tanggal = optional($sbp)->tanggal_sbp;
 
         <table class="content-table">
             <tbody>
+                <tr>
+                    <td class="label">Tanggal SBP</td>
+                    <td class="colon">:</td>
+                    <td class="value"><?php echo $tanggal ? e($tanggal->translatedFormat('d F Y')) : '-'; ?></td>
+                </tr>
                 <tr>
                     <td class="label">Jenis Barang</td>
                     <td class="colon">:</td>
@@ -183,16 +180,6 @@ $tanggal = optional($sbp)->tanggal_sbp;
                     <td class="label">Lokasi Penindakan</td>
                     <td class="colon">:</td>
                     <td class="value"><?php echo e(optional($sbp)->lokasi_penindakan ?? '-'); ?></td>
-                </tr>
-                <tr>
-                    <td class="label">Tanggal SBP</td>
-                    <td class="colon">:</td>
-                    <td class="value"><?php echo $tanggal ? e($tanggal->translatedFormat('d F Y')) : '-'; ?></td>
-                </tr>
-                <tr class="petugas-row">
-                    <td class="label">Petugas</td>
-                    <td class="colon">:</td>
-                    <td class="value"><?php echo e(optional($sbp)->nama_petugas_1 ?? '-'); ?> &amp; <?php echo e(optional($sbp)->nama_petugas_2 ?? '-'); ?></td>
                 </tr>
             </tbody>
         </table>
