@@ -1,0 +1,11 @@
+{
+    "name": "p2bandaaceh",
+    "image": "mcr.microsoft.com/devcontainers/php:1-8.4-bookworm",
+    "features": {
+        "ghcr.io/devcontainers/features/node:1": {
+            "version": "20"
+        }
+    },
+    "forwardPorts": [8000],
+    "postCreateCommand": "sudo apt-get update && sudo apt-get install -y --no-install-recommends libzip-dev libpng-dev libjpeg-dev libfreetype6-dev && sudo docker-php-ext-configure gd --with-freetype --with-jpeg && sudo docker-php-ext-install gd zip pcntl pdo_sqlite exif bcmath && composer install && npm install"
+}
