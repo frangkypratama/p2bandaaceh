@@ -112,6 +112,7 @@
                     @endif
                     <li><hr class="dropdown-divider"></li>
                     <li><a class="dropdown-item" href="{{ route('sbp.pdf.checklist', $sbp->id) }}" target="_blank">Checklist Kelengkapan</a></li>
+                    <li><a class="dropdown-item" href="{{ route('sbp.pdf.label', $sbp->id) }}" target="_blank">Cetak Label Barang</a></li>
                 </ul>
             </div>
         </div>
