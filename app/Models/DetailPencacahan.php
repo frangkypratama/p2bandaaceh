@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -76,5 +77,46 @@ class DetailPencacahan extends Model
     public function satuan(): BelongsTo
     {
         return $this->belongsTo(RefSatuan::class, 'id_satuan');
+    }
+
+    /**
+     * Representasi kuantitas barang untuk ditampilkan (di halaman detail maupun cetak PDF).
+     *
+     * Kolom yang menyimpan "jumlah" berbeda-beda tergantung jenis barang (lihat
+     * partials.fields._conditional): Hasil Tembakau pakai total_batang, MMEA/Etil
+     * Alkohol/Crude Oil/CPO pakai jumlah_botol, Narkotika pakai jumlah_kemasan, dst.
+     * Jenis barang yang formnya tidak punya field kuantitas sama sekali (Handphone,
+     * Elektronik, Kendaraan, Senjata Api, Kosmetik) dianggap 1 baris = 1 unit.
+     */
+    protected function jumlahTampil(): Attribute
+    {
+        return Attribute::make(get: function () {
+            if (!is_null($this->jumlah)) {
+                $unit = optional($this->satuan)->nama_satuan;
+                return $this->jumlah . ($unit ? ' ' . $unit : '');
+            }
+
+            if (!is_null($this->total_batang)) {
+                return $this->total_batang . ' Batang';
+            }
+
+            if (!is_null($this->jumlah_botol)) {
+                return $this->jumlah_botol . ' Botol/Wadah';
+            }
+
+            if (!is_null($this->jumlah_kemasan)) {
+                return $this->jumlah_kemasan . ' Kemasan';
+            }
+
+            if (!is_null($this->berat)) {
+                return rtrim(rtrim(number_format($this->berat, 2, ',', '.'), '0'), ',') . ' gram';
+            }
+
+            if (!is_null($this->volume)) {
+                return rtrim(rtrim(number_format($this->volume, 2, ',', '.'), '0'), ',');
+            }
+
+            return '1';
+        });
     }
 }

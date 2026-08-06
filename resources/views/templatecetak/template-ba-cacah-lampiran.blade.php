@@ -46,21 +46,53 @@
             text-align: left;
         }
 
-        .doc-title-lampiran {
-            text-align: center;
-            font-weight: bold;
-            font-size: 10pt;
+        .doc-title-lampiran-wrap {
+            width: 100%;
+            border: none;
             margin-bottom: 10px;
+        }
+
+        .doc-title-lampiran-wrap td {
+            border: none;
+            padding: 0;
+        }
+
+        .doc-title-lampiran {
+            text-align: left;
+            font-weight: normal;
+            font-size: 9pt;
+        }
+
+        .doc-title-lampiran-info td {
+            border: none;
+            padding: 0 4px 0 0;
+            text-align: left;
+            vertical-align: top;
         }
     </style>
 </head>
 <body>
 
-    <div class="doc-title-lampiran">
-        LAMPIRAN BERITA ACARA PENCACAHAN<br>
-        NOMOR: {{ $pencacahan->no_ba_cacah ?? '-' }}<br>
-        TANGGAL: {{ optional($pencacahan->tanggal_ba_cacah)->translatedFormat('d F Y') ?? '-' }}
-    </div>
+    <table class="doc-title-lampiran-wrap">
+        <tr>
+            <td style="width: 60%;"></td>
+            <td class="doc-title-lampiran">
+                <div>Lampiran Berita Acara Pencacahan</div>
+                <table class="doc-title-lampiran-info">
+                    <tr>
+                        <td style="width: 55px;">Nomor</td>
+                        <td style="width: 10px;">:</td>
+                        <td>{{ $pencacahan->no_ba_cacah ?? '-' }}</td>
+                    </tr>
+                    <tr>
+                        <td>Tanggal</td>
+                        <td>:</td>
+                        <td>{{ optional($pencacahan->tanggal_ba_cacah)->translatedFormat('d F Y') ?? '-' }}</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
 
     <table class="main-table">
         <thead class="main-header">
@@ -109,7 +141,7 @@
                             <td>{{ $detail->gol_pita_cukai ?? '-' }}</td>
                             <td>{{ $detail->tarif_cukai ?? '-' }}</td>
                             <td>{{ $detail->volume_pita_cukai ?? '-' }}</td>
-                            <td class="text-left">{{ $detail->jumlah ?? '-' }} {{ optional($detail->satuan)->nama_satuan ?? '' }}</td>
+                            <td class="text-left">{{ $detail->jumlah_tampil }}</td>
                             <td>{{ $detail->kondisi_barang ?? '-' }}</td>
                             <td>{{ $detail->keterangan ?? '-' }}</td>
                         </tr>

@@ -125,7 +125,18 @@ class PencacahanController extends Controller
 
     public function show(string $id)
     {
-        $pencacahan = Pencacahan::with('petugas1', 'petugas2', 'sbp', 'details', 'photos')->findOrFail($id);
+        $pencacahan = Pencacahan::with([
+            'petugas1',
+            'petugas2',
+            'sbp' => function ($query) {
+                $query->withPivot('id');
+            },
+            'details' => function ($query) {
+                $query->with(['jenisBarang', 'satuan']);
+            },
+            'photos'
+        ])->findOrFail($id);
+
         return view('pencacahan.show', compact('pencacahan'));
     }
 
@@ -376,7 +387,7 @@ class PencacahanController extends Controller
         ])->findOrFail($id);
 
         Carbon::setLocale('id');
-        $filename = 'BA-CACAH-' . str_replace('/', '-', $pencacahan->no_ba_cacah) . '.pdf';
+        $filename = str_replace('/', '-', $pencacahan->no_ba_cacah) . '.pdf';
         $tempPath = storage_path('app/temp');
         if (!file_exists($tempPath)) {
             mkdir($tempPath, 0777, true);

@@ -224,8 +224,17 @@
 
 @push('styles')
 <style>
-    .foto-upload-wrapper { border: 2px dashed #c4c9d0; border-radius: .25rem; padding: 1.5rem; background-color: #f8f9fa; min-height: 200px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background-color 0.2s; }
+    .foto-upload-wrapper { position: relative; border: 2px dashed #c4c9d0; border-radius: .25rem; padding: 1.5rem; background-color: #f8f9fa; min-height: 200px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background-color 0.2s, border-color 0.2s; }
     .foto-upload-wrapper:hover { background-color: #e9ecef; }
+    .foto-upload-wrapper.dragover { background-color: #e7f1ff; border-color: #0d6efd; }
+    .foto-upload-wrapper.compressing { opacity: .5; pointer-events: none; }
+    .foto-upload-wrapper.compressing::after {
+        content: 'Mengompres foto...';
+        position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        font-size: .85rem; font-weight: 600; color: #0d6efd;
+        background: rgba(255,255,255,.9); padding: .35rem .75rem; border-radius: .25rem;
+        white-space: nowrap;
+    }
     #foto_preview_modal { max-height: 250px; object-fit: contain; }
     .row-dicacah { background-color: #e9ecef !important; color: #6c757d; cursor: not-allowed; }
     .row-dicacah:hover { background-color: #e0e5e9 !important; }
@@ -258,6 +267,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // Menyimpan data checkbox agar persist saat pindah halaman pagination
     // Format: { 'sbp_id': { nomorSbp, tanggalSbp, jenisBarang, uraianBarang } }
     const pendingSelections = new Map();
+    // SBP yang sudah terpilih sebelumnya tapi di-uncheck lagi di modal (batal pilih), belum dikonfirmasi
+    const pendingRemovals = new Set();
 
     // ═══════════════════════════════════════════════════════════════════
     // UTILITY
@@ -365,7 +376,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         const tr = document.createElement('tr');
                         const sbpIdStr = sbp.id.toString();
                         // Checked jika: sudah confirmed (selectedSbpIds) ATAU pending di modal
-                        const isChecked = selectedSbpIds.has(sbpIdStr) || pendingSelections.has(sbpIdStr);
+                        const isChecked = (selectedSbpIds.has(sbpIdStr) && !pendingRemovals.has(sbpIdStr)) || pendingSelections.has(sbpIdStr);
                         if (sbp.is_disabled) tr.classList.add('row-dicacah');
                         tr.innerHTML = `
                             <td class="text-center"><input class="form-check-input sbp-checkbox" type="checkbox" value="${sbp.id}" ${isChecked ? 'checked' : ''} ${sbp.is_disabled ? 'disabled' : ''} data-nomor-sbp="${esc(sbp.nomor_sbp)}" data-tanggal-sbp="${sbp.tanggal_sbp || ''}" data-jenis-barang="${esc(sbp.jenis_barang)}" data-uraian-barang="${esc(sbp.uraian_barang)}"></td>
@@ -389,6 +400,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const sbpIdStr = cb.value.toString();
 
         if (cb.checked) {
+            pendingRemovals.delete(sbpIdStr);
             // Jangan tambahkan ke pending jika sudah ada di confirmed
             if (!selectedSbpIds.has(sbpIdStr)) {
                 pendingSelections.set(sbpIdStr, {
@@ -400,6 +412,10 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         } else {
             pendingSelections.delete(sbpIdStr);
+            // SBP yang sudah confirmed lalu di-uncheck di modal: tandai untuk dihapus saat "Pilih" diklik
+            if (selectedSbpIds.has(sbpIdStr)) {
+                pendingRemovals.add(sbpIdStr);
+            }
         }
     });
 
@@ -419,10 +435,11 @@ document.addEventListener('DOMContentLoaded', function () {
     sbpModalElement.addEventListener('show.coreui.modal', () => {
         // Reset pending saat modal dibuka
         pendingSelections.clear();
+        pendingRemovals.clear();
         fetchSbp(getSearchUrl());
     });
 
-    // Saat klik "Pilih", proses semua pending selections
+    // Saat klik "Pilih", proses semua pending selections & pending removals
     document.getElementById('selectSbpButton').addEventListener('click', () => {
         // Proses semua yang ada di pendingSelections
         pendingSelections.forEach((dataset, sbpId) => {
@@ -432,6 +449,14 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
         pendingSelections.clear();
+
+        // Proses SBP yang di-uncheck (batal pilih) di modal
+        pendingRemovals.forEach((sbpId) => {
+            document.getElementById(`selected-row-${sbpId}`)?.remove();
+            document.getElementById(`hidden-inputs-for-${sbpId}`)?.remove();
+            selectedSbpIds.delete(sbpId);
+        });
+        pendingRemovals.clear();
 
         // Juga cek checkbox yang visible di halaman saat ini (untuk backward compat)
         document.querySelectorAll('#sbpTableBody .sbp-checkbox:checked:not(:disabled)').forEach(cb => {
@@ -473,7 +498,7 @@ document.addEventListener('DOMContentLoaded', function () {
         `;
         hiddenInputsContainer.appendChild(div);
 
-        document.getElementById(`hidden-file-input-${sbpId}`).addEventListener('change', handleFileChange);
+        document.getElementById(`hidden-file-input-${sbpId}`).addEventListener('change', onFotoInputChange);
     }
 
     document.getElementById('selectedSbpTableBody').addEventListener('click', e => {
@@ -555,6 +580,14 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    // Jumlah Batang/Bks (Hasil Tembakau): default 20 batang per bungkus jika ditinggal kosong.
+    barangContainer.addEventListener('focusout', function (e) {
+        if (e.target.matches('[data-field="jumlah_batang"]') && e.target.value.trim() === '') {
+            e.target.value = 20;
+            e.target.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+    });
+
     function addRepeaterItem(data = {}) {
         const item = document.createElement('div');
         item.className = 'barang-item card mb-3 border';
@@ -622,6 +655,15 @@ document.addEventListener('DOMContentLoaded', function () {
                     entry[fieldName.trim()] = (fieldValue != null) ? fieldValue.toString().trim() : '';
                 }
             });
+
+            // Jaring pengaman: pastikan jumlah_batang & total_batang konsisten walau field belum sempat di-blur.
+            if (Object.prototype.hasOwnProperty.call(entry, 'jumlah_batang')) {
+                const batang = entry.jumlah_batang === '' ? 20 : (parseInt(entry.jumlah_batang, 10) || 20);
+                const bungkus = parseInt(entry.jumlah_bungkus, 10) || 0;
+                entry.jumlah_batang = String(batang);
+                entry.total_batang = String(bungkus * batang);
+            }
+
             data.push(entry);
         });
         return data;
@@ -630,9 +672,108 @@ document.addEventListener('DOMContentLoaded', function () {
     // ═══════════════════════════════════════════════════════════════════
     // FOTO HANDLING
     // ═══════════════════════════════════════════════════════════════════
-    document.getElementById('foto-upload-modal-trigger').addEventListener('click', () => {
+    const fotoUploadWrapper = document.getElementById('foto-upload-modal-trigger');
+    const FOTO_COMPRESS_OPTIONS = { maxWidth: 1920, maxHeight: 1920, quality: 0.75 };
+
+    // Kompres gambar di browser (canvas) sebelum diunggah agar ukuran file lebih kecil.
+    function compressImage(file, opts = FOTO_COMPRESS_OPTIONS) {
+        return new Promise((resolve) => {
+            if (!file.type.startsWith('image/') || file.type === 'image/gif') {
+                resolve(file);
+                return;
+            }
+            const objectUrl = URL.createObjectURL(file);
+            const img = new Image();
+            img.onload = () => {
+                const ratio = Math.min(1, opts.maxWidth / img.width, opts.maxHeight / img.height);
+                const width = Math.round(img.width * ratio);
+                const height = Math.round(img.height * ratio);
+
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+                canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+
+                canvas.toBlob((blob) => {
+                    URL.revokeObjectURL(objectUrl);
+                    if (!blob || blob.size >= file.size) {
+                        resolve(file);
+                        return;
+                    }
+                    const newName = file.name.replace(/\.[^./\\]+$/, '') + '.jpg';
+                    resolve(new File([blob], newName, { type: 'image/jpeg', lastModified: Date.now() }));
+                }, 'image/jpeg', opts.quality);
+            };
+            img.onerror = () => {
+                URL.revokeObjectURL(objectUrl);
+                resolve(file);
+            };
+            img.src = objectUrl;
+        });
+    }
+
+    // Kompres lalu pasang file ke input, kemudian trigger 'change' agar preview & status ter-update.
+    async function setCompressedFile(input, file) {
+        fotoUploadWrapper.classList.add('compressing');
+        try {
+            const compressed = await compressImage(file);
+            const dt = new DataTransfer();
+            dt.items.add(compressed);
+            input.dataset.skipCompress = '1';
+            input.files = dt.files;
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+        } finally {
+            fotoUploadWrapper.classList.remove('compressing');
+        }
+    }
+
+    // Listener utama pada input file: file dari picker dikompres dulu, file hasil kompresi (re-dispatch) langsung diproses.
+    function onFotoInputChange(event) {
+        const input = event.target;
+        if (input.dataset.skipCompress === '1') {
+            delete input.dataset.skipCompress;
+            handleFileChange(event);
+            return;
+        }
+        const file = input.files && input.files[0];
+        if (!file) {
+            handleFileChange(event);
+            return;
+        }
+        setCompressedFile(input, file);
+    }
+
+    fotoUploadWrapper.addEventListener('click', () => {
         const sbpId = detailSbpModalElement.dataset.currentSbpId;
         document.getElementById(`hidden-file-input-${sbpId}`)?.click();
+    });
+
+    ['dragenter', 'dragover'].forEach(evt => {
+        fotoUploadWrapper.addEventListener(evt, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            fotoUploadWrapper.classList.add('dragover');
+        });
+    });
+
+    ['dragleave', 'dragend', 'drop'].forEach(evt => {
+        fotoUploadWrapper.addEventListener(evt, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            fotoUploadWrapper.classList.remove('dragover');
+        });
+    });
+
+    fotoUploadWrapper.addEventListener('drop', (e) => {
+        const file = e.dataTransfer?.files?.[0];
+        if (!file) return;
+        if (!file.type.startsWith('image/')) {
+            alert('File yang di-drop harus berupa gambar.');
+            return;
+        }
+        const sbpId = detailSbpModalElement.dataset.currentSbpId;
+        const input = document.getElementById(`hidden-file-input-${sbpId}`);
+        if (input) setCompressedFile(input, file);
     });
 
     function handleFileChange(event) {
@@ -699,7 +840,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // ═══════════════════════════════════════════════════════════════════
     function attachInitialHandlers() {
         document.querySelectorAll('[id^=hidden-file-input-]').forEach(input => {
-            input.addEventListener('change', handleFileChange);
+            input.addEventListener('change', onFotoInputChange);
             const sbpId = input.id.replace('hidden-file-input-', '');
             updateFotoStatus(sbpId);
         });
