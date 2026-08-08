@@ -1,0 +1,127 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Support\Collection;
+
+class Pencacahan extends Model
+{
+    use HasFactory;
+
+    protected $table = 'pencacahan';
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'no_ba_cacah',
+        'tanggal_ba_cacah',
+        'no_surat_tugas_pencacahan',
+        'tanggal_surat_tugas_pencacahan',
+        'lokasi_cacah',
+        'id_petugas_1',
+        'id_petugas_2',
+        'giat',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'tanggal_ba_cacah' => 'date',
+        'tanggal_surat_tugas_pencacahan' => 'date',
+    ];
+
+    /**
+     * Get the first officer associated with the pencacahan.
+     */
+    public function petugas1(): BelongsTo
+    {
+        return $this->belongsTo(Petugas::class, 'id_petugas_1');
+    }
+
+    /**
+     * Get the second officer associated with the pencacahan.
+     */
+    public function petugas2(): BelongsTo
+    {
+        return $this->belongsTo(Petugas::class, 'id_petugas_2');
+    }
+
+    /**
+     * The sbp that belong to the Pencacahan.
+     */
+    public function sbp(): BelongsToMany
+    {
+        return $this->belongsToMany(Sbp::class, 'pencacahan_sbp', 'pencacahan_id', 'sbp_id')
+                    ->using(PencacahanSbp::class) // Gunakan model pivot kustom
+                    ->withPivot('id')
+                    ->withTimestamps();
+    }
+
+    /**
+     * Get all of the details for the Pencacahan through the SBP pivot table.
+     */
+    public function details(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            DetailPencacahan::class,
+            PencacahanSbp::class,
+            'pencacahan_id', // Foreign key on PencacahanSbp table...
+            'pencacahan_sbp_id', // Foreign key on DetailPencacahan table...
+            'id', // Local key on Pencacahan table...
+            'id' // Local key on PencacahanSbp table...
+        );
+    }
+
+    /**
+     * Get all of the photos for the Pencacahan through the SBP pivot table.
+     */
+    public function photos(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            PencacahanPhoto::class,
+            PencacahanSbp::class,
+            'pencacahan_id', // Foreign key on PencacahanSbp table...
+            'pencacahan_sbp_id', // Foreign key on PencacahanPhoto table...
+            'id', // Local key on Pencacahan table...
+            'id' // Local key on PencacahanSbp table...
+        );
+    }
+
+    /**
+     * Detail barang milik pencacahan ini yang termasuk kategori lampiran tertentu
+     * (DetailPencacahan::KATEGORI_CUKAI atau KATEGORI_PABEAN).
+     */
+    public function detailsUntukKategori(string $kategori): Collection
+    {
+        return $this->details
+            ->filter(fn (DetailPencacahan $detail) => $detail->kategoriLampiran() === $kategori)
+            ->values();
+    }
+
+    /**
+     * SBP milik pencacahan ini yang memiliki minimal satu detail barang
+     * pada kategori lampiran tertentu, agar SBP yang tidak relevan tidak
+     * ikut tercetak kosong di lampiran kategori tersebut.
+     */
+    public function sbpUntukKategori(string $kategori): Collection
+    {
+        $pencacahanSbpIds = $this->detailsUntukKategori($kategori)
+            ->pluck('pencacahan_sbp_id')
+            ->unique();
+
+        return $this->sbp
+            ->filter(fn (Sbp $sbp) => $pencacahanSbpIds->contains($sbp->pivot->id))
+            ->values();
+    }
+}

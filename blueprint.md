@@ -1,43 +1,58 @@
-# Proyek Aplikasi SBP (Surat Bukti Penindakan)
+# Blueprint Aplikasi Laravel
 
-## Ikhtisar
+## Ringkasan Proyek
 
-Aplikasi ini adalah aplikasi web berbasis Laravel untuk mengelola Surat Bukti Penindakan (SBP). Aplikasi ini memungkinkan pengguna untuk membuat, melihat, mengedit, dan mencetak dokumen SBP beserta dokumen terkait lainnya seperti Berita Acara Pemeriksaan, Penegahan, Penyegelan, dan Laporan Pelaksanaan Tugas (LPT).
+Aplikasi ini adalah sistem manajemen internal untuk membantu proses administrasi dan dokumentasi terkait penindakan barang, mulai dari pembuatan Surat Bukti Penindakan (SBP) hingga pencetakan berbagai Berita Acara (BA).
 
-## Desain dan Fitur
+## Fitur yang Sudah Diimplementasikan
 
-### Skema Warna (Dasbor)
+*   **Autentikasi:** Sistem login untuk pengguna.
+*   **Dashboard:** Halaman utama setelah login, menampilkan ringkasan data.
+*   **Manajemen SBP:**
+    *   Membuat SBP baru dengan formulir input yang valid.
+    *   **Dropdown Surat Perintah:** Saat membuat SBP, pengguna dapat memilih Nomor Surat Perintah dari dropdown yang terisi otomatis. Tanggal Surat Perintah juga akan terisi secara otomatis.
+    *   Melihat daftar SBP yang ada dengan paginasi.
+    *   Mengedit data SBP yang sudah ada.
+*   **Manajemen Master Data:**
+    *   CRUD untuk data Petugas.
+    *   CRUD untuk data Pangkat/Golongan.
+    *   CRUD untuk data Surat Perintah (Nomor & Tanggal).
+    *   CRUD untuk LPT (Laporan Pelaksanaan Tugas).
+*   **Manajemen Pencacahan:**
+    *   Membuat dokumen Berita Acara Pencacahan baru.
+    *   Formulir pencacahan memungkinkan pengguna untuk memilih satu atau lebih dokumen SBP yang sudah ada melalui sebuah modal pencarian.
+        *   Logika pencarian SBP yang dinamis:
+            *   Saat membuat pencacahan baru, SBP yang sudah pernah dicacah akan dinonaktifkan.
+            *   Saat mengedit pencacahan, SBP yang sudah dicacah di BA *lain* akan dinonaktifkan, tetapi SBP yang terikat pada BA yang sedang diedit tetap dapat dipilih/dihapus.
+        *   Menyimpan relasi antara dokumen pencacahan dan SBP yang dipilih, termasuk detail barang dan foto.
+    *   Mengedit data pencacahan yang sudah ada.
+*   **Cetak & Pratinjau Dokumen:**
+    *   Mencetak SBP dan dokumen terkait (Berita Acara Pemeriksaan, Penegahan, Penyegelan, LPT) dalam format PDF.
+    *   Menampilkan pratinjau PDF dari semua dokumen yang dapat dicetak langsung di browser.
 
-*   **Total SBP:** Gradien biru.
-*   **Total Petugas:** Gradien hijau.
-*   **Hasil Tembakau:** Gradien oranye.
-*   **Kepabeanan:** Gradien ungu (baru).
-*   **Cukai:** Gradien indigo (baru).
+## Rencana Implementasi Saat Ini
 
-### Fitur Utama
+### **Fitur: Manajemen Satuan Default Berdasarkan Jenis Barang**
 
-*   **Dashboard:** Halaman utama setelah login, menampilkan ringkasan data statistik dan visualisasi.
-*   **Manajemen SBP, Petugas, Pangkat, Surat Perintah, LPT:** Fitur CRUD lengkap untuk semua entitas inti.
-*   **Cetak & Pratinjau Dokumen:** Kemampuan untuk mencetak semua dokumen terkait SBP dalam format PDF.
+**Tujuan:** Mempercepat input data dengan mengisi otomatis kolom "Satuan" berdasarkan "Jenis Barang" yang dipilih pada form Pencacahan, dan memungkinkan pengguna untuk mengubah default ini melalui UI.
 
----
+**Langkah-langkah:**
 
-## Rencana Perubahan Saat Ini: Penambahan Kartu Statistik
+1.  **Modifikasi Database:**
+    *   Membuat migrasi baru untuk menambahkan kolom `id_satuan_default` (foreign key ke `ref_satuan`) ke dalam tabel `ref_jenis_barangs`.
 
-**Tujuan:** Menambahkan dua kartu statistik baru ("Kepabeanan" dan "Cukai") ke dasbor untuk memberikan ringkasan data yang lebih komprehensif.
+2.  **Buat Halaman Manajemen Referensi:**
+    *   **Route:** Menambahkan route `GET` dan `POST`/`PUT` di `routes/web.php` untuk menampilkan dan memperbarui referensi jenis barang.
+    *   **Controller:** Membuat `RefJenisBarangController` menggunakan `php artisan make:controller` untuk mengelola logika bisnis (menampilkan data & menyimpan perubahan).
+    *   **View:** Membuat file `resources/views/ref-jenis-barang.blade.php`. View ini akan menampilkan tabel jenis barang, masing-masing dengan dropdown untuk memilih dan menyimpan satuan defaultnya.
 
-**Langkah-langkah Implementasi:**
+3.  **Update Sidebar:**
+    *   Menambahkan link navigasi baru di `resources/views/layouts/sidebar.blade.php` yang mengarah ke halaman manajemen referensi jenis barang, di bawah kategori "Referensi Data".
 
-1.  **Pembaruan Controller (`DashboardController.php`):**
-    *   Tambahkan logika untuk mengambil jumlah total SBP yang termasuk dalam kategori `Kepabeanan` dan `Cukai` berdasarkan kolom `jenis_pelanggaran`.
-    *   Kirim dua variabel hitungan baru ini ke *view* `dashboard`.
+4.  **Update Seeder (Opsional):**
+    *   Memperbarui `RefJenisBarangSeeder.php` untuk menetapkan nilai awal untuk kolom `id_satuan_default`.
 
-2.  **Pembaruan Tampilan (`dashboard.blade.php`):**
-    *   Ubah tata letak baris kartu statistik untuk mengakomodasi lima kartu secara responsif.
-    *   Tambahkan dua elemen kartu HTML baru untuk menampilkan data "Kepabeanan" dan "Cukai".
-    *   Buat kelas CSS baru (`stat-card-kepabeanan`, `stat-card-cukai`) dengan skema warna gradien yang unik.
-    *   Tetapkan ikon yang relevan (`cil-building` untuk Kepabeanan, `cil-wallet` untuk Cukai) untuk kartu-kartu baru.
-
-3.  **Penyempurnaan Ikon:**
-    *   Memperbarui ikon pada kartu yang ada agar lebih relevan dan menarik secara visual.
-    *   Menambahkan animasi halus pada ikon saat kartu disorot oleh kursor.
+5.  **Integrasi ke Form Pencacahan:**
+    *   **Backend:** Mengubah query di `PencacahanController` untuk menyertakan `id_satuan_default` pada data jenis barang yang dikirim ke view.
+    *   **Frontend (Blade):** Menambahkan `data-default-satuan="{{ $jenis->id_satuan_default }}"` attribute ke setiap `<option>` pada dropdown "Jenis Barang".
+    *   **Frontend (JavaScript):** Menulis script untuk mendeteksi perubahan pada dropdown "Jenis Barang". Script akan membaca `data-default-satuan` dan mengatur nilai dropdown "Satuan" secara otomatis pada baris yang sama.

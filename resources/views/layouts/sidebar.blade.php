@@ -52,6 +52,18 @@
             </li>
 
             <li class="nav-title">
+                <h2 class="fs-6 text-uppercase">Pencacahan</h2>
+            </li>
+
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('pencacahan.index') }}">
+                    <i class="nav-icon cil-calculator"></i>
+                    Berita Acara Pencacahan
+                </a>
+            </li>
+
+            <li class="nav-title">
                 <h2 class="fs-6 text-uppercase">Referensi</h2>
             </li>
 
@@ -87,6 +99,13 @@
                 <a class="nav-link" href="{{ route('surat-perintah.index') }}">
                     <i class="nav-icon cil-description"></i>
                     Referensi Surat Perintah
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('ref-tarif-cukai.index') }}">
+                    <i class="nav-icon cil-money"></i>
+                    Referensi Tarif Cukai
                 </a>
             </li>
 

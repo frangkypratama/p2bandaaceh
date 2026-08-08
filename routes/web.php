@@ -12,9 +12,11 @@ use App\Http\Controllers\SuratPerintahController;
 use App\Http\Controllers\BariksaBadanController;
 use App\Http\Controllers\PemeriksaanBadanController;
 use App\Http\Controllers\LptController;
+use App\Http\Controllers\PencacahanController;
 use App\Http\Controllers\RefJenisBarangController;
 use App\Http\Controllers\LokasiController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\RefTarifCukaiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -128,6 +130,13 @@ Route::resource('ref-jenis-barang', RefJenisBarangController::class);
 
 /*
 |--------------------------------------------------------------------------
+| Referensi Tarif Cukai
+|--------------------------------------------------------------------------
+*/
+Route::resource('ref-tarif-cukai', RefTarifCukaiController::class);
+
+/*
+|--------------------------------------------------------------------------
 | Surat Perintah
 |--------------------------------------------------------------------------
 */
@@ -165,6 +174,15 @@ Route::get('/lpt/{id}/preview', [LptController::class, 'preview'])->name('lpt.pr
 Route::delete('/lpt/photo/{photo}', [LptController::class, 'destroyPhoto'])->name('lpt.photo.destroy');
 Route::get('/api/sbp/{id}', [SbpController::class, 'showApi'])->name('sbp.api.show');
 
+/*
+|--------------------------------------------------------------------------
+| Pencacahan
+|--------------------------------------------------------------------------
+*/
+Route::get('/pencacahan/search-sbp', [PencacahanController::class, 'searchSbp'])->name('pencacahan.searchSbp');
+Route::post('/pencacahan/get-barang-fields', [PencacahanController::class, 'getBarangFields'])->name('pencacahan.getBarangFields');
+Route::get('/pencacahan/{id}/cetak', [PencacahanController::class, 'cetak'])->name('pencacahan.cetak');
+Route::resource('pencacahan', PencacahanController::class);
 
 /*
 |--------------------------------------------------------------------------

@@ -78,10 +78,10 @@ class RefJenisBarangSeeder extends Seeder
         ];
 
         foreach ($jenisBarang as $barang) {
-            RefJenisBarang::create([
-                'nomor_urut' => $barang[0],
-                'nama_barang' => $barang[1]
-            ]);
+            RefJenisBarang::updateOrCreate(
+                ['nomor_urut' => $barang[0]],
+                ['nama_barang' => $barang[1]]
+            );
         }
     }
 }

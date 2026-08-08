@@ -38,6 +38,12 @@
                         <button type="button" class="btn-close" data-coreui-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
+                @if (session('error'))
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        {{ session('error') }}
+                        <button type="button" class="btn-close" data-coreui-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
                 @if ($errors->any())
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         <ul class="mb-0">
@@ -85,6 +91,61 @@
     <!-- CDN for jQuery and Select2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script>
+        /**
+         * Helper global untuk field "Negara Asal" (select2 dengan pencarian).
+         * Daftar nama negara (Bahasa Indonesia) diambil dari CDN i18n-iso-countries,
+         * di-cache sekali lalu dipakai ulang untuk setiap select yang dirender secara dinamis.
+         */
+        window.NegaraAsalHelper = (function ($) {
+            var countriesPromise = null;
+
+            function loadCountries() {
+                if (!countriesPromise) {
+                    countriesPromise = fetch('https://cdn.jsdelivr.net/npm/i18n-iso-countries@7/langs/id.json')
+                        .then(function (res) { return res.json(); })
+                        .then(function (json) {
+                            return Object.values(json.countries).sort(function (a, b) {
+                                return a.localeCompare(b, 'id');
+                            });
+                        })
+                        .catch(function (err) {
+                            console.error('Gagal memuat daftar negara:', err);
+                            return [];
+                        });
+                }
+                return countriesPromise;
+            }
+
+            function init(scope) {
+                scope = scope || document;
+                var selects = scope.querySelectorAll('select.negara-asal-select:not(.negara-asal-ready)');
+                if (!selects.length) return;
+
+                loadCountries().then(function (countries) {
+                    selects.forEach(function (select) {
+                        select.classList.add('negara-asal-ready');
+                        var selected = select.getAttribute('data-selected') || '';
+                        countries.forEach(function (nama) {
+                            select.appendChild(new Option(nama, nama, false, nama === selected));
+                        });
+
+                        var $select = $(select);
+                        var $modal = $select.closest('.modal');
+                        $select.select2({
+                            theme: 'bootstrap-5',
+                            placeholder: 'Pilih Negara Asal',
+                            width: '100%',
+                            dropdownParent: $modal.length ? $modal : undefined
+                        });
+                    });
+                });
+            }
+
+            return { init: init };
+        })(jQuery);
+    </script>
 
     @stack('scripts')
 

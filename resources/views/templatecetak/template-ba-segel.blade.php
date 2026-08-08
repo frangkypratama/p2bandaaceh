@@ -303,7 +303,7 @@
 
              <!-- LAPORAN & SAKSI -->
             <tr>
-                <td colspan="4"><br>menggunakan segel/ tanda pengaman kertas merah sebanyak 1 (satu) nomor {{ $sbp->nomor_ba_segel ?? '-' }} tanggal {{($sbp->tanggal_sbp)->translatedFormat('d F Y') ?? '-' }} dengan penempatan/pelekatan segel/ tanda pengaman pada : barang</td>
+                <td colspan="4"><br>menggunakan segel/ tanda pengaman kertas merah sebanyak 1 (satu) nomor {{ $sbp->nomor_ba_segel ?? '-' }} tanggal {{ optional($sbp->tanggal_sbp)->translatedFormat('d F Y') ?? '-' }} dengan penempatan/pelekatan segel/ tanda pengaman pada : barang</td>
             </tr>
             <tr>
                 <td colspan="4" class="full-width">Penyegelan disaksikan oleh pengangkut/pemilik/importir/eksportir atau kuasanya/ketua lingkungan/dll*:</td>

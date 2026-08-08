@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Helpers\TerbilangHelper;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Sbp extends Model
 {
@@ -95,6 +96,11 @@ class Sbp extends Model
     public function bast()
     {
         return $this->hasOne(Bast::class);
+    }
+
+    public function pencacahan(): BelongsToMany
+    {
+        return $this->belongsToMany(Pencacahan::class, 'pencacahan_sbp', 'sbp_id', 'pencacahan_id');
     }
 
     public function lpt()
