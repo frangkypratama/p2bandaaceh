@@ -26,7 +26,7 @@
                     <label for="kota" class="form-label">Kota/Kabupaten</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="cil-building"></i></span>
-                        <select id="kota" class="form-select" name="kota">
+                        <select id="kota" class="form-select" name="kota" required>
                             <option selected disabled value="">Pilih Kota...</option>
                             <option value="Banda Aceh" {{ old('kota') == 'Banda Aceh' ? 'selected' : '' }}>Banda Aceh</option>
                             <option value="Aceh Besar" {{ old('kota') == 'Aceh Besar' ? 'selected' : '' }}>Aceh Besar</option>
@@ -39,7 +39,7 @@
                     <label for="kecamatan" class="form-label">Kecamatan</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="cil-map"></i></span>
-                        <select id="kecamatan" class="form-select" name="kecamatan" disabled>
+                        <select id="kecamatan" class="form-select" name="kecamatan" disabled required>
                             <option selected disabled>Pilih Kecamatan</option>
                         </select>
                     </div>
