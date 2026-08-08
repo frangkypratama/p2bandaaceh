@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Support\Collection;
 
 class Pencacahan extends Model
 {
@@ -95,5 +96,32 @@ class Pencacahan extends Model
             'id', // Local key on Pencacahan table...
             'id' // Local key on PencacahanSbp table...
         );
+    }
+
+    /**
+     * Detail barang milik pencacahan ini yang termasuk kategori lampiran tertentu
+     * (DetailPencacahan::KATEGORI_CUKAI atau KATEGORI_PABEAN).
+     */
+    public function detailsUntukKategori(string $kategori): Collection
+    {
+        return $this->details
+            ->filter(fn (DetailPencacahan $detail) => $detail->kategoriLampiran() === $kategori)
+            ->values();
+    }
+
+    /**
+     * SBP milik pencacahan ini yang memiliki minimal satu detail barang
+     * pada kategori lampiran tertentu, agar SBP yang tidak relevan tidak
+     * ikut tercetak kosong di lampiran kategori tersebut.
+     */
+    public function sbpUntukKategori(string $kategori): Collection
+    {
+        $pencacahanSbpIds = $this->detailsUntukKategori($kategori)
+            ->pluck('pencacahan_sbp_id')
+            ->unique();
+
+        return $this->sbp
+            ->filter(fn (Sbp $sbp) => $pencacahanSbpIds->contains($sbp->pivot->id))
+            ->values();
     }
 }

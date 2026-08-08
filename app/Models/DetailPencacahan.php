@@ -13,10 +13,28 @@ class DetailPencacahan extends Model
 
     protected $table = 'detail_pencacahan';
 
+    /**
+     * Kode kategori lampiran cetak (dipakai untuk memilah barang cukai vs pabean).
+     */
+    const KATEGORI_CUKAI = 'cukai';
+    const KATEGORI_PABEAN = 'pabean';
+
+    /**
+     * Nama jenis barang (ref_jenis_barang.nama_barang) yang termasuk barang kena cukai.
+     * Di luar daftar ini dianggap barang pabean.
+     */
+    const JENIS_BARANG_CUKAI = [
+        'Hasil Tembakau',
+        'Etil Alkohol',
+        'Minuman Mengandung Etil Alkohol',
+        'Pita Cukai',
+    ];
+
     protected $fillable = [
         'pencacahan_sbp_id',
         'id_jenis_barang',
         'kondisi_barang',
+        'negara_asal',
         'urutan',
         'id_satuan',
         'id_ref_tarif_cukai',
@@ -77,6 +95,19 @@ class DetailPencacahan extends Model
     public function satuan(): BelongsTo
     {
         return $this->belongsTo(RefSatuan::class, 'id_satuan');
+    }
+
+    /**
+     * Kategori lampiran cetak untuk detail ini: cukai atau pabean,
+     * ditentukan dari nama jenis barangnya (lihat JENIS_BARANG_CUKAI).
+     */
+    public function kategoriLampiran(): string
+    {
+        $namaBarang = optional($this->jenisBarang)->nama_barang;
+
+        return in_array($namaBarang, self::JENIS_BARANG_CUKAI, true)
+            ? self::KATEGORI_CUKAI
+            : self::KATEGORI_PABEAN;
     }
 
     /**

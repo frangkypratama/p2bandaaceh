@@ -101,21 +101,16 @@
                 <th rowspan="2">SBP</th>
                 <th rowspan="2">Kode Komoditi</th>
                 <th rowspan="2">Jenis Barang</th>
-                <th colspan="3">Ciri Khusus</th>
-                <th rowspan="2">Subjek Cukai</th>
-                <th colspan="4">Pita Cukai</th>
-                <th rowspan="2">Jumlah</th>
+                <th colspan="2">Ciri Khusus</th>
+                <th rowspan="2">Jumlah Barang</th>
+                <th rowspan="2">Satuan Barang</th>
+                <th rowspan="2">Negara Asal</th>
                 <th rowspan="2">Kondisi</th>
                 <th rowspan="2">Ket.</th>
             </tr>
             <tr>
                 <th>Merek</th>
                 <th>Tipe</th>
-                <th>Kadar</th>
-                <th>Tahun</th>
-                <th>Gol.</th>
-                <th>Tarif</th>
-                <th>Vol.</th>
             </tr>
         </thead>
         @forelse($sbpList as $sbpIndex => $sbp)
@@ -135,13 +130,11 @@
                             <td class="text-left">{{ optional($detail->jenisBarang)->nama_barang ?? '-' }}</td>
                             <td>{{ $detail->merek ?? '-' }}</td>
                             <td>{{ $detail->tipe ?? '-' }}</td>
-                            <td>{{ $detail->kadar ?? '-' }}</td>
-                            <td>{{ $detail->subjek_cukai ?? '-' }}</td>
-                            <td>{{ $detail->tahun_pita_cukai ?? '-' }}</td>
-                            <td>{{ $detail->gol_pita_cukai ?? '-' }}</td>
-                            <td>{{ $detail->tarif_cukai ?? '-' }}</td>
-                            <td>{{ $detail->volume_pita_cukai ?? '-' }}</td>
                             <td class="text-left">{{ $detail->jumlah_tampil }}</td>
+                            @if($loop->first)
+                                <td rowspan="{{ $detailCount }}">{{ $sbp->jenis_satuan ?? '-' }}</td>
+                            @endif
+                            <td>{{ $detail->negara_asal ?? '-' }}</td>
                             <td>{{ $detail->kondisi_barang ?? '-' }}</td>
                             <td>{{ $detail->keterangan ?? '-' }}</td>
                         </tr>
@@ -150,14 +143,14 @@
                     <tr>
                         <td>{{ $sbpIndex + 1 }}</td>
                         <td>{{ $sbp->nomor_sbp }}</td>
-                        <td colspan="13" class="text-center">-- Tidak ada detail barang untuk SBP ini --</td>
+                        <td colspan="9" class="text-center">-- Tidak ada detail barang untuk SBP ini --</td>
                     </tr>
                 @endif
             </tbody>
         @empty
             <tbody>
                 <tr>
-                    <td colspan="15" class="text-center">Tidak ada SBP yang dilampirkan.</td>
+                    <td colspan="11" class="text-center">Tidak ada SBP yang dilampirkan.</td>
                 </tr>
             </tbody>
         @endforelse

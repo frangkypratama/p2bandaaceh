@@ -6,13 +6,21 @@
     <label class="form-label">Merek</label>
     <input type="text" class="form-control" data-field="merek" placeholder="Contoh: Gudang Garam, Dji Sam Soe, dll" value="{{ old('merek', $data['merek'] ?? '') }}">
 </div>
-<div class="mb-3">
-    <label class="form-label">Kondisi Barang</label>
-    <select class="form-select" data-field="kondisi_barang">
-        <option value="" selected disabled>Pilih Kondisi</option>
-        <option value="Baru" {{ old('kondisi_barang', $data['kondisi_barang'] ?? '') == 'Baru' ? 'selected' : '' }}>Baru</option>
-        <option value="Bukan Baru" {{ old('kondisi_barang', $data['kondisi_barang'] ?? '') == 'Bukan Baru' ? 'selected' : '' }}>Bukan Baru</option>
-    </select>
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label class="form-label">Kondisi Barang</label>
+        <select class="form-select" data-field="kondisi_barang">
+            <option value="" selected disabled>Pilih Kondisi</option>
+            <option value="Baru" {{ old('kondisi_barang', $data['kondisi_barang'] ?? '') == 'Baru' ? 'selected' : '' }}>Baru</option>
+            <option value="Bukan Baru" {{ old('kondisi_barang', $data['kondisi_barang'] ?? '') == 'Bukan Baru' ? 'selected' : '' }}>Bukan Baru</option>
+        </select>
+    </div>
+    <div class="col-md-6 mb-3">
+        <label class="form-label">Negara Asal</label>
+        <select class="form-select negara-asal-select" data-field="negara_asal" data-selected="{{ old('negara_asal', $data['negara_asal'] ?? '') }}">
+            <option value="">Pilih Negara Asal</option>
+        </select>
+    </div>
 </div>
 <div class="row">
     <div class="col-md-6 mb-3">

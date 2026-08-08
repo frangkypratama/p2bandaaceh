@@ -55,12 +55,6 @@
                 <h2 class="fs-6 text-uppercase">Pencacahan</h2>
             </li>
 
-            <li class="nav-item">
-                <a class="nav-link" href="#">
-                    <i class="nav-icon cil-description"></i>
-                    Surat Tugas Pencacahan
-                </a>
-            </li>
 
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('pencacahan.index') }}">

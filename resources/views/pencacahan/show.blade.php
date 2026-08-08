@@ -106,6 +106,7 @@
                                                             <th class="text-center" style="width: 5%;">#</th>
                                                             <th>Jenis Barang</th>
                                                             <th>Kondisi</th>
+                                                            <th>Negara Asal</th>
                                                             <th>Uraian / Merek</th>
                                                             <th>Jumlah</th>
                                                         </tr>
@@ -116,6 +117,7 @@
                                                             <td class="text-center">{{ $i + 1 }}</td>
                                                             <td>{{ optional($detail->jenisBarang)->nama_barang ?? '-' }}</td>
                                                             <td>{{ $detail->kondisi_barang ?? '-' }}</td>
+                                                            <td>{{ $detail->negara_asal ?? '-' }}</td>
                                                             <td>{{ $detail->uraian ?? $detail->merek ?? '-' }}</td>
                                                             <td>{{ $detail->jumlah_tampil }}</td>
                                                         </tr>

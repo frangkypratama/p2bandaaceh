@@ -80,7 +80,10 @@
                                     <label for="lokasi_cacah" class="form-label">Lokasi Cacah</label>
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="cil-location-pin"></i></span>
-                                        <input type="text" class="form-control" id="lokasi_cacah" name="lokasi_cacah" value="{{ old('lokasi_cacah') }}">
+                                        <input type="text" class="form-control" id="lokasi_cacah" name="lokasi_cacah" list="lokasiCacahOptions" value="{{ old('lokasi_cacah') }}">
+                                        <datalist id="lokasiCacahOptions">
+                                            <option value="KPPBC TMP C Banda Aceh">
+                                        </datalist>
                                     </div>
                                 </div>
                             </div>
@@ -89,7 +92,11 @@
                                     <label for="giat" class="form-label">Giat</label>
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="cil-thumb-up"></i></span>
-                                        <input type="text" class="form-control" id="giat" name="giat" value="{{ old('giat') }}">
+                                        <input type="text" class="form-control" id="giat" name="giat" list="giatOptions" value="{{ old('giat') }}">
+                                        <datalist id="giatOptions">
+                                            <option value="Bandara">
+                                            <option value="Operasi Pasar">
+                                        </datalist>
                                     </div>
                                 </div>
                             </div>
@@ -331,6 +338,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!response.ok) throw new Error('Network response was not ok');
             const html = await response.text();
             container.innerHTML = html;
+            NegaraAsalHelper.init(container);
 
         } catch (error) {
             console.error('Error fetching fields:', error);

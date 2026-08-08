@@ -393,51 +393,79 @@ class PencacahanController extends Controller
             mkdir($tempPath, 0777, true);
         }
 
+        $tempFiles = [];
+
         $pdfPotret = Pdf::loadView('templatecetak.template-ba-cacah', compact('pencacahan'));
         $potretPath = $tempPath . '/' . uniqid('potret_') . '.pdf';
         $pdfPotret->save($potretPath);
+        $tempFiles[] = $potretPath;
 
-        $pdfLanskap = Pdf::loadView('templatecetak.template-ba-cacah-lampiran', compact('pencacahan'));
-        $lanskapPath = $tempPath . '/' . uniqid('lanskap_') . '.pdf';
-        $pdfLanskap->save($lanskapPath);
+        // Lampiran dipisah per kategori barang: cukai dicetak lebih dulu, baru pabean.
+        // Kategori tanpa detail barang sama sekali tidak ikut dicetak (lihat Pencacahan::detailsUntukKategori()).
+        $lampiranViews = [
+            DetailPencacahan::KATEGORI_CUKAI => 'templatecetak.template-ba-cacah-lampiran-cukai',
+            DetailPencacahan::KATEGORI_PABEAN => 'templatecetak.template-ba-cacah-lampiran-pabean',
+        ];
 
-        $fpdi = new Fpdi();
-
-        $pageCountPotret = $fpdi->setSourceFile($potretPath);
-        $templateId = $fpdi->importPage(1);
-        $size = $fpdi->getTemplateSize($templateId);
-        $fpdi->AddPage($size['orientation'], $size);
-        $fpdi->useTemplate($templateId);
-
-        $pageCountLanskap = $fpdi->setSourceFile($lanskapPath);
-        for ($pageNo = 1; $pageNo <= $pageCountLanskap; $pageNo++) {
-            $templateId = $fpdi->importPage($pageNo);
-            $size = $fpdi->getTemplateSize($templateId);
-            $fpdi->AddPage($size['orientation'], $size);
-            $fpdi->useTemplate($templateId);
-        }
-
-        if ($pageCountPotret > 1) {
-            $fpdi->setSourceFile($potretPath);
-            for ($pageNo = 2; $pageNo <= $pageCountPotret; $pageNo++) {
-                $templateId = $fpdi->importPage($pageNo);
-                $size = $fpdi->getTemplateSize($templateId);
-                $fpdi->AddPage($size['orientation'], $size);
-                $fpdi->useTemplate($templateId);
+        $lampiranPaths = [];
+        foreach ($lampiranViews as $kategori => $view) {
+            $detailsList = $pencacahan->detailsUntukKategori($kategori);
+            if ($detailsList->isEmpty()) {
+                continue;
             }
+            $sbpList = $pencacahan->sbpUntukKategori($kategori);
+
+            $pdfLampiran = Pdf::loadView($view, compact('pencacahan', 'sbpList', 'detailsList'));
+            $lampiranPath = $tempPath . '/' . uniqid($kategori . '_') . '.pdf';
+            $pdfLampiran->save($lampiranPath);
+
+            $lampiranPaths[] = $lampiranPath;
+            $tempFiles[] = $lampiranPath;
         }
 
         try {
+            $fpdi = new Fpdi();
+
+            $pageCountPotret = $fpdi->setSourceFile($potretPath);
+            $templateId = $fpdi->importPage(1);
+            $size = $fpdi->getTemplateSize($templateId);
+            $fpdi->AddPage($size['orientation'], $size);
+            $fpdi->useTemplate($templateId);
+
+            foreach ($lampiranPaths as $lampiranPath) {
+                $pageCountLampiran = $fpdi->setSourceFile($lampiranPath);
+                for ($pageNo = 1; $pageNo <= $pageCountLampiran; $pageNo++) {
+                    $templateId = $fpdi->importPage($pageNo);
+                    $size = $fpdi->getTemplateSize($templateId);
+                    $fpdi->AddPage($size['orientation'], $size);
+                    $fpdi->useTemplate($templateId);
+                }
+            }
+
+            if ($pageCountPotret > 1) {
+                $fpdi->setSourceFile($potretPath);
+                for ($pageNo = 2; $pageNo <= $pageCountPotret; $pageNo++) {
+                    $templateId = $fpdi->importPage($pageNo);
+                    $size = $fpdi->getTemplateSize($templateId);
+                    $fpdi->AddPage($size['orientation'], $size);
+                    $fpdi->useTemplate($templateId);
+                }
+            }
+
             $output = $fpdi->Output('S', $filename);
-            unlink($potretPath);
-            unlink($lanskapPath);
+
+            foreach ($tempFiles as $tempFile) {
+                if (file_exists($tempFile)) unlink($tempFile);
+            }
+
             return response($output, 200, [
                 'Content-Type' => 'application/pdf',
                 'Content-Disposition' => 'inline; filename="' . $filename . '"',
             ]);
         } catch (\Exception $e) {
-            if (file_exists($potretPath)) unlink($potretPath);
-            if (file_exists($lanskapPath)) unlink($lanskapPath);
+            foreach ($tempFiles as $tempFile) {
+                if (file_exists($tempFile)) unlink($tempFile);
+            }
             throw $e;
         }
     }
