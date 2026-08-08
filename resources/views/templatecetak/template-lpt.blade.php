@@ -120,6 +120,12 @@
         <p>Nomor : {{ $lpt->nomor_lpt ?? '-' }}</p>
     </div>
 
+    @php
+        $isMusnah = !empty($lpt->sbp->nomor_ba_musnah);
+        $isDiserahterimakan = !$isMusnah && $lpt->sbp->bast;
+        $instansiTerkait = $lpt->sbp->bast->instansi_eksternal ?? 'instansi terkait';
+    @endphp
+
     {{-- ===== ISI LAPORAN ===== --}}
     <table class="content-table">
         <tbody>
@@ -221,8 +227,16 @@
                                 dan salinannya telah diserahkan kepada yang bersangkutan.
                             </li>
                             <li>
-                                Barang Hasil Penindakan (BHP) selanjutnya dibawa ke KPPBC TMP C Banda Aceh
-                                untuk proses lebih lanjut.
+                                @if($isMusnah)
+                                    Barang Hasil Penindakan (BHP) selanjutnya telah dimusnahkan secara langsung
+                                    di lokasi penindakan sesuai Berita Acara Pemusnahan.
+                                @elseif($isDiserahterimakan)
+                                    Barang Hasil Penindakan (BHP) selanjutnya diserahterimakan kepada
+                                    {{ $instansiTerkait }} untuk ditindaklanjuti.
+                                @else
+                                    Barang Hasil Penindakan (BHP) selanjutnya dibawa ke KPPBC TMP C Banda Aceh
+                                    untuk proses lebih lanjut.
+                                @endif
                             </li>
                             <li>Dokumentasi kegiatan terlampir.</li>
                         @endif
@@ -240,7 +254,11 @@
             <tr>
                 <td class="num"></td>
                 <td colspan="2" class="value">
-                    {{ $lpt->tindak_lanjut ?? 'Dilakukan penindakan terhadap barang tersebut dan dibawa ke KPPBC TMP C Banda Aceh untuk ditindaklanjuti' }}
+                    {{ $lpt->tindak_lanjut ?? ($isMusnah
+                        ? 'Dilakukan penindakan terhadap barang tersebut dan telah dimusnahkan secara langsung di lokasi penindakan'
+                        : ($isDiserahterimakan
+                            ? 'Dilakukan penindakan terhadap barang tersebut dan diserahterimakan kepada ' . $instansiTerkait . ' untuk ditindaklanjuti'
+                            : 'Dilakukan penindakan terhadap barang tersebut dan dibawa ke KPPBC TMP C Banda Aceh untuk ditindaklanjuti')) }}
                 </td>
             </tr>
 
@@ -255,8 +273,14 @@
                 <td class="num"></td>
                 <td colspan="2" class="value">
                     Telah dilakukan pemeriksaan, penindakan, penegahan dan penyegelan terhadap
-                    {{ $lpt->sbp->uraian_barang ?? 'N/A' }}, kemudian barang-barang dibawa ke
-                    KPPBC TMP C Banda Aceh untuk ditindaklanjuti.
+                    {{ $lpt->sbp->uraian_barang ?? 'N/A' }}, kemudian barang-barang
+                    @if($isMusnah)
+                        telah dimusnahkan secara langsung di lokasi penindakan.
+                    @elseif($isDiserahterimakan)
+                        diserahterimakan kepada {{ $instansiTerkait }} untuk ditindaklanjuti.
+                    @else
+                        dibawa ke KPPBC TMP C Banda Aceh untuk ditindaklanjuti.
+                    @endif
                 </td>
             </tr>
 

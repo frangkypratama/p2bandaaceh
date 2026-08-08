@@ -123,7 +123,7 @@ class LptController extends Controller
 
     public function preview($id)
     {
-        $lpt = Lpt::with(['sbp', 'photos'])->findOrFail($id);
+        $lpt = Lpt::with(['sbp.bast', 'photos'])->findOrFail($id);
         $jenis_lpt_options = $this->getJenisLptOptions();
 
         $pdf = Pdf::loadView('templatecetak.template-lpt', compact('lpt', 'jenis_lpt_options'))
