@@ -264,6 +264,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const detailSbpModal = new coreui.Modal(detailSbpModalElement);
     const selectedSbpIds = new Set(@json(old('id_sbp', [])).map(id => id.toString()));
     const jenisBarangOptions = @json($jenisBarangData);
+    const tarifCukaiOptions = @json($tarifCukaiData);
     const barangContainer = document.getElementById('barangItemsContainer');
     const emptyMessage = document.getElementById('emptyBarangMessage');
     const btnTambah = document.getElementById('btnTambahBarang');
@@ -670,6 +671,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 const bungkus = parseInt(entry.jumlah_bungkus, 10) || 0;
                 entry.jumlah_batang = String(batang);
                 entry.total_batang = String(bungkus * batang);
+            }
+
+            // Jaring pengaman: field berikut wajib punya nilai, kalau tidak diisi user pakai default.
+            if (Object.prototype.hasOwnProperty.call(entry, 'id_ref_tarif_cukai') && !entry.id_ref_tarif_cukai) {
+                const defaultTarif = tarifCukaiOptions.find(t => t.jenis === 'SPM' && t.golongan === 'I');
+                if (defaultTarif) entry.id_ref_tarif_cukai = String(defaultTarif.id);
+            }
+            if (Object.prototype.hasOwnProperty.call(entry, 'kondisi_barang') && !entry.kondisi_barang) {
+                entry.kondisi_barang = 'Baru';
+            }
+            if (Object.prototype.hasOwnProperty.call(entry, 'negara_asal') && !entry.negara_asal) {
+                entry.negara_asal = 'Indonesia';
             }
 
             data.push(entry);

@@ -106,9 +106,16 @@
                     countriesPromise = fetch('https://cdn.jsdelivr.net/npm/i18n-iso-countries@7/langs/id.json')
                         .then(function (res) { return res.json(); })
                         .then(function (json) {
-                            return Object.values(json.countries).sort(function (a, b) {
+                            var countries = Object.values(json.countries).sort(function (a, b) {
                                 return a.localeCompare(b, 'id');
                             });
+                            // Indonesia ditaruh paling atas karena barang pencacahan mayoritas berasal dari sini.
+                            var idxIndonesia = countries.indexOf('Indonesia');
+                            if (idxIndonesia > -1) {
+                                countries.splice(idxIndonesia, 1);
+                                countries.unshift('Indonesia');
+                            }
+                            return countries;
                         })
                         .catch(function (err) {
                             console.error('Gagal memuat daftar negara:', err);
