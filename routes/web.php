@@ -171,6 +171,7 @@ Route::resource('pemeriksaan-badan', PemeriksaanBadanController::class)->except(
 Route::get('/lpt/photos/{photo}', [LptController::class, 'showPhoto'])->name('lpt.showPhoto');
 Route::resource('lpt', LptController::class)->except(['show']);
 Route::get('/lpt/{id}/preview', [LptController::class, 'preview'])->name('lpt.preview');
+Route::get('/lpt/{id}/laporan-wa', [LptController::class, 'laporanWa'])->name('lpt.laporan-wa');
 Route::delete('/lpt/photo/{photo}', [LptController::class, 'destroyPhoto'])->name('lpt.photo.destroy');
 Route::get('/api/sbp/{id}', [SbpController::class, 'showApi'])->name('sbp.api.show');
 

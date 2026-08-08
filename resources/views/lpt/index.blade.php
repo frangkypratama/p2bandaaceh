@@ -41,6 +41,11 @@
                                                     data-pdf-title="{{ $item->nomor_lpt }}">
                                                 <i class="cil-print"></i>
                                             </button>
+                                            <button type="button" class="btn btn-sm btn-success text-white wa-btn"
+                                                    data-wa-url="{{ route('lpt.laporan-wa', $item->id) }}"
+                                                    title="Laporan WhatsApp">
+                                                <i class="cib-whatsapp"></i>
+                                            </button>
                                             <a href="{{ route('lpt.edit', $item->id) }}" class="btn btn-sm btn-warning text-white">
                                                 <i class="cil-pencil"></i>
                                             </a>
@@ -92,4 +97,5 @@
 </div>
 
 @include('partials._pdf-viewer')
+@include('partials._wa-viewer')
 @endsection

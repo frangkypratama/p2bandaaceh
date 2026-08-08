@@ -134,6 +134,17 @@ class LptController extends Controller
         return $pdf->stream($filename);
     }
 
+    public function laporanWa($id)
+    {
+        $lpt = Lpt::with('sbp.bast')->findOrFail($id);
+
+        $sbp = $lpt->sbp;
+
+        $text = trim(view('template-laporan-wa.template-penindakan-bandara', compact('sbp'))->render());
+
+        return response($text)->header('Content-Type', 'text/plain; charset=UTF-8');
+    }
+
     public function edit(Request $request, Lpt $lpt)
     {
         $sbp = Sbp::orderBy('tanggal_sbp', 'desc')->paginate(10);
