@@ -4,21 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Models\Lpt;
 use App\Models\Sbp;
-use App\Models\LptPhoto;
 use App\Services\PhotoUploadService;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Response;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class LptController extends Controller
 {
-    private const PHOTO_DISK = 'local';
-    private const PHOTO_FOLDER = 'lpt-photos';
-
     public function __construct(private PhotoUploadService $photoUploadService)
     {
     }
@@ -82,14 +80,7 @@ class LptController extends Controller
 
                 if ($request->hasFile('photos')) {
                     foreach ($request->file('photos') as $photo) {
-                        $path = $this->photoUploadService->store($photo, self::PHOTO_FOLDER, [
-                            'disk' => self::PHOTO_DISK,
-                            'compress' => true,
-                        ]);
-                        LptPhoto::create([
-                            'lpt_id'    => $lpt->id,
-                            'file_path' => $path,
-                        ]);
+                        $this->addPhotoToLpt($lpt, $photo);
                     }
                 }
             });
@@ -101,9 +92,25 @@ class LptController extends Controller
         }
     }
 
+    private function addPhotoToLpt(Lpt $lpt, UploadedFile $photo): void
+    {
+        $wasCompressed = $this->photoUploadService->compressInPlace($photo, [
+            'compress_threshold_kb' => 300,
+        ]);
+
+        $adder = $lpt->addMedia($photo);
+
+        if ($wasCompressed) {
+            $baseName = pathinfo($photo->getClientOriginalName(), PATHINFO_FILENAME);
+            $adder->usingFileName($baseName . '.jpg');
+        }
+
+        $adder->toMediaCollection('photos');
+    }
+
     public function preview($id)
     {
-        $lpt = Lpt::with(['sbp.bast', 'photos'])->findOrFail($id);
+        $lpt = Lpt::with(['sbp.bast', 'media'])->findOrFail($id);
         $jenis_lpt_options = $this->getJenisLptOptions();
 
         $pdf = Pdf::loadView('templatecetak.template-lpt', compact('lpt', 'jenis_lpt_options'))
@@ -133,7 +140,7 @@ class LptController extends Controller
             return view('lpt.partials.sbp-table', compact('sbp'));
         }
 
-        $lpt->load('photos');
+        $lpt->load('media');
         $jenis_lpt_options = $this->getJenisLptOptions();
         return view('lpt.edit', compact('lpt', 'sbp', 'jenis_lpt_options'));
     }
@@ -149,20 +156,17 @@ class LptController extends Controller
             'photos'           => 'nullable|array',
             'photos.*'         => 'image|mimes:jpeg,png,jpg,gif,svg|max:10240',
             'deleted_photos'   => 'nullable|array',
-            'deleted_photos.*' => 'integer|exists:lpt_photos,id'
+            'deleted_photos.*' => 'integer|exists:media,id'
         ]);
 
         try {
             DB::transaction(function () use ($request, $lpt, $validatedData) {
                 if (!empty($validatedData['deleted_photos'])) {
-                    $photosToDelete = LptPhoto::where('lpt_id', $lpt->id)
-                                              ->whereIn('id', $validatedData['deleted_photos'])
-                                              ->get();
-
-                    foreach ($photosToDelete as $photo) {
-                        $this->photoUploadService->delete($photo->file_path, self::PHOTO_DISK);
-                        $photo->delete();
-                    }
+                    $lpt->media()
+                        ->where('collection_name', 'photos')
+                        ->whereIn('id', $validatedData['deleted_photos'])
+                        ->get()
+                        ->each->delete();
                 }
 
                 $lptData = $validatedData;
@@ -175,14 +179,7 @@ class LptController extends Controller
 
                 if ($request->hasFile('photos')) {
                     foreach ($request->file('photos') as $photo) {
-                        $path = $this->photoUploadService->store($photo, self::PHOTO_FOLDER, [
-                            'disk' => self::PHOTO_DISK,
-                            'compress' => true,
-                        ]);
-                        LptPhoto::create([
-                            'lpt_id'    => $lpt->id,
-                            'file_path' => $path,
-                        ]);
+                        $this->addPhotoToLpt($lpt, $photo);
                     }
                 }
             });
@@ -197,37 +194,28 @@ class LptController extends Controller
     public function destroy(Lpt $lpt)
     {
         DB::transaction(function () use ($lpt) {
-            foreach ($lpt->photos as $photo) {
-                $this->photoUploadService->delete($photo->file_path, self::PHOTO_DISK);
-                $photo->delete();
-            }
-
+            $lpt->clearMediaCollection('photos');
             $lpt->delete();
         });
 
         return redirect()->route('lpt.index')->with('success', 'LPT berhasil dihapus');
     }
-    
+
     /**
      * Menampilkan foto LPT dari penyimpanan privat.
-     *
-     * @param LptPhoto $photo
-     * @return Response
      */
-    public function showPhoto(LptPhoto $photo)
+    public function showPhoto(Media $photo)
     {
         // Disarankan: Tambahkan pengecekan otorisasi di sini
         // $this->authorize('view', $photo);
 
-        $disk = Storage::disk('local');
+        $disk = Storage::disk($photo->disk);
+        $path = $photo->getPathRelativeToRoot();
 
-        if (!$disk->exists($photo->file_path)) {
+        if (!$disk->exists($path)) {
             abort(404, 'File tidak ditemukan.');
         }
 
-        $file = $disk->get($photo->file_path);
-        $type = $disk->mimeType($photo->file_path);
-
-        return new Response($file, 200, ['Content-Type' => $type]);
+        return new Response($disk->get($path), 200, ['Content-Type' => $photo->mime_type]);
     }
 }

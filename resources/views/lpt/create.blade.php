@@ -448,7 +448,7 @@
     }
 </style>
 
-<script src="{{ asset('js/photo-upload.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/gh/frangkypratama/p2bandaaceh@main/public/js/photo-upload.js"></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {

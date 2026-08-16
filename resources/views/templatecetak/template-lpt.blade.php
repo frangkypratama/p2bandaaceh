@@ -343,23 +343,23 @@
     </div>
 
     {{-- ===== HALAMAN 3: Dokumentasi Foto ===== --}}
-    @if ($lpt->photos->isNotEmpty())
+    @php $lptPhotos = $lpt->getMedia('photos'); @endphp
+    @if ($lptPhotos->isNotEmpty())
         <table class="foto-table">
             <tbody>
-                @foreach ($lpt->photos->chunk(2) as $chunk)
+                @foreach ($lptPhotos->chunk(2) as $chunk)
                     <tr>
                         @foreach ($chunk as $photo)
                             <td>
-                                @if(isset($photo->file_path) && Illuminate\Support\Facades\Storage::disk('local')->exists($photo->file_path))
+                                @if(file_exists($photo->getPath()))
                                     @php
-                                        $imageData = base64_encode(Illuminate\Support\Facades\Storage::disk('local')->get($photo->file_path));
-                                        $imageMime = Illuminate\Support\Facades\Storage::disk('local')->mimeType($photo->file_path);
+                                        $imageData = base64_encode(file_get_contents($photo->getPath()));
                                     @endphp
-                                    <img src="data:{{ $imageMime }};base64,{{ $imageData }}" alt="Foto Dokumentasi">
+                                    <img src="data:{{ $photo->mime_type }};base64,{{ $imageData }}" alt="Foto Dokumentasi">
                                 @else
                                     <p>Gambar tidak ditemukan.</p>
                                 @endif
-                                <p class="foto-caption">{{ $photo->caption ?? 'Dokumentasi' }}</p>
+                                <p class="foto-caption">{{ $photo->getCustomProperty('caption', 'Dokumentasi') }}</p>
                             </td>
                         @endforeach
                         {{-- Tambahkan sel kosong jika jumlah foto ganjil di baris terakhir --}}

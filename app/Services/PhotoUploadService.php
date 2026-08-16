@@ -75,18 +75,64 @@ class PhotoUploadService
             return;
         }
 
-        $steps = $options['compress_steps'] ?? [
+        $image = $this->imageManager->read($storage->get($path));
+
+        $this->applyCompressionSteps(
+            $image,
+            $options['compress_steps'] ?? null,
+            $thresholdBytes,
+            fn (string $bytes) => $storage->put($path, $bytes),
+            fn () => $storage->size($path),
+        );
+    }
+
+    /**
+     * Kompres file upload di tempatnya (menimpa file sementara PHP), tanpa
+     * menyimpannya ke disk Laravel - dipakai sebelum file diserahkan ke
+     * penyimpanan lain (mis. Spatie MediaLibrary) yang mengelola disk sendiri.
+     *
+     * Opsi yang didukung sama seperti store(): compress_threshold_kb, compress_steps.
+     */
+    public function compressInPlace(UploadedFile $file, array $options = []): void
+    {
+        $thresholdBytes = ($options['compress_threshold_kb'] ?? 300) * 1024;
+        $realPath = $file->getRealPath();
+
+        if (filesize($realPath) <= $thresholdBytes) {
+            return;
+        }
+
+        $image = $this->imageManager->read($realPath);
+
+        $this->applyCompressionSteps(
+            $image,
+            $options['compress_steps'] ?? null,
+            $thresholdBytes,
+            fn (string $bytes) => file_put_contents($realPath, $bytes),
+            fn () => filesize($realPath),
+        );
+    }
+
+    /**
+     * @param  array<array{width:int,quality:int}>|null  $steps
+     */
+    protected function applyCompressionSteps(
+        \Intervention\Image\Interfaces\ImageInterface $image,
+        ?array $steps,
+        int $thresholdBytes,
+        callable $write,
+        callable $currentSize,
+    ): void {
+        $steps ??= [
             ['width' => 1200, 'quality' => 70],
             ['width' => 800, 'quality' => 65],
         ];
 
-        $image = $this->imageManager->read($storage->get($path));
-
         foreach ($steps as $step) {
             $image->scaleDown(width: $step['width']);
-            $storage->put($path, (string) $image->toJpeg(quality: $step['quality']));
+            $write((string) $image->toJpeg(quality: $step['quality']));
 
-            if ($storage->size($path) <= $thresholdBytes) {
+            if ($currentSize() <= $thresholdBytes) {
                 break;
             }
         }
