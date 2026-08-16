@@ -93,13 +93,13 @@ class PhotoUploadService
      *
      * Opsi yang didukung sama seperti store(): compress_threshold_kb, compress_steps.
      */
-    public function compressInPlace(UploadedFile $file, array $options = []): void
+    public function compressInPlace(UploadedFile $file, array $options = []): bool
     {
         $thresholdBytes = ($options['compress_threshold_kb'] ?? 300) * 1024;
         $realPath = $file->getRealPath();
 
         if (filesize($realPath) <= $thresholdBytes) {
-            return;
+            return false;
         }
 
         $image = $this->imageManager->read($realPath);
@@ -111,6 +111,8 @@ class PhotoUploadService
             fn (string $bytes) => file_put_contents($realPath, $bytes),
             fn () => filesize($realPath),
         );
+
+        return true;
     }
 
     /**

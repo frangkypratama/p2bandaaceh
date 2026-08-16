@@ -8,6 +8,7 @@ use App\Services\PhotoUploadService;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -98,14 +99,12 @@ class LptController extends Controller
             'compress_threshold_kb' => 300,
         ]);
 
-        $adder = $lpt->addMedia($photo);
+        $extension = $wasCompressed ? 'jpg' : $photo->getClientOriginalExtension();
+        $randomName = Str::random(40) . '.' . $extension;
 
-        if ($wasCompressed) {
-            $baseName = pathinfo($photo->getClientOriginalName(), PATHINFO_FILENAME);
-            $adder->usingFileName($baseName . '.jpg');
-        }
-
-        $adder->toMediaCollection('photos');
+        $lpt->addMedia($photo)
+            ->usingFileName($randomName)
+            ->toMediaCollection('photos');
     }
 
     public function preview($id)
