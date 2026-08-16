@@ -448,7 +448,7 @@
     }
 </style>
 
-<script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
+<script src="{{ asset('js/photo-upload.js') }}"></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
@@ -491,155 +491,44 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // =========================================================
-    // Photo Upload & Compression (Existing Script)
+    // Photo Upload & Compression (PhotoUploadField)
     // =========================================================
-    const photoInput      = document.getElementById('photos');
-    const dropzone        = document.getElementById('uploadDropzone');
-    const progressWrap    = document.getElementById('uploadProgress');
-    const progressFill    = document.getElementById('progressFill');
-    const progressText    = document.getElementById('progressText');
-    const previewSection  = document.getElementById('uploadPreview');
-    const photoGrid       = document.getElementById('photoGrid');
-    const photoCount      = document.getElementById('photoCount');
-    const clearAllBtn     = document.getElementById('clearAllBtn');
-    const submitBtn       = document.getElementById('submitBtn');
-    const lightbox        = document.getElementById('lightbox');
-    const lightboxImg     = document.getElementById('lightboxImg');
-    const lightboxClose   = document.getElementById('lightboxClose');
+    const progressWrap   = document.getElementById('uploadProgress');
+    const progressFill   = document.getElementById('progressFill');
+    const progressText   = document.getElementById('progressText');
+    const previewSection = document.getElementById('uploadPreview');
+    const photoCount     = document.getElementById('photoCount');
+    const submitBtn      = document.getElementById('submitBtn');
 
-    let processedFiles = [];
-
-    const COMPRESS_OPTIONS = {
-        maxSizeMB: 0.3,
-        maxWidthOrHeight: 1200,
-        useWebWorker: true,
-        fileType: 'image/jpeg',
-    };
-
-    ['dragenter', 'dragover'].forEach(evt =>
-        dropzone.addEventListener(evt, () => dropzone.classList.add('dragover'))
-    );
-    ['dragleave', 'drop'].forEach(evt =>
-        dropzone.addEventListener(evt, () => dropzone.classList.remove('dragover'))
-    );
-
-    function formatSize(bytes) {
-        if (bytes < 1024)        return bytes + ' B';
-        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-        return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
-    }
-
-    function setSubmitLoading(loading) {
-        submitBtn.disabled = loading;
-        submitBtn.innerHTML = loading
-            ? '<span class="spinner-border spinner-border-sm me-1"></span>Mengompres...'
-            : '<i class="cil-save me-1"></i>Simpan';
-    }
-
-    function syncInputFiles() {
-        const dt = new DataTransfer();
-        processedFiles.forEach(f => dt.items.add(f));
-        photoInput.files = dt.files;
-    }
-
-    function updatePreview() {
-        photoGrid.innerHTML = '';
-
-        if (!processedFiles.length) {
-            previewSection.classList.remove('active');
-            return;
-        }
-
-        previewSection.classList.add('active');
-        photoCount.textContent = processedFiles.length;
-
-        processedFiles.forEach((file, idx) => {
-            const url = URL.createObjectURL(file);
-            const tile = document.createElement('div');
-            tile.className = 'upload-tile';
-            tile.innerHTML =
-                '<button type="button" class="upload-tile-del" data-idx="' + idx + '" title="Hapus">&times;</button>' +
-                (file._compressed
-                    ? '<span class="upload-tile-badge">Dikompres</span>'
-                    : '') +
-                '<img src="' + url + '" class="upload-tile-img" data-url="' + url + '" alt="' + file.name + '">' +
-                '<div class="upload-tile-meta">' +
-                    '<span class="upload-tile-name" title="' + file.name + '">' + file.name + '</span>' +
-                    '<span class="upload-tile-size">' + formatSize(file.size) + '</span>' +
-                '</div>';
-            photoGrid.appendChild(tile);
-        });
-    }
-
-    photoGrid.addEventListener('click', function (e) {
-        const delBtn = e.target.closest('.upload-tile-del');
-        if (delBtn) {
-            processedFiles.splice(parseInt(delBtn.dataset.idx), 1);
-            syncInputFiles();
-            updatePreview();
-            if (!processedFiles.length) return;
-        }
-
-        const img = e.target.closest('.upload-tile-img');
-        if (img) {
-            lightboxImg.src = img.dataset.url;
-            lightbox.classList.add('active');
-        }
-    });
-
-    clearAllBtn.addEventListener('click', function () {
-        processedFiles = [];
-        syncInputFiles();
-        updatePreview();
-    });
-
-    lightboxClose.addEventListener('click', () => lightbox.classList.remove('active'));
-    lightbox.addEventListener('click', (e) => {
-        if (e.target === lightbox) lightbox.classList.remove('active');
-    });
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') lightbox.classList.remove('active');
-    });
-
-    photoInput.addEventListener('change', async function () {
-        const files = Array.from(this.files);
-        if (!files.length) return;
-
-        processedFiles = [];
-        photoGrid.innerHTML = '';
-        progressWrap.classList.add('active');
-        progressFill.style.width = '0%';
-        setSubmitLoading(true);
-
-        for (let i = 0; i < files.length; i++) {
-            const file = files[i];
-            progressFill.style.width = Math.round((i / files.length) * 100) + '%';
-            progressText.textContent = 'Memproses ' + (i + 1) + ' dari ' + files.length + ': ' + file.name;
-
-            if (file.size > 300 * 1024) {
-                try {
-                    const compressed = await imageCompression(file, COMPRESS_OPTIONS);
-                    const newFile = new File([compressed], file.name, {
-                        type: compressed.type,
-                        lastModified: Date.now(),
-                    });
-                    newFile._compressed = true;
-                    processedFiles.push(newFile);
-                } catch (err) {
-                    console.error('Compress error:', file.name, err);
-                    processedFiles.push(file);
-                }
-            } else {
-                processedFiles.push(file);
-            }
-        }
-
-        progressFill.style.width = '100%';
-        syncInputFiles();
-        setTimeout(() => progressWrap.classList.remove('active'), 300);
-
-        updatePreview();
-        setSubmitLoading(false);
+    new PhotoUploadField({
+        input: '#photos',
+        dropzone: '#uploadDropzone',
+        previewContainer: '#photoGrid',
+        clearAllButton: '#clearAllBtn',
+        lightbox: '#lightbox',
+        multiple: true,
+        compress: { maxWidth: 1200, maxHeight: 1200, quality: 0.7, thresholdKB: 300 },
+        onCompressStart: function () {
+            progressWrap.classList.add('active');
+            progressFill.style.width = '0%';
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Mengompres...';
+        },
+        onProgress: function ({ index, total, file }) {
+            progressFill.style.width = Math.round((index / total) * 100) + '%';
+            progressText.textContent = 'Memproses ' + (index + 1) + ' dari ' + total + ': ' + file.name;
+        },
+        onCompressEnd: function () {
+            progressFill.style.width = '100%';
+            setTimeout(() => progressWrap.classList.remove('active'), 300);
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="cil-save me-1"></i>Simpan';
+        },
+        onChange: function (state) {
+            const total = state.newFiles.length;
+            photoCount.textContent = total;
+            previewSection.classList.toggle('active', total > 0);
+        },
     });
 });
 </script>

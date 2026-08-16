@@ -5,17 +5,24 @@ namespace App\Http\Controllers;
 use App\Models\Lpt;
 use App\Models\Sbp;
 use App\Models\LptPhoto;
+use App\Services\PhotoUploadService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Intervention\Image\ImageManagerStatic as Image;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Response;
 
 class LptController extends Controller
 {
+    private const PHOTO_DISK = 'local';
+    private const PHOTO_FOLDER = 'lpt-photos';
+
+    public function __construct(private PhotoUploadService $photoUploadService)
+    {
+    }
+
     private function getJenisLptOptions(): array
     {
         return [
@@ -24,34 +31,6 @@ class LptController extends Controller
                 'icon' => 'cil-flight-takeoff',
             ],
         ];
-    }
-
-    private function compressPhoto(string $storedPath): void
-    {
-        // Menggunakan disk 'local' (private) untuk kompresi
-        $disk = Storage::disk('local');
-        $threshold = 300 * 1024;
-        
-        if ($disk->size($storedPath) > $threshold) {
-            // Baca file dari disk, proses, dan simpan kembali
-            $image = Image::make($disk->get($storedPath));
-
-            $image->resize(1200, null, function ($constraint) {
-                $constraint->aspectRatio();
-                $constraint->upsize();
-            });
-            $imageStream = (string) $image->encode(null, 70);
-            $disk->put($storedPath, $imageStream);
-
-            if ($disk->size($storedPath) > $threshold) {
-                $image->resize(800, null, function ($constraint) {
-                    $constraint->aspectRatio();
-                    $constraint->upsize();
-                });
-                $imageStream = (string) $image->encode(null, 65);
-                $disk->put($storedPath, $imageStream);
-            }
-        }
     }
 
     public function index()
@@ -103,9 +82,10 @@ class LptController extends Controller
 
                 if ($request->hasFile('photos')) {
                     foreach ($request->file('photos') as $photo) {
-                        // Simpan ke disk 'local' (private)
-                        $path = $photo->store('lpt-photos', 'local');
-                        $this->compressPhoto($path);
+                        $path = $this->photoUploadService->store($photo, self::PHOTO_FOLDER, [
+                            'disk' => self::PHOTO_DISK,
+                            'compress' => true,
+                        ]);
                         LptPhoto::create([
                             'lpt_id'    => $lpt->id,
                             'file_path' => $path,
@@ -180,8 +160,7 @@ class LptController extends Controller
                                               ->get();
 
                     foreach ($photosToDelete as $photo) {
-                        // Hapus dari disk 'local' (private)
-                        Storage::disk('local')->delete($photo->file_path);
+                        $this->photoUploadService->delete($photo->file_path, self::PHOTO_DISK);
                         $photo->delete();
                     }
                 }
@@ -196,9 +175,10 @@ class LptController extends Controller
 
                 if ($request->hasFile('photos')) {
                     foreach ($request->file('photos') as $photo) {
-                        // Simpan ke disk 'local' (private)
-                        $path = $photo->store('lpt-photos', 'local');
-                        $this->compressPhoto($path);
+                        $path = $this->photoUploadService->store($photo, self::PHOTO_FOLDER, [
+                            'disk' => self::PHOTO_DISK,
+                            'compress' => true,
+                        ]);
                         LptPhoto::create([
                             'lpt_id'    => $lpt->id,
                             'file_path' => $path,
@@ -218,11 +198,10 @@ class LptController extends Controller
     {
         DB::transaction(function () use ($lpt) {
             foreach ($lpt->photos as $photo) {
-                // Hapus dari disk 'local' (private)
-                Storage::disk('local')->delete($photo->file_path);
+                $this->photoUploadService->delete($photo->file_path, self::PHOTO_DISK);
                 $photo->delete();
             }
-    
+
             $lpt->delete();
         });
 
