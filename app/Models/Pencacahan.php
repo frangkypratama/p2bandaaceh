@@ -84,9 +84,12 @@ class Pencacahan extends Model
     }
 
     /**
-     * Get all of the photos for the Pencacahan through the SBP pivot table.
+     * Relasi ke tabel pencacahan_photos lama (pra-Spatie MediaLibrary).
+     * Dipertahankan hanya sebagai cadangan/rujukan riwayat migrasi data,
+     * bukan untuk dipakai fitur baru. Foto aktif sekarang diakses lewat
+     * $sbp->pivot->getMedia('foto') (lihat PencacahanSbp::registerMediaCollections()).
      */
-    public function photos(): HasManyThrough
+    public function legacyPhotos(): HasManyThrough
     {
         return $this->hasManyThrough(
             PencacahanPhoto::class,

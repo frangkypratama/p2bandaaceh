@@ -179,6 +179,7 @@ Route::get('/api/sbp/{id}', [SbpController::class, 'showApi'])->name('sbp.api.sh
 | Pencacahan
 |--------------------------------------------------------------------------
 */
+Route::get('/pencacahan/photos/{photo}', [PencacahanController::class, 'showPhoto'])->name('pencacahan.showPhoto');
 Route::get('/pencacahan/search-sbp', [PencacahanController::class, 'searchSbp'])->name('pencacahan.searchSbp');
 Route::post('/pencacahan/get-barang-fields', [PencacahanController::class, 'getBarangFields'])->name('pencacahan.getBarangFields');
 Route::get('/pencacahan/{id}/cetak', [PencacahanController::class, 'cetak'])->name('pencacahan.cetak');

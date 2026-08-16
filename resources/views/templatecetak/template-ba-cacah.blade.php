@@ -324,7 +324,8 @@
     {{-- BAGIAN LAMPIRAN LANSKAP DIHAPUS DARI SINI --}}
 
     {{-- ===== HALAMAN 3: DOKUMENTASI FOTO ===== --}}
-    @if(isset($pencacahan->photos) && $pencacahan->photos->count() > 0)
+    @php $adaFotoPencacahan = $pencacahan->sbp->contains(fn ($s) => $s->pivot->getMedia('foto')->isNotEmpty()); @endphp
+    @if($adaFotoPencacahan)
         <div class="page-break">
             <div class="doc-title-lampiran">
                 DOKUMENTASI<br>
@@ -343,7 +344,7 @@
                     @php $photoCounter = 1; @endphp
                     @foreach($pencacahan->sbp as $sbp)
                         @php
-                            $photos = $pencacahan->photos->where('pencacahan_sbp_id', $sbp->pivot->id);
+                            $photos = $sbp->pivot->getMedia('foto');
                         @endphp
                         @if($photos->isNotEmpty())
                             <tr>
@@ -351,14 +352,13 @@
                                 <td>{{ $sbp->nomor_sbp ?? '-' }}</td>
                                 <td>
                                     @foreach($photos as $photo)
-                                        @if(Illuminate\Support\Facades\Storage::disk('public')->exists($photo->path))
+                                        @if(file_exists($photo->getPath()))
                                             @php
-                                                $imageData = base64_encode(Illuminate\Support\Facades\Storage::disk('public')->get($photo->path));
-                                                $imageMime = Illuminate\Support\Facades\Storage::disk('public')->mimeType($photo->path);
+                                                $imageData = base64_encode(file_get_contents($photo->getPath()));
                                             @endphp
-                                            <img src="data:{{ $imageMime }};base64,{{ $imageData }}" alt="Foto Dokumentasi SBP {{ $sbp->nomor_sbp }}">
+                                            <img src="data:{{ $photo->mime_type }};base64,{{ $imageData }}" alt="Foto Dokumentasi SBP {{ $sbp->nomor_sbp }}">
                                         @else
-                                            <p>Gambar tidak ditemukan di path: {{ $photo->path }}</p>
+                                            <p>Gambar tidak ditemukan: {{ $photo->file_name }}</p>
                                         @endif
                                     @endforeach
                                 </td>

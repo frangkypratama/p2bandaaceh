@@ -83,7 +83,7 @@
                     @forelse($pencacahan->sbp as $sbp)
                         @php
                             $detailsForSbp = $pencacahan->details->where('pencacahan_sbp_id', $sbp->pivot->id);
-                            $photosForSbp = $pencacahan->photos->where('pencacahan_sbp_id', $sbp->pivot->id);
+                            $photosForSbp = $sbp->pivot->getMedia('foto');
                         @endphp
                         <div class="card {{ $loop->last ? 'mb-0' : 'mb-3' }}">
                             <div class="card-header bg-light d-flex justify-content-between align-items-center flex-wrap gap-2">
@@ -133,8 +133,9 @@
                                         @if($photosForSbp->isNotEmpty())
                                             <div class="d-flex flex-wrap gap-2">
                                                 @foreach($photosForSbp as $photo)
-                                                    <a href="{{ asset('storage/' . $photo->path) }}" target="_blank" title="Lihat foto ukuran penuh">
-                                                        <img src="{{ asset('storage/' . $photo->path) }}" alt="Foto bukti {{ $sbp->nomor_sbp }}" class="img-thumbnail" style="height: 200px; width: 200px; object-fit: cover;">
+                                                    @php $photoUrl = route('pencacahan.showPhoto', $photo->id); @endphp
+                                                    <a href="{{ $photoUrl }}" target="_blank" title="Lihat foto ukuran penuh">
+                                                        <img src="{{ $photoUrl }}" alt="Foto bukti {{ $sbp->nomor_sbp }}" class="img-thumbnail" style="height: 200px; width: 200px; object-fit: cover;">
                                                     </a>
                                                 @endforeach
                                             </div>

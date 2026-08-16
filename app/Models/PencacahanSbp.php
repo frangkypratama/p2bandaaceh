@@ -5,9 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class PencacahanSbp extends Pivot
+class PencacahanSbp extends Pivot implements HasMedia
 {
+    use InteractsWithMedia;
+
     /**
      * Indicates if the IDs are auto-incrementing.
      *
@@ -41,10 +45,17 @@ class PencacahanSbp extends Pivot
         return $this->hasMany(DetailPencacahan::class, 'pencacahan_sbp_id');
     }
 
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('foto')->useDisk('local')->singleFile();
+    }
+
     /**
-     * Get all of the photos for the pivot record.
+     * Relasi ke tabel pencacahan_photos lama (pra-Spatie MediaLibrary).
+     * Dipertahankan hanya sebagai cadangan/rujukan riwayat migrasi data,
+     * bukan untuk dipakai fitur baru - lihat App\Console\Commands\MigratePencacahanPhotosToMedia.
      */
-    public function photos(): HasMany
+    public function legacyPhotos(): HasMany
     {
         return $this->hasMany(PencacahanPhoto::class, 'pencacahan_sbp_id');
     }

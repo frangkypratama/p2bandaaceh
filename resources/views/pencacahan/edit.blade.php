@@ -219,8 +219,8 @@
                                     <input type="file" name="foto_barang[{{$sbp->id}}]" id="hidden-file-input-{{$sbp->id}}" class="d-none" accept="image/*">
                                     <input type="hidden" name="has_file[{{$sbp->id}}]" id="has-file-hidden-{{$sbp->id}}" value="{{ old("has_file.{$sbp->id}", $sbp->has_file) }}">
                                     <input type="hidden" name="remove_foto[{{$sbp->id}}]" id="remove-foto-hidden-{{$sbp->id}}" value="0">
-                                    {{-- Simpan path foto lama untuk preview --}}
-                                    <input type="hidden" id="existing-photo-path-{{$sbp->id}}" value="{{ $sbp->photo_path ?? '' }}">
+                                    {{-- Simpan URL foto lama untuk preview --}}
+                                    <input type="hidden" id="existing-photo-url-{{$sbp->id}}" value="{{ $sbp->photo_url ?? '' }}">
                                 </div>
                             @endforeach
                         </div>
@@ -508,7 +508,7 @@ document.addEventListener('DOMContentLoaded', function () {
             <input type="file" name="foto_barang[${sbpId}]" id="hidden-file-input-${sbpId}" class="d-none" accept="image/*">
             <input type="hidden" name="has_file[${sbpId}]" id="has-file-hidden-${sbpId}" value="0">
             <input type="hidden" name="remove_foto[${sbpId}]" id="remove-foto-hidden-${sbpId}" value="0">
-            <input type="hidden" id="existing-photo-path-${sbpId}" value="">
+            <input type="hidden" id="existing-photo-url-${sbpId}" value="">
         `;
         hiddenInputsContainer.appendChild(div);
 
@@ -822,7 +822,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const preview = document.getElementById('foto_preview_modal');
         const placeholder = document.querySelector('.foto-placeholder-modal');
         const removeBtn = document.getElementById('btn-remove-foto-modal');
-        const existingPath = document.getElementById(`existing-photo-path-${sbpId}`)?.value;
+        const existingUrl = document.getElementById(`existing-photo-url-${sbpId}`)?.value;
         const isMarkedRemoved = document.getElementById(`remove-foto-hidden-${sbpId}`)?.value === '1';
 
         if (fileInput && fileInput.files && fileInput.files[0]) {
@@ -831,9 +831,9 @@ document.addEventListener('DOMContentLoaded', function () {
             preview.classList.remove('d-none');
             placeholder.classList.add('d-none');
             removeBtn.classList.remove('d-none');
-        } else if (existingPath && !isMarkedRemoved) {
+        } else if (existingUrl && !isMarkedRemoved) {
             // Kasus 2: Ada foto lama di server dan belum ditandai hapus → tampilkan foto lama
-            preview.src = '/storage/' + existingPath;
+            preview.src = existingUrl;
             preview.classList.remove('d-none');
             placeholder.classList.add('d-none');
             removeBtn.classList.remove('d-none');
@@ -851,19 +851,19 @@ document.addEventListener('DOMContentLoaded', function () {
         const statusFoto = document.getElementById(`status-foto-${sbpId}`);
         if (!statusFoto) return;
 
-        const existingPath = document.getElementById(`existing-photo-path-${sbpId}`)?.value;
+        const existingUrl = document.getElementById(`existing-photo-url-${sbpId}`)?.value;
         const isMarkedRemoved = document.getElementById(`remove-foto-hidden-${sbpId}`)?.value === '1';
         const fileIsSelected = fileInput && fileInput.files.length > 0;
 
         if (fileIsSelected) {
             // Ada file baru dipilih
-            statusFoto.textContent = existingPath ? 'Diganti' : 'Siap Diunggah';
+            statusFoto.textContent = existingUrl ? 'Diganti' : 'Siap Diunggah';
             statusFoto.className = 'badge bg-warning text-dark';
         } else if (isMarkedRemoved) {
             // Foto lama ditandai untuk dihapus
             statusFoto.textContent = 'Akan Dihapus';
             statusFoto.className = 'badge bg-danger';
-        } else if (existingPath) {
+        } else if (existingUrl) {
             // Ada foto lama, tidak diubah
             statusFoto.textContent = 'Ada';
             statusFoto.className = 'badge bg-success';
@@ -878,14 +878,14 @@ document.addEventListener('DOMContentLoaded', function () {
         const sbpId = detailSbpModalElement.dataset.currentSbpId;
         const fileInput = document.getElementById(`hidden-file-input-${sbpId}`);
         const removeInput = document.getElementById(`remove-foto-hidden-${sbpId}`);
-        const existingPath = document.getElementById(`existing-photo-path-${sbpId}`)?.value;
+        const existingUrl = document.getElementById(`existing-photo-url-${sbpId}`)?.value;
 
         if (fileInput) {
             // Clear file input baru (jika ada)
             fileInput.value = '';
         }
 
-        if (existingPath && removeInput) {
+        if (existingUrl && removeInput) {
             // Tandai foto lama untuk dihapus di backend
             removeInput.value = '1';
         }

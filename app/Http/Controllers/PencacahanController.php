@@ -4,24 +4,63 @@ namespace App\Http\Controllers;
 
 use App\Models\DetailPencacahan;
 use App\Models\Pencacahan;
-use App\Models\PencacahanPhoto;
 use App\Models\PencacahanSbp;
 use App\Models\Petugas;
 use App\Models\RefJenisBarang;
 use App\Models\RefSatuan;
 use App\Models\RefTarifCukai;
 use App\Models\Sbp;
+use App\Services\PhotoUploadService;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use setasign\Fpdi\Fpdi;
+use Illuminate\Http\Response;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class PencacahanController extends Controller
 {
+    public function __construct(private PhotoUploadService $photoUploadService)
+    {
+    }
+
+    private function addPhotoToPencacahanSbp(PencacahanSbp $pencacahanSbp, UploadedFile $file): void
+    {
+        $wasCompressed = $this->photoUploadService->compressInPlace($file, [
+            'compress_threshold_kb' => 300,
+        ]);
+
+        $extension = $wasCompressed ? 'jpg' : $file->getClientOriginalExtension();
+        $randomName = Str::random(40) . '.' . $extension;
+
+        // Collection 'foto' didaftarkan sebagai singleFile() - upload baru otomatis
+        // menggantikan (menghapus) foto lama di collection yang sama.
+        $pencacahanSbp->addMedia($file)
+            ->usingFileName($randomName)
+            ->toMediaCollection('foto');
+    }
+
+    /**
+     * Menampilkan foto Pencacahan dari penyimpanan privat.
+     */
+    public function showPhoto(Media $photo)
+    {
+        $disk = Storage::disk($photo->disk);
+        $path = $photo->getPathRelativeToRoot();
+
+        if (!$disk->exists($path)) {
+            abort(404, 'File tidak ditemukan.');
+        }
+
+        return new Response($disk->get($path), 200, ['Content-Type' => $photo->mime_type]);
+    }
+
     public function index()
     {
         $pencacahan = Pencacahan::with('petugas1', 'petugas2', 'sbp')->latest()->paginate(10);
@@ -103,17 +142,10 @@ class PencacahanController extends Controller
                 }
 
                 if ($request->hasFile("foto_barang.$sbpId")) {
-                    $file = $request->file("foto_barang.$sbpId");
-                    $folder = 'pencacahan_photos';
-                    $path = $file->store($folder, 'public');
-                    PencacahanPhoto::create([
-                        'pencacahan_sbp_id' => $pencacahanSbp->id,
-                        'path' => $path,
-                        'filename' => $file->hashName(),
-                    ]);
+                    $this->addPhotoToPencacahanSbp($pencacahanSbp, $request->file("foto_barang.$sbpId"));
                 }
             }
-            
+
             DB::commit();
             return redirect()->route('pencacahan.index')->with('success', 'Data Pencacahan berhasil ditambahkan.');
 
@@ -134,7 +166,6 @@ class PencacahanController extends Controller
             'details' => function ($query) {
                 $query->with(['jenisBarang', 'satuan']);
             },
-            'photos'
         ])->findOrFail($id);
 
         return view('pencacahan.show', compact('pencacahan'));
@@ -155,15 +186,15 @@ class PencacahanController extends Controller
         } else {
             $pencacahanSbpIds = $sbpDataForView->pluck('pivot.id');
             $existingDetails = DetailPencacahan::whereIn('pencacahan_sbp_id', $pencacahanSbpIds)->get()->groupBy('pencacahan_sbp_id');
-            $existingPhotos = PencacahanPhoto::whereIn('pencacahan_sbp_id', $pencacahanSbpIds)->get()->keyBy('pencacahan_sbp_id');
+            $pencacahanSbpsWithMedia = PencacahanSbp::with('media')->whereIn('id', $pencacahanSbpIds)->get()->keyBy('id');
 
-            $sbpDataForView->each(function ($sbp) use ($existingDetails, $existingPhotos) {
+            $sbpDataForView->each(function ($sbp) use ($existingDetails, $pencacahanSbpsWithMedia) {
                 $pivotId = $sbp->pivot->id;
                 $sbp->details_json = $existingDetails->get($pivotId) ? $existingDetails->get($pivotId)->toJson() : '[]';
-                
-                $photo = $existingPhotos->get($pivotId);
+
+                $photo = $pencacahanSbpsWithMedia->get($pivotId)?->getFirstMedia('foto');
                 $sbp->has_file = $photo ? '1' : '0';
-                $sbp->photo_path = $photo ? $photo->path : null;
+                $sbp->photo_url = $photo ? route('pencacahan.showPhoto', $photo->id) : null;
             });
         }
 
@@ -230,29 +261,16 @@ class PencacahanController extends Controller
                 }
 
                 // ── Foto: 3 kemungkinan ──
-                $existingPhoto = $pencacahanSbp->photos()->first();
                 $hasNewUpload = $request->hasFile("foto_barang.$sbpId");
                 $wantRemove = $request->input("remove_foto.$sbpId") == '1';
 
                 if ($hasNewUpload) {
-                    // Kasus 1: Ada upload baru → hapus foto lama, simpan foto baru
-                    if ($existingPhoto) {
-                        Storage::disk('public')->delete($existingPhoto->path);
-                        $existingPhoto->delete();
-                    }
-
-                    $file = $request->file("foto_barang.$sbpId");
-                    $folder = 'pencacahan_photos';
-                    $path = $file->store($folder, 'public');
-                    PencacahanPhoto::create([
-                        'pencacahan_sbp_id' => $pencacahanSbp->id,
-                        'path' => $path,
-                        'filename' => $file->hashName(),
-                    ]);
-                } elseif ($wantRemove && $existingPhoto) {
+                    // Kasus 1: Ada upload baru → collection 'foto' singleFile() otomatis
+                    // menghapus foto lama saat foto baru ditambahkan.
+                    $this->addPhotoToPencacahanSbp($pencacahanSbp, $request->file("foto_barang.$sbpId"));
+                } elseif ($wantRemove) {
                     // Kasus 2: User eksplisit hapus foto (tanpa upload pengganti)
-                    Storage::disk('public')->delete($existingPhoto->path);
-                    $existingPhoto->delete();
+                    $pencacahanSbp->clearMediaCollection('foto');
                 }
                 // Kasus 3: Tidak ada upload baru, tidak minta hapus → foto lama tetap ada
             }
@@ -383,7 +401,6 @@ class PencacahanController extends Controller
             'details' => function ($query) {
                 $query->with(['jenisBarang', 'satuan']);
             },
-            'photos'
         ])->findOrFail($id);
 
         Carbon::setLocale('id');
