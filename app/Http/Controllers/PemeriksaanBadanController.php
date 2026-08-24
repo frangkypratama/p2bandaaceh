@@ -110,7 +110,7 @@ class PemeriksaanBadanController extends Controller
             'nomor_dokumen_barang' => 'nullable|string|max:255',
             'tgl_dokumen_barang' => 'nullable|date',
             'id_petugas_1' => 'required|exists:petugas,id',
-            'id_petugas_2' => 'nullable|exists:petugas,id',
+            'id_petugas_2' => 'nullable|exists:petugas,id|different:id_petugas_1',
         ]);
 
         PemeriksaanBadan::create($validatedData);
@@ -228,7 +228,7 @@ class PemeriksaanBadanController extends Controller
             'nomor_dokumen_barang' => 'nullable|string|max:255',
             'tgl_dokumen_barang' => 'nullable|date',
             'id_petugas_1' => 'required|exists:petugas,id',
-            'id_petugas_2' => 'nullable|exists:petugas,id',
+            'id_petugas_2' => 'nullable|exists:petugas,id|different:id_petugas_1',
         ]);
 
         $pemeriksaanBadan->update($validatedData);
