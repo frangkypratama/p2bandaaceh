@@ -113,9 +113,10 @@ Semua di-render ke kertas kustom **F4 (595.28 × 935.43 pt)**, potret, via DomPD
 
 Dokumentasi pemeriksaan fisik terhadap seseorang (mis. penumpang) — terpisah dari SBP karena tidak selalu berujung penindakan barang.
 
-- Data: nomor & tanggal BA Riksa, referensi surat perintah, identitas lengkap orang yang diperiksa (nama, jenis/no identitas, tempat & tanggal lahir, jenis kelamin, **kewarganegaraan** — dropdown daftar negara lengkap hardcode di controller, alamat identitas & tempat tinggal, asal & tujuan perjalanan), lokasi & jenis pemeriksaan, hasil pemeriksaan, rekan perjalanan, data sarana angkut (nama sarkut, no register), dokumen barang terkait (jenis, nomor, tanggal), dua petugas pemeriksa.
+- Data: nomor & tanggal BA Riksa, referensi surat perintah, identitas lengkap orang yang diperiksa (nama, jenis/no identitas, tempat & tanggal lahir, jenis kelamin, **kewarganegaraan** — dropdown daftar negara lengkap hardcode di controller, alamat identitas & tempat tinggal, asal & tujuan perjalanan), lokasi & jenis pemeriksaan, hasil pemeriksaan, rekan perjalanan, data sarana angkut (nama sarkut, no register), dokumen barang terkait (jenis, nomor, tanggal), dua petugas pemeriksa (**wajib berbeda** — validasi `different:id_petugas_1`, disamakan dengan SBP & Pencacahan).
 - **Penomoran otomatis:** endpoint `pemeriksaan-badan.get-last-number` menghitung nomor urut berikutnya dari pola `BA-{n}` tahun berjalan (regex, bukan kolom integer terpisah seperti SBP).
-- CRUD lengkap kecuali `show` (tidak ada halaman detail terpisah — cukup index/edit).
+- **Soft delete** — model kini pakai `SoftDeletes` (sebelumnya hapus permanen); data terhapus tetap tersimpan di database dan bisa dipulihkan.
+- CRUD lengkap kecuali `show` (tidak ada halaman detail terpisah — cukup index/edit). Form create/edit dan index sudah dirapikan ulang (perataan teks kiri pada tabel, tombol aksi diberi `title` tooltip) tanpa mengubah field data.
 - **Cetak PDF** (`pemeriksaan-badan.cetak`): kertas custom (609.45 × 935.43 pt), memuat representasi tanggal dalam kalimat terbilang Bahasa Indonesia (`TerbilangHelper`, lokal Carbon `id`).
 
 ## 6. Modul: LPT (Laporan Pelaksanaan Tugas)
@@ -125,8 +126,9 @@ Dokumentasi pemeriksaan fisik terhadap seseorang (mis. penumpang) — terpisah d
 - Setiap LPT **terikat 1:1 ke sebuah SBP** (`sbp_id`, relasi `belongsTo`); tabel SBP dipilih lewat modal AJAX (partial `sbp-table.blade.php`) yang bisa dipanggil ulang saat create maupun edit.
 - Jenis LPT saat ini hanya satu opsi aktif: **`bandara`** (LPT Penindakan Bandara) — struktur kode (`getJenisLptOptions()`) sudah disiapkan untuk menambah jenis LPT lain di masa depan.
 - **Penomoran:** `nomor_lpt_int` diinput manual, diformat otomatis jadi `LPT-{n}/KBC.0102/{tahun}` (tahun diambil dari `tanggal_lpt`). Unique per tahun aktif (mengabaikan baris yang sudah soft-deleted).
+- **Proteksi keunikan nomor di level database** (pola identik dengan `nomor_sbp_active` di SBP, §4.1): kolom tersembunyi `nomor_lpt_int_active` disinkronkan otomatis lewat model event `saving` (`null` jika baris soft-deleted), dilindungi unique index. Mencegah dua LPT punya nomor sama akibat race condition, sekaligus mengizinkan nomor dipakai ulang setelah LPT lama dihapus.
 - **Upload foto (multi-file, Spatie MediaLibrary, collection `photos`):**
-  - Validasi: image (`jpeg,png,jpg,gif,svg`), maks 10 MB/file.
+  - Validasi: image (`jpeg,png,jpg,gif`), maks 10 MB/file. **SVG tidak lagi diterima** (dihapus dari daftar mime yang diizinkan — mencegah risiko XSS lewat SVG yang bisa memuat script).
   - Otomatis dikompresi (`PhotoUploadService::compressInPlace`) jika ukuran > 300 KB, sebelum masuk MediaLibrary.
   - Nama file di-random (40 karakter) — mencegah tabrakan nama & mengaburkan nama asli file.
   - Saat edit, foto lama bisa dihapus satuan lewat `deleted_photos[]` (ID media), foto baru ditambahkan tanpa menghapus yang lama (append, bukan replace).
@@ -240,7 +242,7 @@ Tabel inti beserta evolusi skemanya (urut kronologis migrasi):
 - `sbp` (+ flag BA musnah, soft delete, field identitas pelaku tambahan, **unique index `nomor_sbp_active`** — migrasi paling akhir & paling kritikal untuk konsistensi data)
 - `bast` (dokumen jadi nullable belakangan, + soft delete)
 - `ref_pelanggaran`, `ref_satuan`
-- `lpt` (+ `sbp_id`, soft delete, `nomor_lpt_int`), `lpt_photos` (skema lama)
+- `lpt` (+ `sbp_id`, soft delete, `nomor_lpt_int`, **`nomor_lpt_int_active` + unique index** — migrasi terbaru, pola sama seperti `nomor_sbp_active`), `lpt_photos` (skema lama)
 - `surat_perintah`
 - `pemeriksaan_badan` (+ field surat perintah belakangan)
 - `pencacahan`, `pencacahan_sbp` (pivot)
@@ -259,4 +261,4 @@ Bagian ini murni observasi berdasarkan pembacaan kode, bukan pekerjaan yang seda
 4. **Validasi jenis barang kondisional** (§7.2) memakai daftar nama string hardcode di dua tempat berbeda (`PencacahanController::getBarangFields()` untuk pilih view, `DetailPencacahan::JENIS_BARANG_CUKAI` untuk kategori cetak) — perubahan nama jenis barang di data referensi berisiko tidak sinkron dengan daftar hardcode ini.
 
 ---
-*Dokumen ini dihasilkan dari pembacaan langsung struktur kode (routes, controllers, models, services, migrations) pada 2026-08-17. Untuk detail implementasi presisi, rujuk file sumber terkait di setiap bagian.*
+*Dokumen ini dihasilkan dari pembacaan langsung struktur kode (routes, controllers, models, services, migrations), terakhir diperbarui 2026-08-24 mengikuti perubahan pada modul LPT (proteksi nomor via `nomor_lpt_int_active`, mime foto SVG dihapus, perbaikan null-safety template cetak) dan Pemeriksaan Badan (soft delete, validasi dua petugas wajib berbeda, perapian form). Untuk detail implementasi presisi, rujuk file sumber terkait di setiap bagian.*
