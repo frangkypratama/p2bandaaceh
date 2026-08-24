@@ -37,6 +37,37 @@ class Lpt extends Model implements HasMedia
         'tanggal_lpt' => 'date',
     ];
 
+    /**
+     * Kolom internal (bukan mass-assignable) yang menyimpan nomor_lpt_int hanya untuk
+     * baris aktif dan dilindungi unique index di database. Lihat migration
+     * add_nomor_lpt_int_active_unique_to_lpt_table.
+     */
+    protected $hidden = [
+        'nomor_lpt_int_active',
+    ];
+
+    /**
+     * The "booted" method of the model.
+     *
+     * @return void
+     */
+    protected static function booted()
+    {
+        static::saving(function ($lpt) {
+            // Sinkron otomatis di setiap create/update/restore (semuanya lewat save()).
+            $lpt->nomor_lpt_int_active = $lpt->trashed() ? null : $lpt->nomor_lpt_int;
+        });
+
+        static::deleting(function ($lpt) {
+            if (!$lpt->isForceDeleting()) {
+                // Soft delete menulis deleted_at lewat query langsung (bukan save()),
+                // jadi hook 'saving' di atas tidak ikut jalan. Kosongkan manual supaya
+                // nomor_lpt ini bisa dipakai lagi oleh LPT baru.
+                $lpt->forceFill(['nomor_lpt_int_active' => null])->saveQuietly();
+            }
+        });
+    }
+
     public function sbp()
     {
         return $this->belongsTo(Sbp::class);

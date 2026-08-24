@@ -121,9 +121,9 @@
     </div>
 
     @php
-        $isMusnah = !empty($lpt->sbp->nomor_ba_musnah);
-        $isDiserahterimakan = !$isMusnah && $lpt->sbp->bast;
-        $instansiTerkait = $lpt->sbp->bast->instansi_eksternal ?? 'instansi terkait';
+        $isMusnah = !empty(optional($lpt->sbp)->nomor_ba_musnah);
+        $isDiserahterimakan = !$isMusnah && optional($lpt->sbp)->bast;
+        $instansiTerkait = optional(optional($lpt->sbp)->bast)->instansi_eksternal ?? 'instansi terkait';
     @endphp
 
     {{-- ===== ISI LAPORAN ===== --}}

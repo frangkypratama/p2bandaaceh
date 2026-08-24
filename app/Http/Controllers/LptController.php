@@ -66,7 +66,7 @@ class LptController extends Controller
             'jenis_lpt'     => 'required|in:' . implode(',', array_keys($jenis_lpt_options)),
             'sbp_id'        => 'required|exists:sbp,id',
             'photos'        => 'nullable|array',
-            'photos.*'      => 'image|mimes:jpeg,png,jpg,gif,svg|max:10240'
+            'photos.*'      => 'image|mimes:jpeg,png,jpg,gif|max:10240'
         ]);
 
         try {
@@ -153,7 +153,7 @@ class LptController extends Controller
             'jenis_lpt'        => 'required|in:' . implode(',', array_keys($jenis_lpt_options)),
             'sbp_id'           => 'required|exists:sbp,id',
             'photos'           => 'nullable|array',
-            'photos.*'         => 'image|mimes:jpeg,png,jpg,gif,svg|max:10240',
+            'photos.*'         => 'image|mimes:jpeg,png,jpg,gif|max:10240',
             'deleted_photos'   => 'nullable|array',
             'deleted_photos.*' => 'integer|exists:media,id'
         ]);
