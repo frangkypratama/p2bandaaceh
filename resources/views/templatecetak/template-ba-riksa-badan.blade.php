@@ -68,7 +68,8 @@
         }
 
         /* ===== SIGNATURE ===== */
-        .signature { margin-top: 20px; }
+        .closing-block { page-break-inside: avoid; }
+        .signature { margin-top: 20px; page-break-inside: avoid; }
         .signature td    { padding: 2px; }
         .signature .num  { width: 20px; }
         .signature .sig-left  { width: 50%; }
@@ -205,42 +206,43 @@
         </tbody>
     </table>
 
-    <!-- PENUTUP -->
-    <p class="full-width">
-        Demikian Berita Acara ini dibuat dengan sebenarnya.
-    </p>
+    <!-- PENUTUP + SIGNATURE (satu kesatuan, tidak boleh terpisah halaman) -->
+    <div class="closing-block">
+        <p class="full-width">
+            Demikian Berita Acara ini dibuat dengan sebenarnya.
+        </p>
 
-    <!-- SIGNATURE -->
-    <table class="signature">
-        <tbody>
-            <tr>
-                <td class="num"><br></td>
-                <td class="sig-left"><br></td>
-                <td class="sig-right">Banda Aceh, {{ optional($pemeriksaanBadan->tgl_ba_riksa)->translatedFormat('d F Y') ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td class="num"><br></td>
-                <td class="sig-left">Orang yang diperiksa,</td>
-                <td class="sig-right">Pejabat yang melakukan pemeriksaan,</td>
-            </tr>
-            <tr>
-                <td class="num"><br></td>
-                <td class="sig-left">
-                    <div class="name">{{ $pemeriksaanBadan->nama ?? '-' }}</div>
-                </td>
-                <td class="sig-right">
-                    <div class="name">{{ optional($pemeriksaanBadan->petugas1)->nama ?? '-' }}<br>NIP {{ optional($pemeriksaanBadan->petugas1)->nip_formatted ?? '-' }}</div>
-                </td>
-            </tr>
-            <tr>
-                <td class="num"><br></td>
-                <td class="sig-left"><br></td>
-                <td class="sig-right">
-                    <div class="name">{{ optional($pemeriksaanBadan->petugas2)->nama ?? '-' }}<br>NIP {{ optional($pemeriksaanBadan->petugas2)->nip_formatted ?? '-' }}</div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+        <table class="signature">
+            <tbody>
+                <tr>
+                    <td class="num"><br></td>
+                    <td class="sig-left"><br></td>
+                    <td class="sig-right">Banda Aceh, {{ optional($pemeriksaanBadan->tgl_ba_riksa)->translatedFormat('d F Y') ?? '-' }}</td>
+                </tr>
+                <tr>
+                    <td class="num"><br></td>
+                    <td class="sig-left">Orang yang diperiksa,</td>
+                    <td class="sig-right">Pejabat yang melakukan pemeriksaan,</td>
+                </tr>
+                <tr>
+                    <td class="num"><br></td>
+                    <td class="sig-left">
+                        <div class="name">{{ $pemeriksaanBadan->nama ?? '-' }}</div>
+                    </td>
+                    <td class="sig-right">
+                        <div class="name">{{ optional($pemeriksaanBadan->petugas1)->nama ?? '-' }}<br>NIP {{ optional($pemeriksaanBadan->petugas1)->nip_formatted ?? '-' }}</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num"><br></td>
+                    <td class="sig-left"><br></td>
+                    <td class="sig-right">
+                        <div class="name">{{ optional($pemeriksaanBadan->petugas2)->nama ?? '-' }}<br>NIP {{ optional($pemeriksaanBadan->petugas2)->nip_formatted ?? '-' }}</div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </body>
 
 </html>

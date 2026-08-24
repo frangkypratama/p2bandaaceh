@@ -125,8 +125,13 @@
         }
 
         /* ===== SIGNATURE ===== */
+        .closing-block {
+            page-break-inside: avoid;
+        }
+
         .signature {
             margin-top: 0px;
+            page-break-inside: avoid;
         }
 
         .signature td {
@@ -335,45 +340,43 @@
                 <td class="colon">:</td>
                 <td class="value">{{ $sbp->nomor_identitas ?? '-' }}</td>
             </tr>
-            <tr>
-                <td colspan="4"><br></td>
-            </tr>
-            <tr>
-                <td colspan="4" class="full-width">Demikian Berita Acara ini dibuat dengan sebenarnya.</td>
-            </tr>
         </tbody>
     </table>
 
-    <table class="signature">
-        <tbody>
-            <tr>
-                <td class="num"></td>
-                <td class="sig-left"><br></td>
-                <td class="sig-right">{{ $sbp->kota_penindakan ?? 'Banda Aceh' }}, {{ optional($sbp->tanggal_sbp)->translatedFormat('d F Y') ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td class="num"></td>
-                <td class="sig-left">Pemilik/Kuasanya/Saksi*,</td>
-                <td class="sig-right">Pejabat yang melakukan penegahan,</td>
-            </tr>
-            <tr>
-                <td class="num"></td>
-                <td class="sig-left">
-                    <div class="name">{{ $sbp->nama_pelaku ?? '-' }}</div>
-                </td>
-                <td class="sig-right">
-                    <div class="name">{{ optional($sbp->petugas1)->nama ?? '-' }}<br>NIP {{ optional($sbp->petugas1)->nip_formatted ?? '-' }}</div>
-                </td>
-            </tr>
-            <tr>
-                <td class="num"></td>
-                <td class="sig-left"><br></td>
-                <td class="sig-right">
-                    <div class="name">{{ optional($sbp->petugas2)->nama ?? '-' }}<br>NIP {{ optional($sbp->petugas2)->nip_formatted ?? '-' }}</div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="closing-block">
+        <p class="full-width">Demikian Berita Acara ini dibuat dengan sebenarnya.</p>
+
+        <table class="signature">
+            <tbody>
+                <tr>
+                    <td class="num"></td>
+                    <td class="sig-left"><br></td>
+                    <td class="sig-right">{{ $sbp->kota_penindakan ?? 'Banda Aceh' }}, {{ optional($sbp->tanggal_sbp)->translatedFormat('d F Y') ?? '-' }}</td>
+                </tr>
+                <tr>
+                    <td class="num"></td>
+                    <td class="sig-left">Pemilik/Kuasanya/Saksi*,</td>
+                    <td class="sig-right">Pejabat yang melakukan penegahan,</td>
+                </tr>
+                <tr>
+                    <td class="num"></td>
+                    <td class="sig-left">
+                        <div class="name">{{ $sbp->nama_pelaku ?? '-' }}</div>
+                    </td>
+                    <td class="sig-right">
+                        <div class="name">{{ optional($sbp->petugas1)->nama ?? '-' }}<br>NIP {{ optional($sbp->petugas1)->nip_formatted ?? '-' }}</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num"></td>
+                    <td class="sig-left"><br></td>
+                    <td class="sig-right">
+                        <div class="name">{{ optional($sbp->petugas2)->nama ?? '-' }}<br>NIP {{ optional($sbp->petugas2)->nip_formatted ?? '-' }}</div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </body>
 
 </html>

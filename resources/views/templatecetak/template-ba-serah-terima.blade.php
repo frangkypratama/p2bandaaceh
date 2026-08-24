@@ -125,8 +125,13 @@
         }
 
         /* ===== SIGNATURE ===== */
+        .closing-block {
+            page-break-inside: avoid;
+        }
+
         .signature {
             margin-top: 0px;
+            page-break-inside: avoid;
         }
 
         .signature td {
@@ -306,10 +311,6 @@
             </tr>
 
             <tr>
-                <td colspan="4" class="full-width">Demikian Berita Acara ini dibuat dengan sebenarnya.</td>
-            </tr>
-
-            <tr>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -318,29 +319,33 @@
         </tbody>
     </table>
 
-    <table class="signature">
-        <tbody>
-            <tr>
-                <td class="num"></td>
-                <td class="sig-left"></td>
-                <td class="sig-right">{{ $sbp->kota_penindakan ?? 'Banda Aceh' }}, {{ optional($bast->tanggal_bast)->translatedFormat('d F Y') ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td class="num"></td>
-                <td class="sig-left">Yang menerima,</td>
-                <td class="sig-right">Yang menyerahkan,</td>
-            </tr>
-            <tr>
-                <td class="num"></td>
-                <td class="sig-left">
-                    <div class="name">{{ $bast->petugas_eksternal ?? '-' }}<br>NIP {{ $bast->nip_nrp_petugas_eksternal ?? '-' }}</div>
-                </td>
-                <td class="sig-right">
-                    <div class="name">{{ optional($sbp->petugas1)->nama ?? '-' }}<br>NIP {{ optional($sbp->petugas1)->nip_formatted ?? '-' }}</div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="closing-block">
+        <p class="full-width">Demikian Berita Acara ini dibuat dengan sebenarnya.</p>
+
+        <table class="signature">
+            <tbody>
+                <tr>
+                    <td class="num"></td>
+                    <td class="sig-left"></td>
+                    <td class="sig-right">{{ $sbp->kota_penindakan ?? 'Banda Aceh' }}, {{ optional($bast->tanggal_bast)->translatedFormat('d F Y') ?? '-' }}</td>
+                </tr>
+                <tr>
+                    <td class="num"></td>
+                    <td class="sig-left">Yang menerima,</td>
+                    <td class="sig-right">Yang menyerahkan,</td>
+                </tr>
+                <tr>
+                    <td class="num"></td>
+                    <td class="sig-left">
+                        <div class="name">{{ $bast->petugas_eksternal ?? '-' }}<br>NIP {{ $bast->nip_nrp_petugas_eksternal ?? '-' }}</div>
+                    </td>
+                    <td class="sig-right">
+                        <div class="name">{{ optional($sbp->petugas1)->nama ?? '-' }}<br>NIP {{ optional($sbp->petugas1)->nip_formatted ?? '-' }}</div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </body>
 
 </html>
