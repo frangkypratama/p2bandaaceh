@@ -78,11 +78,18 @@ class Sbp extends Model
 
         static::deleting(function ($sbp) {
             if ($sbp->isForceDeleting()) {
-                // Jika force delete, hapus permanen BAST juga
+                // Jika force delete, hapus permanen BAST & LPHP juga
                 $sbp->bast()->forceDelete();
+                // instance ->forceDelete() (bukan relasi ->forceDelete()) supaya event
+                // model Lphp ikut terpicu, sehingga cascade ke LP di dalamnya juga jalan.
+                optional($sbp->lphp)->forceDelete();
             } else {
-                // Jika soft delete, soft delete BAST juga
+                // Jika soft delete, soft delete BAST & LPHP juga
                 $sbp->bast()->delete();
+                // instance ->delete() (bukan relasi ->delete()) supaya event model Lphp
+                // ikut terpicu, sehingga cascade ke LP di dalamnya juga jalan. Relasi
+                // ->delete() hanya bulk update ke DB dan tidak memicu event model.
+                optional($sbp->lphp)->delete();
 
                 // Soft delete menulis deleted_at lewat query langsung (bukan save()),
                 // jadi hook 'saving' di atas tidak ikut jalan. Kosongkan manual supaya
@@ -92,8 +99,12 @@ class Sbp extends Model
         });
 
         static::restoring(function ($sbp) {
-            // Saat SBP di-restore, restore juga BAST terkait
+            // Saat SBP di-restore, restore juga BAST & LPHP terkait
             $sbp->bast()->restore();
+
+            // Ambil instance LPHP yang trashed (relasi default menyembunyikannya),
+            // lalu restore lewat instance supaya event model & cascade ke LP jalan.
+            optional($sbp->lphp()->withTrashed()->first())->restore();
         });
     }
 
@@ -125,6 +136,11 @@ class Sbp extends Model
     public function lpt()
     {
         return $this->hasOne(Lpt::class);
+    }
+
+    public function lphp()
+    {
+        return $this->hasOne(Lphp::class);
     }
 
     /**

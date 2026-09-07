@@ -69,6 +69,15 @@
                                         <a href="{{ route('sbp.cetak.preview', ['id' => $sbp->id, 'back' => request()->fullUrl()]) }}" class="btn btn-sm btn-info text-white me-2" title="Lihat Pratinjau">
                                             <i class="cil-print"></i>
                                         </a>
+                                        @if($sbp->lphp)
+                                            <a href="{{ route('lphp.edit', $sbp->lphp->id) }}" class="btn btn-sm btn-secondary text-white me-2" title="Lihat LPHP">
+                                                <i class="cil-description"></i>
+                                            </a>
+                                        @else
+                                            <a href="{{ route('lphp.create', ['sbp_id' => $sbp->id]) }}" class="btn btn-sm btn-success text-white me-2" title="Buat LPHP">
+                                                <i class="cil-notes"></i>
+                                            </a>
+                                        @endif
                                         <a href="{{ route('sbp.edit', $sbp->id) }}" class="btn btn-sm btn-warning text-white me-2" title="Edit Data">
                                             <i class="cil-pencil"></i>
                                         </a>

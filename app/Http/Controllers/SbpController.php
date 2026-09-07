@@ -84,7 +84,7 @@ class SbpController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Sbp::with(['petugas1', 'petugas2', 'bast']);
+        $query = Sbp::with(['petugas1', 'petugas2', 'bast', 'lphp']);
 
         // Apply search filter
         if ($request->filled('search')) {
