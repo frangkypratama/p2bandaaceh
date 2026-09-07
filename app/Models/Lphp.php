@@ -17,7 +17,10 @@ class Lphp extends Model
         'nomor_lphp',
         'tanggal_lphp',
         'dugaan_pelanggaran',
+        'uraian_kegiatan',
         'nama_tempat',
+        'tanggal_lahir',
+        'kewarganegaraan',
         'pasal',
         'uu_terkait',
         'konseptor_id',
@@ -28,6 +31,7 @@ class Lphp extends Model
 
     protected $casts = [
         'tanggal_lphp' => 'date',
+        'tanggal_lahir' => 'date',
     ];
 
     /**

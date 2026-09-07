@@ -9,10 +9,10 @@
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0"><strong>Data Lembar Penentuan Hasil Penindakan (LPHP)</strong></h5>
-                    <a href="{{ route('sbp.index') }}" class="btn btn-primary">
+                    <button type="button" class="btn btn-primary" data-coreui-toggle="modal" data-coreui-target="#sbpPickerModal">
                         <i class="cil-plus"></i>
-                        Buat dari Data SBP
-                    </a>
+                        Tambah Data
+                    </button>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -88,5 +88,58 @@
     </div>
 </div>
 
+{{-- Modal Pilih SBP (di luar form apa pun - hanya berfungsi sebagai navigasi ke halaman create) --}}
+<div class="modal fade" id="sbpPickerModal" tabindex="-1" aria-labelledby="sbpPickerModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="sbpPickerModalLabel">Pilih SBP untuk Dibuat LPHP</h5>
+                <button type="button" class="btn-close" data-coreui-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="sbpPickerModalBody">
+                <div class="d-flex justify-content-center align-items-center" style="height: 200px;">
+                    <div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 @include('partials._pdf-viewer')
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var sbpPickerModalEl = document.getElementById('sbpPickerModal');
+    var sbpPickerModalBody = document.getElementById('sbpPickerModalBody');
+    var loaded = false;
+
+    function loadSbpPicker(url) {
+        sbpPickerModalBody.innerHTML = '<div class="d-flex justify-content-center align-items-center" style="height: 200px;"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+
+        fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(function (response) { return response.text(); })
+            .then(function (html) { sbpPickerModalBody.innerHTML = html; })
+            .catch(function () {
+                sbpPickerModalBody.innerHTML = '<p class="text-center text-danger">Gagal memuat data SBP. Silakan coba lagi.</p>';
+            });
+    }
+
+    sbpPickerModalEl.addEventListener('show.coreui.modal', function () {
+        if (!loaded) {
+            loaded = true;
+            loadSbpPicker('{{ route('lphp.pilih-sbp') }}');
+        }
+    });
+
+    sbpPickerModalBody.addEventListener('click', function (e) {
+        var pageLink = e.target.closest('.pagination a');
+        if (pageLink) {
+            e.preventDefault();
+            loadSbpPicker(pageLink.getAttribute('href'));
+        }
+    });
+});
+</script>
+@endpush

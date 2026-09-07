@@ -4,7 +4,7 @@
     <div class="container-lg">
         <form action="{{ route('lphp.store') }}" method="POST" id="lphpForm">
             @csrf
-            <input type="hidden" name="sbp_id" value="{{ $sbp->id }}">
+            <input type="hidden" name="sbp_id" value="{{ $selectedSbp->id }}">
 
             <div class="card shadow-sm">
                 <div class="card-header bg-primary text-white">
@@ -12,12 +12,12 @@
                         <i class="cil-plus me-2"></i>
                         <span><strong>Buat Lembar Penentuan Hasil Penindakan (LPHP)</strong></span>
                     </h4>
-                    <small class="text-medium-emphasis-white">Tindak lanjut atas SBP {{ $sbp->nomor_sbp }}.</small>
+                    <small class="text-medium-emphasis-white">Tindak lanjut atas SBP.</small>
                 </div>
                 <div class="card-body p-4">
                     <div class="row g-4">
 
-                        {{-- Data SBP (read-only) --}}
+                        {{-- Pilih SBP --}}
                         <div class="col-md-12">
                             <div class="card h-100 border-light shadow-sm">
                                 <div class="card-header bg-light">
@@ -25,39 +25,41 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="row g-3">
-                                        <div class="col-md-6">
+                                        <div class="col-md-12">
                                             <label class="form-label">Nomor SBP</label>
-                                            <input type="text" class="form-control" value="{{ $sbp->nomor_sbp }}" readonly>
+                                            <input type="text" class="form-control" readonly value="{{ $selectedSbp->nomor_sbp }}">
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form-label">Tanggal SBP</label>
-                                            <input type="text" class="form-control" value="{{ optional($sbp->tanggal_sbp)->translatedFormat('d F Y') }}" readonly>
+                                            <input type="text" class="form-control" readonly
+                                                   value="{{ optional($selectedSbp->tanggal_sbp)->translatedFormat('d F Y') }}">
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form-label">Nama Pelaku</label>
-                                            <input type="text" class="form-control" value="{{ $sbp->nama_pelaku ?? '-' }}" readonly>
+                                            <input type="text" class="form-control" readonly value="{{ $selectedSbp->nama_pelaku }}">
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form-label">Identitas</label>
-                                            <input type="text" class="form-control" value="{{ $sbp->jenis_identitas ?? '-' }} / {{ $sbp->nomor_identitas ?? '-' }}" readonly>
+                                            <input type="text" class="form-control" readonly
+                                                   value="{{ $selectedSbp->jenis_identitas }} / {{ $selectedSbp->nomor_identitas }}">
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form-label">Jenis Barang</label>
-                                            <input type="text" class="form-control" value="{{ $sbp->jenis_barang ?? '-' }}" readonly>
+                                            <input type="text" class="form-control" readonly value="{{ $selectedSbp->jenis_barang }}">
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form-label">Jumlah Barang</label>
-                                            <input type="text" class="form-control" value="{{ $sbp->jumlah_barang ?? '-' }} {{ $sbp->jenis_satuan ?? '' }}" readonly>
+                                            <input type="text" class="form-control" readonly
+                                                   value="{{ $selectedSbp->jumlah_barang }} {{ $selectedSbp->jenis_satuan }}">
                                         </div>
                                         <div class="col-md-12">
                                             <label class="form-label">Uraian Barang</label>
-                                            <input type="text" class="form-control" value="{{ $sbp->uraian_barang ?? '-' }}" readonly>
+                                            <input type="text" class="form-control" readonly value="{{ $selectedSbp->uraian_barang }}">
                                         </div>
                                         <div class="col-md-12">
                                             <label class="form-label">Lokasi Penindakan</label>
-                                            <input type="text" class="form-control"
-                                                   value="{{ $sbp->lokasi_penindakan ?? '-' }}, Kec. {{ $sbp->kecamatan_penindakan ?? '-' }}, {{ $sbp->kota_penindakan ?? '-' }} pukul {{ $sbp->waktu_penindakan ?? '-' }}"
-                                                   readonly>
+                                            <input type="text" class="form-control" readonly
+                                                   value="{{ $selectedSbp->lokasi_penindakan }}, Kec. {{ $selectedSbp->kecamatan_penindakan }}, {{ $selectedSbp->kota_penindakan }} pukul {{ $selectedSbp->waktu_penindakan }}">
                                         </div>
                                     </div>
                                 </div>
@@ -93,11 +95,37 @@
                                             @enderror
                                         </div>
                                         <div class="col-md-12">
+                                            <label for="uraian_kegiatan" class="form-label">Kegiatan Penindakan</label>
+                                            <textarea class="form-control @error('uraian_kegiatan') is-invalid @enderror"
+                                                      id="uraian_kegiatan" name="uraian_kegiatan" rows="2"
+                                                      placeholder="Contoh: Dilakukan pemeriksaan terhadap Toko Nay Jaya yang diindikasikan membawa/menjual/memiliki barang kena cukai ilegal"
+                                                      required>{{ old('uraian_kegiatan') }}</textarea>
+                                            @error('uraian_kegiatan')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        <div class="col-md-12">
                                             <label for="nama_tempat" class="form-label">Nama Tempat / Toko</label>
                                             <input type="text" class="form-control @error('nama_tempat') is-invalid @enderror"
                                                    id="nama_tempat" name="nama_tempat" value="{{ old('nama_tempat') }}"
                                                    placeholder="Contoh: Toko Nay Jaya">
                                             @error('nama_tempat')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="tanggal_lahir" class="form-label">Tanggal Lahir (Pelaku)</label>
+                                            <input type="date" class="form-control @error('tanggal_lahir') is-invalid @enderror"
+                                                   id="tanggal_lahir" name="tanggal_lahir" value="{{ old('tanggal_lahir') }}">
+                                            @error('tanggal_lahir')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="kewarganegaraan" class="form-label">Kewarganegaraan</label>
+                                            <input type="text" class="form-control @error('kewarganegaraan') is-invalid @enderror"
+                                                   id="kewarganegaraan" name="kewarganegaraan" value="{{ old('kewarganegaraan', 'Indonesia') }}">
+                                            @error('kewarganegaraan')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
                                         </div>
@@ -184,7 +212,7 @@
                     </div>
                 </div>
                 <div class="card-footer text-end bg-light">
-                    <a href="{{ route('sbp.index') }}" class="btn btn-secondary">
+                    <a href="{{ route('lphp.index') }}" class="btn btn-secondary">
                         <i class="cil-x-circle me-2"></i>Batal
                     </a>
                     <button type="submit" class="btn btn-primary">

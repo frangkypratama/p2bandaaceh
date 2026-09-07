@@ -77,7 +77,7 @@
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('lp.index') }}">
                     <i class="nav-icon cil-warning"></i>
-                    LP
+                    Laporan Pelanggaran
                 </a>
             </li>
 

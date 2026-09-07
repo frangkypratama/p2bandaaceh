@@ -24,25 +24,40 @@ class LphpController extends Controller
         return view('lphp.index', compact('lphp'));
     }
 
+    /**
+     * Daftar SBP untuk modal pemilihan SBP (dipakai dari halaman index sebelum
+     * masuk ke form create, maupun dari dalam form create itu sendiri).
+     */
+    public function pickSbp(Request $request)
+    {
+        $sbpList = Sbp::with('lphp')
+            ->orderBy('tanggal_sbp', 'desc')
+            ->orderBy('nomor_sbp_int', 'desc')
+            ->paginate(10)
+            ->appends($request->query());
+
+        return view('lphp.partials.pilih-sbp-table', ['sbp' => $sbpList]);
+    }
+
     public function create(Request $request)
     {
-        $sbp = null;
-
-        if ($request->filled('sbp_id')) {
-            $sbp = Sbp::with('lphp')->find($request->query('sbp_id'));
-
-            if ($sbp && $sbp->lphp) {
-                return redirect()->route('sbp.index')->with('error', 'SBP ini sudah memiliki LPHP.');
-            }
+        if (!$request->filled('sbp_id')) {
+            return redirect()->route('lphp.index')->with('error', 'Pilih SBP terlebih dahulu untuk membuat LPHP.');
         }
 
-        if (!$sbp) {
-            return redirect()->route('sbp.index')->with('error', 'Pilih SBP dari halaman Data SBP untuk membuat LPHP.');
+        $selectedSbp = Sbp::with('lphp')->find($request->query('sbp_id'));
+
+        if (!$selectedSbp) {
+            return redirect()->route('lphp.index')->with('error', 'SBP tidak ditemukan.');
+        }
+
+        if ($selectedSbp->lphp) {
+            return redirect()->route('lphp.index')->with('error', 'SBP ini sudah memiliki LPHP.');
         }
 
         $petugasData = Petugas::orderBy('nama')->get();
 
-        return view('lphp.create', compact('sbp', 'petugasData'));
+        return view('lphp.create', compact('selectedSbp', 'petugasData'));
     }
 
     public function store(Request $request)
@@ -51,7 +66,10 @@ class LphpController extends Controller
             'sbp_id'             => ['required', 'exists:sbp,id', Rule::unique('lphp', 'sbp_id')->whereNull('deleted_at')],
             'tanggal_lphp'        => 'required|date',
             'dugaan_pelanggaran'  => 'required|string|max:255',
+            'uraian_kegiatan'     => 'required|string',
             'nama_tempat'         => 'nullable|string|max:255',
+            'tanggal_lahir'       => 'nullable|date',
+            'kewarganegaraan'     => 'nullable|string|max:255',
             'pasal'               => 'required|string|max:255',
             'uu_terkait'          => 'required|string',
             'konseptor_id'        => 'required|exists:petugas,id',
@@ -90,7 +108,10 @@ class LphpController extends Controller
         $validatedData = $request->validate([
             'tanggal_lphp'        => 'required|date',
             'dugaan_pelanggaran'  => 'required|string|max:255',
+            'uraian_kegiatan'     => 'required|string',
             'nama_tempat'         => 'nullable|string|max:255',
+            'tanggal_lahir'       => 'nullable|date',
+            'kewarganegaraan'     => 'nullable|string|max:255',
             'pasal'               => 'required|string|max:255',
             'uu_terkait'          => 'required|string',
             'konseptor_id'        => 'required|exists:petugas,id',

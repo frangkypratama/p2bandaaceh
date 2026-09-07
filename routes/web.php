@@ -182,6 +182,7 @@ Route::get('/api/sbp/{id}', [SbpController::class, 'showApi'])->name('sbp.api.sh
 |--------------------------------------------------------------------------
 */
 Route::get('/lphp/{id}/preview', [LphpController::class, 'preview'])->name('lphp.preview');
+Route::get('/lphp/pilih-sbp', [LphpController::class, 'pickSbp'])->name('lphp.pilih-sbp');
 Route::resource('lphp', LphpController::class)->except(['show']);
 
 /*

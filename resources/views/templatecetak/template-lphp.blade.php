@@ -171,50 +171,105 @@
                 <td class="num">3.</td>
                 <td class="label">Kegiatan Penindakan</td>
                 <td class="colon">:</td>
-                <td class="value" colspan="4">
-                    Dilakukan pemeriksaan terhadap {{ $lphp->nama_tempat ?? '-' }} yang diindikasikan {{ optional($sbp)->alasan_penindakan ?? 'membawa/menjual/memiliki barang kena cukai ilegal' }}
-                </td>
+                <td class="value" colspan="4">{{ $lphp->uraian_kegiatan ?? '-' }}</td>
             </tr>
             <tr>
                 <td class="sub">a.</td>
-                <td class="label">Sarana Pengangkut</td>
-                <td class="colon"></td>
-                <td class="value" colspan="4">Jenis: -, No. Pol/Voy/Flight: -, Nomor Petikemas: -, Ukuran: -</td>
+                <td class="label" colspan="6">Sarana Pengangkut</td>
+            </tr>
+            <tr>
+                <td class="sub"></td>
+                <td class="label">Jenis</td>
+                <td class="colon">:</td>
+                <td class="value">-</td>
+                <td class="label" style="width:60px">No. Pol/Voy/Flight</td>
+                <td class="colon">:</td>
+                <td class="value">-</td>
+            </tr>
+            <tr>
+                <td class="sub"></td>
+                <td class="label">Nomor Petikemas</td>
+                <td class="colon">:</td>
+                <td class="value">-</td>
+                <td class="label" style="width:60px">Ukuran</td>
+                <td class="colon">:</td>
+                <td class="value">-</td>
             </tr>
             <tr>
                 <td class="sub">b.</td>
-                <td class="label">Barang</td>
-                <td class="colon"></td>
-                <td class="value" colspan="4">
-                    Komoditi/Jenis: {{ optional($sbp)->jenis_barang ?? '-' }};
-                    Jumlah: {{ optional($sbp)->jumlah_barang ?? '-' }} {{ optional($sbp)->jenis_satuan ?? '' }}
-                    ({{ optional($sbp)->uraian_barang ?? '-' }})
-                </td>
+                <td class="label" colspan="6">Barang</td>
+            </tr>
+            <tr>
+                <td class="sub"></td>
+                <td class="label">Komoditi/Jenis</td>
+                <td class="colon">:</td>
+                <td class="value" colspan="4">{{ optional($sbp)->jenis_barang ?? '-' }}</td>
+            </tr>
+            <tr>
+                <td class="sub"></td>
+                <td class="label">Jumlah</td>
+                <td class="colon">:</td>
+                <td class="value" colspan="4">{{ optional($sbp)->uraian_barang ?? '-' }}</td>
             </tr>
             <tr>
                 <td class="sub">c.</td>
-                <td class="label">Bangunan / Tempat</td>
-                <td class="colon"></td>
-                <td class="value" colspan="4">Alamat: -; No Reg Bangunan/NPPBKC: -; Pemilik/yang menguasai: -</td>
+                <td class="label" colspan="6">Bangunan / Tempat</td>
+            </tr>
+            <tr>
+                <td class="sub"></td>
+                <td class="label">Alamat</td>
+                <td class="colon">:</td>
+                <td class="value" colspan="4">-</td>
+            </tr>
+            <tr>
+                <td class="sub"></td>
+                <td class="label">No Reg Bangunan / NPPBKC/ dll</td>
+                <td class="colon">:</td>
+                <td class="value" colspan="4">-</td>
+            </tr>
+            <tr>
+                <td class="sub"></td>
+                <td class="label">Pemilik / yang menguasai</td>
+                <td class="colon">:</td>
+                <td class="value" colspan="4">-</td>
             </tr>
             <tr>
                 <td class="sub">d.</td>
-                <td class="label">Orang</td>
-                <td class="colon"></td>
-                <td class="value" colspan="4">
-                    Nama: {{ optional($sbp)->nama_pelaku ?? '-' }};
-                    Jenis Kelamin: {{ optional($sbp)->jenis_kelamin ?? '-' }};
-                    Identitas: {{ optional($sbp)->nomor_identitas ?? '-' }};
-                    Alamat: {{ optional($sbp)->alamat_di_indonesia ?? '-' }};
-                    Kewarganegaraan: Indonesia
-                </td>
+                <td class="label" colspan="6">Orang</td>
+            </tr>
+            <tr>
+                <td class="sub"></td>
+                <td class="label">Nama</td>
+                <td class="colon">:</td>
+                <td class="value">{{ optional($sbp)->nama_pelaku ?? '-' }}</td>
+                <td class="label" style="width:60px">Tanggal Lahir</td>
+                <td class="colon">:</td>
+                <td class="value">{{ optional($lphp->tanggal_lahir)->translatedFormat('d F Y') ?? '-' }}</td>
+            </tr>
+            <tr>
+                <td class="sub"></td>
+                <td class="label">Jenis Kelamin</td>
+                <td class="colon">:</td>
+                <td class="value">{{ optional($sbp)->jenis_kelamin ?? '-' }}</td>
+                <td class="label" style="width:60px">Identitas</td>
+                <td class="colon">:</td>
+                <td class="value">{{ optional($sbp)->nomor_identitas ?? '-' }}</td>
+            </tr>
+            <tr>
+                <td class="sub"></td>
+                <td class="label">Alamat</td>
+                <td class="colon">:</td>
+                <td class="value">{{ optional($sbp)->alamat_di_indonesia ?? '-' }}</td>
+                <td class="label" style="width:60px">Kewarganegaraan</td>
+                <td class="colon">:</td>
+                <td class="value">{{ $lphp->kewarganegaraan ?? 'Indonesia' }}</td>
             </tr>
             <tr>
                 <td class="num">4.</td>
                 <td class="label">SB Penindakan</td>
                 <td class="colon">:</td>
                 <td class="value">{{ optional($sbp)->nomor_sbp ?? '-' }}</td>
-                <td class="label" style="width:60px">Pukul</td>
+                <td class="label" style="width:60px">Tanggal</td>
                 <td class="colon">:</td>
                 <td class="value">{{ optional($sbp)->waktu_penindakan ?? '-' }} WIB</td>
             </tr>
@@ -230,28 +285,22 @@
                     patut diduga melanggar ketentuan {{ $lphp->pasal ?? '-' }} {{ $lphp->uu_terkait ?? '-' }}
                 </td>
             </tr>
-            @if($lphp->catatan)
-            <tr>
-                <td class="num"></td>
-                <td class="value" colspan="6"><br>Catatan: {{ $lphp->catatan }}</td>
-            </tr>
-            @endif
         </tbody>
     </table>
 
-    <table class="content-table" style="margin-top: 20px;">
+    <table class="signature">
         <tbody>
             <tr>
-                <td colspan="2"></td>
-                <td class="value">{{ optional($sbp)->kota_penindakan ?? 'Banda Aceh' }}, {{ optional($lphp->tanggal_lphp)->translatedFormat('d F Y') }}</td>
+                <td class="sig-left">&nbsp;</td>
+                <td class="sig-right">{{ optional($sbp)->kota_penindakan ?? 'Banda Aceh' }}, {{ optional($lphp->tanggal_lphp)->translatedFormat('d F Y') }}</td>
             </tr>
             <tr>
-                <td colspan="2"></td>
-                <td class="value">Konseptor LPHP</td>
+                <td class="sig-left">&nbsp;</td>
+                <td class="sig-right">Konseptor LPHP</td>
             </tr>
             <tr>
-                <td colspan="2"></td>
-                <td class="value">
+                <td class="sig-left">&nbsp;</td>
+                <td class="sig-right">
                     <div class="name">{{ optional($lphp->konseptor)->nama ?? '-' }}<br>NIP {{ optional($lphp->konseptor)->nip_formatted ?? '-' }}</div>
                 </td>
             </tr>
@@ -271,6 +320,16 @@
                 <td class="sig-right">
                     <div class="name">{{ optional($lphp->pemeriksa)->nama ?? '-' }}<br>NIP {{ optional($lphp->pemeriksa)->nip_formatted ?? '-' }}</div>
                 </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <table class="content-table" style="margin-top: 20px;">
+        <tbody>
+            <tr>
+                <td class="label">Catatan</td>
+                <td class="colon">:</td>
+                <td class="value">{{ $lphp->catatan ?? '' }}</td>
             </tr>
         </tbody>
     </table>

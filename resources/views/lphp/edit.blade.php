@@ -93,11 +93,37 @@
                                             @enderror
                                         </div>
                                         <div class="col-md-12">
+                                            <label for="uraian_kegiatan" class="form-label">Kegiatan Penindakan</label>
+                                            <textarea class="form-control @error('uraian_kegiatan') is-invalid @enderror"
+                                                      id="uraian_kegiatan" name="uraian_kegiatan" rows="2"
+                                                      required>{{ old('uraian_kegiatan', $lphp->uraian_kegiatan) }}</textarea>
+                                            @error('uraian_kegiatan')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        <div class="col-md-12">
                                             <label for="nama_tempat" class="form-label">Nama Tempat / Toko</label>
                                             <input type="text" class="form-control @error('nama_tempat') is-invalid @enderror"
                                                    id="nama_tempat" name="nama_tempat" value="{{ old('nama_tempat', $lphp->nama_tempat) }}"
                                                    placeholder="Contoh: Toko Nay Jaya">
                                             @error('nama_tempat')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="tanggal_lahir" class="form-label">Tanggal Lahir (Pelaku)</label>
+                                            <input type="date" class="form-control @error('tanggal_lahir') is-invalid @enderror"
+                                                   id="tanggal_lahir" name="tanggal_lahir"
+                                                   value="{{ old('tanggal_lahir', optional($lphp->tanggal_lahir)->format('Y-m-d')) }}">
+                                            @error('tanggal_lahir')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="kewarganegaraan" class="form-label">Kewarganegaraan</label>
+                                            <input type="text" class="form-control @error('kewarganegaraan') is-invalid @enderror"
+                                                   id="kewarganegaraan" name="kewarganegaraan" value="{{ old('kewarganegaraan', $lphp->kewarganegaraan) }}">
+                                            @error('kewarganegaraan')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
                                         </div>

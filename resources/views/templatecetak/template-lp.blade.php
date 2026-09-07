@@ -196,7 +196,7 @@
                 <td class="sub"></td>
                 <td class="label">Tempus</td>
                 <td class="colon">:</td>
-                <td class="value">Kec. {{ optional($sbp)->kecamatan_penindakan ?? '-' }}, {{ optional($sbp)->kota_penindakan ?? '-' }}</td>
+                <td class="value">{{ optional(optional($sbp)->tanggal_sbp)->translatedFormat('d F Y') ?? '-' }}</td>
                 <td class="label" style="width:60px">Pukul</td>
                 <td class="colon">:</td>
                 <td class="value">{{ optional($sbp)->waktu_penindakan ?? '-' }} WIB</td>
