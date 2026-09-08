@@ -336,6 +336,10 @@
                 </td>
             </tr>
             <tr>
+                <td class="sig-left">&nbsp;</td>
+                <td class="sig-right">&nbsp;</td>
+            </tr>
+            <tr>
                 <td class="sig-left">
                     Pengampu Pejabat Penyusun LPHP
                     <div class="name">{{ optional($lphp->pengampu)->nama ?? '-' }}<br>NIP {{ optional($lphp->pengampu)->nip_formatted ?? '-' }}</div>

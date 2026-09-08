@@ -23,7 +23,7 @@
                                     <th scope="col">Tanggal LP</th>
                                     <th scope="col">Nomor LPHP</th>
                                     <th scope="col">Nomor SBP</th>
-                                    <th scope="col">Pejabat Penerbit</th>
+                                    <th scope="col">Nama Pelaku</th>
                                     <th scope="col">Aksi</th>
                                 </tr>
                             </thead>
@@ -35,8 +35,10 @@
                                         <td>
                                             <span class="badge bg-info text-white">{{ optional($item->lphp)->nomor_lphp ?? 'N/A' }}</span>
                                         </td>
-                                        <td>{{ optional(optional($item->lphp)->sbp)->nomor_sbp ?? '-' }}</td>
-                                        <td>{{ optional($item->pejabatPenerbit)->nama ?? '-' }}</td>
+                                        <td>
+                                            <span class="badge bg-success text-white">{{ optional(optional($item->lphp)->sbp)->nomor_sbp ?? '-' }}</span>
+                                        </td>
+                                        <td>{{ optional(optional($item->lphp)->sbp)->nama_pelaku ?? '-' }}</td>
                                         <td>
                                             <div class="d-flex align-items-center">
                                                 <button type="button" class="btn btn-sm btn-info text-white preview-btn me-2"

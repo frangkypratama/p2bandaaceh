@@ -15,7 +15,7 @@ class LpController extends Controller
 {
     public function index()
     {
-        $lp = Lp::with(['lphp.sbp', 'pejabatPenerbit'])
+        $lp = Lp::with(['lphp.sbp'])
             ->orderBy('tanggal_lp', 'desc')
             ->orderBy('id', 'desc')
             ->paginate(10)
