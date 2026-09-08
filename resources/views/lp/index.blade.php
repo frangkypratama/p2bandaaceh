@@ -11,7 +11,7 @@
                     <h5 class="mb-0"><strong>Data Laporan Pelanggaran (LP)</strong></h5>
                     <a href="{{ route('lphp.index') }}" class="btn btn-primary">
                         <i class="cil-plus"></i>
-                        Buat dari Data LPHP
+                        Tambah Data
                     </a>
                 </div>
                 <div class="card-body">

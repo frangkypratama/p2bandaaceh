@@ -20,7 +20,7 @@
                     <td>{{ $item->jenis_barang }}</td>
                     <td>
                         @if($item->lphp)
-                            <span class="badge bg-secondary">Sudah ada LPHP</span>
+                            <span class="badge bg-success">Telah Diteliti</span>
                         @else
                             <a href="{{ route('lphp.create', ['sbp_id' => $item->id]) }}" class="btn btn-sm btn-primary">
                                 Pilih

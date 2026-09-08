@@ -30,6 +30,12 @@
             vertical-align: top;
         }
 
+        /* Cegah satu baris terpotong di antara dua halaman - kalau tidak
+           muat, seluruh baris didorong utuh ke halaman berikutnya. */
+        tr {
+            page-break-inside: avoid;
+        }
+
         /* ===== HEADER ===== */
         .header-table td {
             border-bottom: 2px solid #000;
@@ -73,8 +79,8 @@
 
         /* ===== CONTENT ===== */
         .content-table td {
-            padding: 3px 2px;
-            line-height: 1.3;
+            padding: 1px 2px;
+            line-height: 1;
         }
 
         .num {
@@ -101,6 +107,10 @@
         /* ===== SIGNATURE ===== */
         .signature {
             margin-top: 40px;
+            /* Jaga seluruh blok tanda tangan (kota/tanggal, jabatan, nama & NIP)
+               tetap utuh - kalau tidak muat di sisa halaman, seluruh blok
+               didorong ke halaman baru, bukan terpotong di tengah. */
+            page-break-inside: avoid;
         }
 
         .signature .sig-left {
@@ -209,7 +219,7 @@
                 <td class="sub"></td>
                 <td class="label">Jumlah</td>
                 <td class="colon">:</td>
-                <td class="value" colspan="4">{{ optional($sbp)->uraian_barang ?? '-' }}</td>
+                <td class="value" colspan="4">{{ $lphp->uraian_brg_lphp_lp ?? '-' }}</td>
             </tr>
             <tr>
                 <td class="sub">c.</td>
@@ -237,6 +247,32 @@
                 <td class="sub">d.</td>
                 <td class="label" colspan="6">Orang</td>
             </tr>
+            @if($lphp->pelaku_tidak_ditemukan)
+            <tr>
+                <td class="sub"></td>
+                <td class="label">Nama</td>
+                <td class="colon">:</td>
+                <td class="value" colspan="4">Pelaku tidak ditemukan</td>
+            </tr>
+            <tr>
+                <td class="sub"></td>
+                <td class="label">Jenis Kelamin</td>
+                <td class="colon">:</td>
+                <td class="value">-</td>
+                <td class="label" style="width:60px">Identitas</td>
+                <td class="colon">:</td>
+                <td class="value">-</td>
+            </tr>
+            <tr>
+                <td class="sub"></td>
+                <td class="label">Alamat</td>
+                <td class="colon">:</td>
+                <td class="value">-</td>
+                <td class="label" style="width:60px">Kewarganegaraan</td>
+                <td class="colon">:</td>
+                <td class="value">-</td>
+            </tr>
+            @else
             <tr>
                 <td class="sub"></td>
                 <td class="label">Nama</td>
@@ -264,6 +300,7 @@
                 <td class="colon">:</td>
                 <td class="value">{{ $lphp->kewarganegaraan ?? 'Indonesia' }}</td>
             </tr>
+            @endif
             <tr>
                 <td class="num">4.</td>
                 <td class="label">SB Penindakan</td>
@@ -292,44 +329,24 @@
         <tbody>
             <tr>
                 <td class="sig-left">&nbsp;</td>
-                <td class="sig-right">{{ optional($sbp)->kota_penindakan ?? 'Banda Aceh' }}, {{ optional($lphp->tanggal_lphp)->translatedFormat('d F Y') }}</td>
-            </tr>
-            <tr>
-                <td class="sig-left">&nbsp;</td>
-                <td class="sig-right">Konseptor LPHP</td>
-            </tr>
-            <tr>
-                <td class="sig-left">&nbsp;</td>
                 <td class="sig-right">
+                    Banda Aceh, {{ optional($lphp->tanggal_lphp)->translatedFormat('d F Y') }}<br>
+                    Konseptor LPHP
                     <div class="name">{{ optional($lphp->konseptor)->nama ?? '-' }}<br>NIP {{ optional($lphp->konseptor)->nip_formatted ?? '-' }}</div>
                 </td>
             </tr>
-        </tbody>
-    </table>
-
-    <table class="signature">
-        <tbody>
-            <tr>
-                <td class="sig-left">Pengampu Pejabat Penyusun LPHP</td>
-                <td class="sig-right">Pemeriksa Bea dan Cukai Ahli Pertama</td>
-            </tr>
             <tr>
                 <td class="sig-left">
+                    Pengampu Pejabat Penyusun LPHP
                     <div class="name">{{ optional($lphp->pengampu)->nama ?? '-' }}<br>NIP {{ optional($lphp->pengampu)->nip_formatted ?? '-' }}</div>
                 </td>
                 <td class="sig-right">
+                    Pemeriksa Bea dan Cukai Ahli Pertama
                     <div class="name">{{ optional($lphp->pemeriksa)->nama ?? '-' }}<br>NIP {{ optional($lphp->pemeriksa)->nip_formatted ?? '-' }}</div>
                 </td>
             </tr>
-        </tbody>
-    </table>
-
-    <table class="content-table" style="margin-top: 20px;">
-        <tbody>
             <tr>
-                <td class="label">Catatan</td>
-                <td class="colon">:</td>
-                <td class="value">{{ $lphp->catatan ?? '' }}</td>
+                <td colspan="2" style="padding-top: 20px;">Catatan : {{ $lphp->catatan ?? '' }}</td>
             </tr>
         </tbody>
     </table>

@@ -8,11 +8,48 @@ use App\Models\Sbp;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class LphpController extends Controller
 {
+    /**
+     * Daftar kewarganegaraan untuk dropdown pencarian (select2).
+     */
+    private function getNationalities(): Collection
+    {
+        $nationalities = [
+            "Afghanistan", "Albania", "Aljazair", "Amerika Serikat", "Andorra", "Angola", "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan",
+            "Bahama", "Bahrain", "Bangladesh", "Barbados", "Belanda", "Belarus", "Belgia", "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia dan Herzegovina", "Botswana", "Brasil", "Brunei Darussalam", "Bulgaria", "Burkina Faso", "Burundi",
+            "Ceko", "Chad", "Cile",
+            "Denmark", "Djibouti", "Dominika",
+            "Ekuador", "El Salvador", "Eritrea", "Estonia", "Eswatini", "Ethiopia",
+            "Fiji", "Filipina", "Finlandia",
+            "Gabon", "Gambia", "Georgia", "Ghana", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana",
+            "Haiti", "Honduras", "Hungaria",
+            "India", "Indonesia", "Inggris", "Irak", "Iran", "Irlandia", "Islandia", "Israel", "Italia",
+            "Jamaika", "Jepang", "Jerman",
+            "Kamboja", "Kamerun", "Kanada", "Kazakhstan", "Kenya", "Kirgistan", "Kiribati", "Kolombia", "Komoro", "Kongo", "Korea Selatan", "Korea Utara", "Kosta Rika", "Kroasia", "Kuba", "Kuwait",
+            "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lituania", "Luksemburg",
+            "Madagaskar", "Maladewa", "Malawi", "Malaysia", "Mali", "Malta", "Maroko", "Marshall", "Mauritania", "Mauritius", "Meksiko", "Mesir", "Mikronesia", "Moldova", "Monako", "Mongolia", "Montenegro", "Mozambik", "Myanmar",
+            "Namibia", "Nauru", "Nepal", "Nikaragua", "Niger", "Nigeria", "Norwegia",
+            "Oman",
+            "Pakistan", "Palau", "Panama", "Pantai Gading", "Papua Nugini", "Paraguay", "Peru", "Polandia", "Portugal",
+            "Prancis",
+            "Qatar",
+            "Rumania", "Rusia", "Rwanda",
+            "Saint Kitts dan Nevis", "Saint Lucia", "Saint Vincent dan Grenadine", "Samoa", "San Marino", "Sao Tome dan Principe", "Selandia Baru", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapura", "Siprus", "Slovenia", "Slowakia", "Solomon", "Somalia", "Spanyol", "Sri Lanka", "Sudan", "Sudan Selatan", "Suriah", "Suriname", "Swedia", "Swiss",
+            "Tajikistan", "Tanjung Verde", "Tanzania", "Thailand", "Timor Leste", "Tiongkok", "Togo", "Tonga", "Trinidad dan Tobago", "Tunisia", "Turki", "Turkmenistan", "Tuvalu",
+            "Uganda", "Ukraina", "Uni Emirat Arab", "Uruguay", "Uzbekistan",
+            "Vanuatu", "Vatikan", "Venezuela", "Vietnam",
+            "Yaman", "Yordania", "Yunani",
+            "Zambia", "Zimbabwe"
+        ];
+
+        return collect($nationalities)->sort()->values();
+    }
+
     public function index()
     {
         $lphp = Lphp::with(['sbp', 'konseptor', 'pengampu', 'pemeriksa', 'lp'])
@@ -56,8 +93,23 @@ class LphpController extends Controller
         }
 
         $petugasData = Petugas::orderBy('nama')->get();
+        $nationalities = $this->getNationalities();
 
-        return view('lphp.create', compact('selectedSbp', 'petugasData'));
+        $previewYear = optional($selectedSbp->tanggal_sbp)->year ?? date('Y');
+        $previewNomorLphp = Lphp::formatNomorLphp($selectedSbp->nomor_sbp_int, $previewYear);
+        $defaultDugaanPelanggaran = Lphp::inferDugaanPelanggaran($selectedSbp->jenis_barang);
+        $defaultNamaTempat = Lphp::namaTempatUntuk($selectedSbp);
+        $categoryDefaults = Lphp::categoryDefaults($selectedSbp);
+
+        return view('lphp.create', compact(
+            'selectedSbp',
+            'petugasData',
+            'nationalities',
+            'previewNomorLphp',
+            'defaultDugaanPelanggaran',
+            'defaultNamaTempat',
+            'categoryDefaults'
+        ));
     }
 
     public function store(Request $request)
@@ -67,7 +119,9 @@ class LphpController extends Controller
             'tanggal_lphp'        => 'required|date',
             'dugaan_pelanggaran'  => 'required|string|max:255',
             'uraian_kegiatan'     => 'required|string',
+            'uraian_brg_lphp_lp'  => 'required|string',
             'nama_tempat'         => 'nullable|string|max:255',
+            'pelaku_tidak_ditemukan' => 'nullable|boolean',
             'tanggal_lahir'       => 'nullable|date',
             'kewarganegaraan'     => 'nullable|string|max:255',
             'pasal'               => 'required|string|max:255',
@@ -77,6 +131,8 @@ class LphpController extends Controller
             'pemeriksa_id'        => 'required|exists:petugas,id',
             'catatan'             => 'nullable|string',
         ]);
+
+        $validatedData['pelaku_tidak_ditemukan'] = $request->boolean('pelaku_tidak_ditemukan');
 
         try {
             DB::transaction(function () use ($validatedData) {
@@ -99,8 +155,10 @@ class LphpController extends Controller
     {
         $lphp->load('sbp');
         $petugasData = Petugas::orderBy('nama')->get();
+        $nationalities = $this->getNationalities();
+        $categoryDefaults = Lphp::categoryDefaults($lphp->sbp);
 
-        return view('lphp.edit', compact('lphp', 'petugasData'));
+        return view('lphp.edit', compact('lphp', 'petugasData', 'nationalities', 'categoryDefaults'));
     }
 
     public function update(Request $request, Lphp $lphp)
@@ -109,7 +167,9 @@ class LphpController extends Controller
             'tanggal_lphp'        => 'required|date',
             'dugaan_pelanggaran'  => 'required|string|max:255',
             'uraian_kegiatan'     => 'required|string',
+            'uraian_brg_lphp_lp'  => 'required|string',
             'nama_tempat'         => 'nullable|string|max:255',
+            'pelaku_tidak_ditemukan' => 'nullable|boolean',
             'tanggal_lahir'       => 'nullable|date',
             'kewarganegaraan'     => 'nullable|string|max:255',
             'pasal'               => 'required|string|max:255',
@@ -119,6 +179,8 @@ class LphpController extends Controller
             'pemeriksa_id'        => 'required|exists:petugas,id',
             'catatan'             => 'nullable|string',
         ]);
+
+        $validatedData['pelaku_tidak_ditemukan'] = $request->boolean('pelaku_tidak_ditemukan');
 
         try {
             DB::transaction(function () use ($validatedData, $lphp) {

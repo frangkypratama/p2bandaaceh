@@ -30,6 +30,12 @@
             vertical-align: top;
         }
 
+        /* Cegah satu baris terpotong di antara dua halaman - kalau tidak
+           muat, seluruh baris didorong utuh ke halaman berikutnya. */
+        tr {
+            page-break-inside: avoid;
+        }
+
         /* ===== HEADER ===== */
         .header-table td {
             border-bottom: 2px solid #000;
@@ -73,8 +79,8 @@
 
         /* ===== CONTENT ===== */
         .content-table td {
-            padding: 3px 2px;
-            line-height: 1.3;
+            padding: 1px 2px;
+            line-height: 1;
         }
 
         .num {
@@ -101,6 +107,10 @@
         /* ===== SIGNATURE ===== */
         .signature {
             margin-top: 40px;
+            /* Jaga seluruh blok tanda tangan (kota/tanggal, jabatan, nama & NIP)
+               tetap utuh - kalau tidak muat di sisa halaman, seluruh blok
+               didorong ke halaman baru, bukan terpotong di tengah. */
+            page-break-inside: avoid;
         }
 
         .signature .sig-left {
@@ -167,9 +177,7 @@
                 <td class="num">3.</td>
                 <td class="label">Uraian Penindakan</td>
                 <td class="colon">:</td>
-                <td class="value" colspan="4">
-                    Dilakukan pemeriksaan terhadap {{ optional($lphp)->nama_tempat ?? '-' }} yang diindikasikan {{ optional($sbp)->alasan_penindakan ?? '-' }}
-                </td>
+                <td class="value" colspan="4">{{ optional($lphp)->uraian_kegiatan ?? '-' }}</td>
             </tr>
             <tr>
                 <td class="sub"></td>
@@ -205,6 +213,23 @@
                 <td class="num">4.</td>
                 <td class="label" colspan="6">Diduga dilakukan oleh:</td>
             </tr>
+            @if(optional($lphp)->pelaku_tidak_ditemukan)
+            <tr>
+                <td class="sub"></td>
+                <td class="label">Nama</td>
+                <td class="colon">:</td>
+                <td class="value" colspan="4">Pelaku tidak ditemukan</td>
+            </tr>
+            <tr>
+                <td class="sub"></td>
+                <td class="label">Nomor Identitas</td>
+                <td class="colon">:</td>
+                <td class="value">-</td>
+                <td class="label" style="width:60px">Alamat</td>
+                <td class="colon">:</td>
+                <td class="value">-</td>
+            </tr>
+            @else
             <tr>
                 <td class="sub"></td>
                 <td class="label">Nama</td>
@@ -223,6 +248,7 @@
                 <td class="colon">:</td>
                 <td class="value">{{ optional($sbp)->alamat_di_indonesia ?? '-' }}</td>
             </tr>
+            @endif
             <tr>
                 <td class="num">5.</td>
                 <td class="label" colspan="6">Barang Hasil Penindakan:</td>
@@ -237,7 +263,7 @@
                 <td class="sub"></td>
                 <td class="label">Jumlah Barang</td>
                 <td class="colon">:</td>
-                <td class="value" colspan="4">{{ optional($sbp)->jumlah_barang ?? '-' }} {{ optional($sbp)->jenis_satuan ?? '' }} ({{ optional($sbp)->uraian_barang ?? '-' }})</td>
+                <td class="value" colspan="4">{{ optional($lphp)->uraian_brg_lphp_lp ?? '-' }}</td>
             </tr>
             <tr>
                 <td class="sub"></td>
@@ -252,15 +278,9 @@
         <tbody>
             <tr>
                 <td class="sig-left">&nbsp;</td>
-                <td class="sig-right">{{ optional($sbp)->kota_penindakan ?? 'Banda Aceh' }}, {{ optional($lp->tanggal_lp)->translatedFormat('d F Y') }}</td>
-            </tr>
-            <tr>
-                <td class="sig-left">&nbsp;</td>
-                <td class="sig-right">Pejabat Penerbit LP</td>
-            </tr>
-            <tr>
-                <td class="sig-left">&nbsp;</td>
                 <td class="sig-right">
+                    Banda Aceh, {{ optional($lp->tanggal_lp)->translatedFormat('d F Y') }}<br>
+                    Pejabat Penerbit LP
                     <div class="name">{{ optional($lp->pejabatPenerbit)->nama ?? '-' }}<br>NIP {{ optional($lp->pejabatPenerbit)->nip_formatted ?? '-' }}</div>
                 </td>
             </tr>

@@ -18,7 +18,9 @@ class Lphp extends Model
         'tanggal_lphp',
         'dugaan_pelanggaran',
         'uraian_kegiatan',
+        'uraian_brg_lphp_lp',
         'nama_tempat',
+        'pelaku_tidak_ditemukan',
         'tanggal_lahir',
         'kewarganegaraan',
         'pasal',
@@ -32,6 +34,7 @@ class Lphp extends Model
     protected $casts = [
         'tanggal_lphp' => 'date',
         'tanggal_lahir' => 'date',
+        'pelaku_tidak_ditemukan' => 'boolean',
     ];
 
     /**
@@ -103,5 +106,81 @@ class Lphp extends Model
     public static function formatNomorLphp(int $nomorSbpInt, int $tahun): string
     {
         return "LPHP-{$nomorSbpInt}/KBC.010202/{$tahun}";
+    }
+
+    /**
+     * Jenis barang yang termasuk kategori pelanggaran Cukai. Jenis barang lain
+     * di luar daftar ini dianggap kategori Pabean.
+     */
+    public static function jenisBarangCukai(): array
+    {
+        return ['Hasil Tembakau', 'Minuman Mengandung Etil Alkohol', 'Etil Alkohol'];
+    }
+
+    /**
+     * Tentukan kategori dugaan pelanggaran (Cukai/Pabean) dari jenis barang SBP.
+     */
+    public static function inferDugaanPelanggaran(?string $jenisBarang): string
+    {
+        return in_array($jenisBarang, self::jenisBarangCukai(), true) ? 'Cukai' : 'Pabean';
+    }
+
+    /**
+     * Pasal default sesuai kategori dugaan pelanggaran.
+     */
+    public static function pasalUntuk(string $dugaanPelanggaran): string
+    {
+        return $dugaanPelanggaran === 'Cukai' ? 'Pasal 54 dan/atau 56' : 'Pasal 53';
+    }
+
+    /**
+     * Undang-Undang terkait default sesuai kategori dugaan pelanggaran.
+     */
+    public static function uuTerkaitUntuk(string $dugaanPelanggaran): string
+    {
+        return $dugaanPelanggaran === 'Cukai'
+            ? 'Undang-Undang Nomor 39 Tahun 2007 tentang Perubahan Atas Undang-Undang Nomor 11 Tahun 1995 tentang Cukai'
+            : 'Undang-Undang Nomor 17 Tahun 2006 tentang perubahan Undang-Undang Nomor 10 Tahun 1995 tentang Kepabeanan';
+    }
+
+    /**
+     * Narasi "Kegiatan Penindakan" default sesuai kategori dugaan pelanggaran:
+     * Cukai menyebut lokasi penindakan, Pabean menyebut nama pelaku.
+     */
+    public static function uraianKegiatanUntuk(string $dugaanPelanggaran, Sbp $sbp): string
+    {
+        $subjek = $dugaanPelanggaran === 'Cukai' ? $sbp->lokasi_penindakan : $sbp->nama_pelaku;
+        $bidang = $dugaanPelanggaran === 'Cukai' ? 'Cukai' : 'Kepabeanan';
+
+        return "Telah dilakukan pemeriksaan, penindakan, penegahan dan penyegelan terhadap {$subjek} yang diduga melanggar ketentuan dibidang {$bidang}";
+    }
+
+    /**
+     * Saran "Nama Tempat / Toko" dirangkai dari lokasi, kecamatan, dan kota
+     * penindakan pada SBP.
+     */
+    public static function namaTempatUntuk(Sbp $sbp): string
+    {
+        return collect([
+            $sbp->lokasi_penindakan,
+            $sbp->kecamatan_penindakan ? 'Kec. ' . $sbp->kecamatan_penindakan : null,
+            $sbp->kota_penindakan,
+        ])->filter()->implode(', ');
+    }
+
+    /**
+     * Peta default (pasal, UU terkait, uraian kegiatan) untuk kedua kategori
+     * dugaan pelanggaran - dipakai form untuk live-update saat kategori diganti
+     * manual, tanpa duplikasi aturan di JS.
+     */
+    public static function categoryDefaults(Sbp $sbp): array
+    {
+        return collect(['Cukai', 'Pabean'])->mapWithKeys(function ($kategori) use ($sbp) {
+            return [$kategori => [
+                'pasal' => self::pasalUntuk($kategori),
+                'uu_terkait' => self::uuTerkaitUntuk($kategori),
+                'uraian_kegiatan' => self::uraianKegiatanUntuk($kategori, $sbp),
+            ]];
+        })->all();
     }
 }
