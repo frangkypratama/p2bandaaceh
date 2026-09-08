@@ -12,6 +12,8 @@ use App\Http\Controllers\SuratPerintahController;
 use App\Http\Controllers\BariksaBadanController;
 use App\Http\Controllers\PemeriksaanBadanController;
 use App\Http\Controllers\LptController;
+use App\Http\Controllers\LphpController;
+use App\Http\Controllers\LpController;
 use App\Http\Controllers\PencacahanController;
 use App\Http\Controllers\RefJenisBarangController;
 use App\Http\Controllers\LokasiController;
@@ -173,6 +175,23 @@ Route::resource('lpt', LptController::class)->except(['show']);
 Route::get('/lpt/{id}/preview', [LptController::class, 'preview'])->name('lpt.preview');
 Route::get('/lpt/{id}/laporan-wa', [LptController::class, 'laporanWa'])->name('lpt.laporan-wa');
 Route::get('/api/sbp/{id}', [SbpController::class, 'showApi'])->name('sbp.api.show');
+
+/*
+|--------------------------------------------------------------------------
+| LPHP (Lembar Penentuan Hasil Penindakan)
+|--------------------------------------------------------------------------
+*/
+Route::get('/lphp/{id}/preview', [LphpController::class, 'preview'])->name('lphp.preview');
+Route::get('/lphp/pilih-sbp', [LphpController::class, 'pickSbp'])->name('lphp.pilih-sbp');
+Route::resource('lphp', LphpController::class)->except(['show']);
+
+/*
+|--------------------------------------------------------------------------
+| LP (Laporan Pelanggaran)
+|--------------------------------------------------------------------------
+*/
+Route::get('/lp/{id}/preview', [LpController::class, 'preview'])->name('lp.preview');
+Route::resource('lp', LpController::class)->except(['show']);
 
 /*
 |--------------------------------------------------------------------------

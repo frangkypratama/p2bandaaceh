@@ -64,6 +64,24 @@
             </li>
 
             <li class="nav-title">
+                <h2 class="fs-6 text-uppercase">Penelitian Penindakan</h2>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('lphp.index') }}">
+                    <i class="nav-icon cil-description"></i>
+                    LPHP
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('lp.index') }}">
+                    <i class="nav-icon cil-newspaper"></i>
+                    Laporan Pelanggaran
+                </a>
+            </li>
+
+            <li class="nav-title">
                 <h2 class="fs-6 text-uppercase">Referensi</h2>
             </li>
 

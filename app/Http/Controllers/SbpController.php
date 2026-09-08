@@ -325,7 +325,7 @@ class SbpController extends Controller
      */
     public function generatePdfChecklist($id)
     {
-        $sbp = Sbp::with(['petugas1', 'petugas2', 'bast', 'lpt'])->findOrFail($id);
+        $sbp = Sbp::with(['petugas1', 'petugas2', 'bast', 'lpt', 'lphp.lp'])->findOrFail($id);
 
         $checklistItems = [
             ['nama' => 'SURAT TUGAS (INTELIJEN)', 'status' => false],
@@ -350,8 +350,8 @@ class SbpController extends Controller
             ['nama' => 'BERITA ACARA PENOLAKAN TANDA TANGAN TERHADAP BERITA ACARA PENOLAKAN TANDA TANGAN SURAT BUKTI PENINDAKAN', 'status' => false],
             ['nama' => 'PENINDAKAN SEGERA', 'status' => false],
             ['nama' => 'LAPORAN PELAKSANAAN TUGAS (LPT)*', 'status' => !empty($sbp->lpt)],
-            ['nama' => 'LAPORAN DAN PENENTUAN HASIL PENINDAKAN (LPHP)*', 'status' => false],
-            ['nama' => 'LAPORAN PELANGGARAN (LP)*', 'status' => false],
+            ['nama' => 'LAPORAN DAN PENENTUAN HASIL PENINDAKAN (LPHP)*', 'status' => !empty($sbp->lphp)],
+            ['nama' => 'LAPORAN PELANGGARAN (LP)*', 'status' => !empty(optional($sbp->lphp)->lp)],
             ['nama' => 'BERITA ACARA SERAH TERIMA (BAST KE PENYIDIKAN)', 'status' => !empty($sbp->bast)],
             ['nama' => 'BERITA ACARA PEMUSNAHAN', 'status' => !empty($sbp->nomor_ba_musnah)],
             ['nama' => 'LEMBAR PENERIMAAN PERKARA (LPP)*', 'status' => false],
