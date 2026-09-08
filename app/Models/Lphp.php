@@ -110,7 +110,7 @@ class Lphp extends Model
 
     /**
      * Jenis barang yang termasuk kategori pelanggaran Cukai. Jenis barang lain
-     * di luar daftar ini dianggap kategori Pabean.
+     * di luar daftar ini dianggap kategori Kepabeanan.
      */
     public static function jenisBarangCukai(): array
     {
@@ -118,11 +118,11 @@ class Lphp extends Model
     }
 
     /**
-     * Tentukan kategori dugaan pelanggaran (Cukai/Pabean) dari jenis barang SBP.
+     * Tentukan kategori dugaan pelanggaran (Cukai/Kepabeanan) dari jenis barang SBP.
      */
     public static function inferDugaanPelanggaran(?string $jenisBarang): string
     {
-        return in_array($jenisBarang, self::jenisBarangCukai(), true) ? 'Cukai' : 'Pabean';
+        return in_array($jenisBarang, self::jenisBarangCukai(), true) ? 'Cukai' : 'Kepabeanan';
     }
 
     /**
@@ -145,7 +145,7 @@ class Lphp extends Model
 
     /**
      * Narasi "Kegiatan Penindakan" default sesuai kategori dugaan pelanggaran:
-     * Cukai menyebut lokasi penindakan, Pabean menyebut nama pelaku.
+     * Cukai menyebut lokasi penindakan, Kepabeanan menyebut nama pelaku.
      */
     public static function uraianKegiatanUntuk(string $dugaanPelanggaran, Sbp $sbp): string
     {
@@ -175,7 +175,7 @@ class Lphp extends Model
      */
     public static function categoryDefaults(Sbp $sbp): array
     {
-        return collect(['Cukai', 'Pabean'])->mapWithKeys(function ($kategori) use ($sbp) {
+        return collect(['Cukai', 'Kepabeanan'])->mapWithKeys(function ($kategori) use ($sbp) {
             return [$kategori => [
                 'pasal' => self::pasalUntuk($kategori),
                 'uu_terkait' => self::uuTerkaitUntuk($kategori),

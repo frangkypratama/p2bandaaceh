@@ -126,7 +126,7 @@
                                             <select class="form-select @error('dugaan_pelanggaran') is-invalid @enderror"
                                                     id="dugaan_pelanggaran" name="dugaan_pelanggaran" required>
                                                 <option value="Cukai" {{ old('dugaan_pelanggaran', $defaultDugaanPelanggaran) == 'Cukai' ? 'selected' : '' }}>Cukai</option>
-                                                <option value="Pabean" {{ old('dugaan_pelanggaran', $defaultDugaanPelanggaran) == 'Pabean' ? 'selected' : '' }}>Pabean</option>
+                                                <option value="Kepabeanan" {{ old('dugaan_pelanggaran', $defaultDugaanPelanggaran) == 'Kepabeanan' ? 'selected' : '' }}>Kepabeanan</option>
                                             </select>
                                             @error('dugaan_pelanggaran')
                                                 <div class="invalid-feedback">{{ $message }}</div>
