@@ -102,8 +102,8 @@
         }
 
         /* ===== SIGNATURE ===== */
-        .signature-block {
-            page-break-inside: avoid; /* "Yang Melakukan Pencacahan," & tanda tangan tidak boleh terpisah halaman */
+        .closing-block {
+            page-break-inside: avoid; /* Kalimat penutup & tanda tangan tidak boleh terpisah halaman */
         }
 
         .signature {
@@ -292,17 +292,13 @@
                 </td>
             </tr>
 
-            <tr><td colspan="4"><br></td></tr>
-            <tr>
-                <td colspan="4" class="full-width">
-                    Demikian Berita Acara Hasil Penindakan ini dibuat dengan sebenarnya dan ditandatangani pada tempat dan waktu tersebut di atas.
-                </td>
-            </tr>
         </tbody>
     </table>
 
     {{-- TANDA TANGAN HALAMAN 1 --}}
-    <div class="signature-block">
+    <div class="closing-block">
+        <p class="full-width">Demikian Berita Acara Hasil Penindakan ini dibuat dengan sebenarnya dan ditandatangani pada tempat dan waktu tersebut di atas.</p>
+
         <table class="signature">
             <tbody>
                 <tr>
@@ -378,7 +374,7 @@
             <br>
 
             {{-- TANDA TANGAN DOKUMENTASI --}}
-            <div class="signature-block">
+            <div class="closing-block">
                 <table class="signature">
                     <tbody>
                         <tr>
