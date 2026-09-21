@@ -37,6 +37,14 @@
             border-top: none;
         }
 
+        /* Cegah satu grup SBP (rowspan No & SBP) terpotong di tengah halaman */
+        tbody {
+            page-break-inside: avoid;
+        }
+        tr {
+            page-break-inside: avoid;
+        }
+
         .main-table th {
             font-weight: bold;
             border-bottom: 2px solid #000; /* Make header border thicker */
