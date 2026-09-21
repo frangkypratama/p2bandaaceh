@@ -14,6 +14,10 @@ use App\Http\Controllers\PemeriksaanBadanController;
 use App\Http\Controllers\LptController;
 use App\Http\Controllers\LphpController;
 use App\Http\Controllers\LpController;
+use App\Http\Controllers\LppController;
+use App\Http\Controllers\SplitController;
+use App\Http\Controllers\LpfController;
+use App\Http\Controllers\LhpController;
 use App\Http\Controllers\PencacahanController;
 use App\Http\Controllers\RefJenisBarangController;
 use App\Http\Controllers\LokasiController;
@@ -192,6 +196,40 @@ Route::resource('lphp', LphpController::class)->except(['show']);
 */
 Route::get('/lp/{id}/preview', [LpController::class, 'preview'])->name('lp.preview');
 Route::resource('lp', LpController::class)->except(['show']);
+
+/*
+|--------------------------------------------------------------------------
+| LPP (Lembar Penerimaan Perkara)
+|--------------------------------------------------------------------------
+*/
+Route::get('/lpp/{id}/preview', [LppController::class, 'preview'])->name('lpp.preview');
+Route::get('/lpp/pilih-lp', [LppController::class, 'pickLp'])->name('lpp.pilih-lp');
+Route::resource('lpp', LppController::class)->except(['show']);
+
+/*
+|--------------------------------------------------------------------------
+| SPLIT (Surat Perintah Penelitian)
+|--------------------------------------------------------------------------
+*/
+Route::get('/split/{id}/preview', [SplitController::class, 'preview'])->name('split.preview');
+Route::resource('split', SplitController::class)->except(['show']);
+
+/*
+|--------------------------------------------------------------------------
+| LPF (Lembar Penelitian Formal)
+|--------------------------------------------------------------------------
+*/
+Route::get('/lpf/{id}/preview', [LpfController::class, 'preview'])->name('lpf.preview');
+Route::resource('lpf', LpfController::class)->except(['show']);
+
+/*
+|--------------------------------------------------------------------------
+| LHP (Lembar Hasil Penelitian)
+|--------------------------------------------------------------------------
+*/
+Route::get('/lhp/{id}/preview', [LhpController::class, 'preview'])->name('lhp.preview');
+Route::get('/lhp/{id}/preview-berkas', [LhpController::class, 'previewBerkas'])->name('lhp.preview-berkas');
+Route::resource('lhp', LhpController::class)->except(['show']);
 
 /*
 |--------------------------------------------------------------------------

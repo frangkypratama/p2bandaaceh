@@ -82,6 +82,38 @@
             </li>
 
             <li class="nav-title">
+                <h2 class="fs-6 text-uppercase">Penelitian Perkara</h2>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('lpp.index') }}">
+                    <i class="nav-icon cil-folder"></i>
+                    LPP
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('lpf.index') }}">
+                    <i class="nav-icon cil-task"></i>
+                    LPF
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('split.index') }}">
+                    <i class="nav-icon cil-clipboard"></i>
+                    SPLIT
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('lhp.index') }}">
+                    <i class="nav-icon cil-check-circle"></i>
+                    LHP
+                </a>
+            </li>
+
+            <li class="nav-title">
                 <h2 class="fs-6 text-uppercase">Referensi</h2>
             </li>
 
