@@ -102,9 +102,12 @@
         }
 
         /* ===== SIGNATURE ===== */
+        .signature-block {
+            page-break-inside: avoid; /* "Yang Melakukan Pencacahan," & tanda tangan tidak boleh terpisah halaman */
+        }
+
         .signature {
             margin-top: 20px;
-            page-break-inside: avoid; /* "Yang Melakukan Pencacahan," & tanda tangan tidak boleh terpisah halaman */
         }
 
         .signature td {
@@ -298,29 +301,31 @@
     </table>
 
     {{-- TANDA TANGAN HALAMAN 1 --}}
-    <table class="signature">
-        <tbody>
-            <tr>
-                <td colspan="2">Yang Melakukan Pencacahan,</td>
-            </tr>
-            <tr>
-                <td class="sig-left">
-                    <div class="electronic-sign">Ditandatangani secara elektronik</div>
-                    <div class="name">
-                        {{ optional($pencacahan->petugas1)->nama ?? '-' }}<br>
-                        NIP {{ optional($pencacahan->petugas1)->nip_formatted ?? optional($pencacahan->petugas1)->nip ?? '-' }}
-                    </div>
-                </td>
-                <td class="sig-right">
-                    <div class="electronic-sign">Ditandatangani secara elektronik</div>
-                    <div class="name">
-                        {{ optional($pencacahan->petugas2)->nama ?? '-' }}<br>
-                        NIP {{ optional($pencacahan->petugas2)->nip_formatted ?? optional($pencacahan->petugas2)->nip ?? '-' }}
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="signature-block">
+        <table class="signature">
+            <tbody>
+                <tr>
+                    <td colspan="2">Yang Melakukan Pencacahan,</td>
+                </tr>
+                <tr>
+                    <td class="sig-left">
+                        <div class="electronic-sign">Ditandatangani secara elektronik</div>
+                        <div class="name">
+                            {{ optional($pencacahan->petugas1)->nama ?? '-' }}<br>
+                            NIP {{ optional($pencacahan->petugas1)->nip_formatted ?? optional($pencacahan->petugas1)->nip ?? '-' }}
+                        </div>
+                    </td>
+                    <td class="sig-right">
+                        <div class="electronic-sign">Ditandatangani secara elektronik</div>
+                        <div class="name">
+                            {{ optional($pencacahan->petugas2)->nama ?? '-' }}<br>
+                            NIP {{ optional($pencacahan->petugas2)->nip_formatted ?? optional($pencacahan->petugas2)->nip ?? '-' }}
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
     {{-- BAGIAN LAMPIRAN LANSKAP DIHAPUS DARI SINI --}}
 
@@ -372,29 +377,31 @@
             <br>
 
             {{-- TANDA TANGAN DOKUMENTASI --}}
-            <table class="signature">
-                <tbody>
-                    <tr>
-                        <td colspan="2">Yang Melakukan Pencacahan,</td>
-                    </tr>
-                    <tr>
-                        <td class="sig-left">
-                            <div class="electronic-sign">Ditandatangani secara elektronik</div>
-                            <div class="name">
-                                {{ optional($pencacahan->petugas1)->nama ?? '-' }}<br>
-                                NIP {{ optional($pencacahan->petugas1)->nip_formatted ?? optional($pencacahan->petugas1)->nip ?? '-' }}
-                            </div>
-                        </td>
-                        <td class="sig-right">
-                            <div class="electronic-sign">Ditandatangani secara elektronik</div>
-                            <div class="name">
-                                {{ optional($pencacahan->petugas2)->nama ?? '-' }}<br>
-                                NIP {{ optional($pencacahan->petugas2)->nip_formatted ?? optional($pencacahan->petugas2)->nip ?? '-' }}
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="signature-block">
+                <table class="signature">
+                    <tbody>
+                        <tr>
+                            <td colspan="2">Yang Melakukan Pencacahan,</td>
+                        </tr>
+                        <tr>
+                            <td class="sig-left">
+                                <div class="electronic-sign">Ditandatangani secara elektronik</div>
+                                <div class="name">
+                                    {{ optional($pencacahan->petugas1)->nama ?? '-' }}<br>
+                                    NIP {{ optional($pencacahan->petugas1)->nip_formatted ?? optional($pencacahan->petugas1)->nip ?? '-' }}
+                                </div>
+                            </td>
+                            <td class="sig-right">
+                                <div class="electronic-sign">Ditandatangani secara elektronik</div>
+                                <div class="name">
+                                    {{ optional($pencacahan->petugas2)->nama ?? '-' }}<br>
+                                    NIP {{ optional($pencacahan->petugas2)->nip_formatted ?? optional($pencacahan->petugas2)->nip ?? '-' }}
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     @endif
 
