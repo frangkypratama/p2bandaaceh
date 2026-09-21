@@ -108,6 +108,7 @@
 
         .signature {
             margin-top: 20px;
+            page-break-inside: avoid;
         }
 
         .signature td {
