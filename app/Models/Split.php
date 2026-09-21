@@ -114,14 +114,12 @@ class Split extends Model
     }
 
     /**
-     * Saran narasi "Untuk" (uraian tugas) default, merujuk data pelaku pada SBP asal.
+     * Saran narasi "Untuk" (uraian tugas) default. Data pelaku (nama, alamat, dsb) ditampilkan
+     * terpisah di atas teks ini pada template cetak, sehingga tidak diulang di sini.
      */
-    public static function defaultUraianTugas(Lp $lp): string
+    public static function defaultUraianTugas(): string
     {
-        $sbp = optional($lp->lphp)->sbp;
-        $nama = optional($sbp)->nama_pelaku ?: 'pelaku yang bersangkutan';
-
-        return "1. Melakukan tugas penelitian berupa mencari, mengumpulkan bahan keterangan, dan menemukan bukti permulaan yang cukup atas perkara yang diduga dilakukan oleh {$nama}.\n"
-            . '2. Setelah melaksanakan Surat Perintah ini agar melaporkan kepada yang memberi perintah.';
+        return "Melakukan tugas penelitian berupa mencari, mengumpulkan bahan keterangan, dan menemukan bukti permulaan yang cukup atas perkara yang diduga dilakukan oleh :\n"
+            . 'Setelah melaksanakan Surat Perintah ini agar melaporkan kepada yang memberi perintah.';
     }
 }

@@ -6,8 +6,8 @@
     <title>Berkas Penyidikan - {{ $lp->nomor_lp ?? '-' }}</title>
     <style>
         @page {
-            size: 215mm 330mm;
-            margin: 15mm;
+            size: 215.9mm 330.2mm;
+            margin: 10mm 20mm 5mm 20mm;
         }
 
         body {
@@ -45,6 +45,29 @@
         .header-table td {
             border-bottom: 2px solid #000;
             padding-bottom: 8px;
+        }
+
+        .kop {
+            margin-bottom: 6px;
+        }
+
+        .kop p {
+            font-weight: bold;
+            margin: 0;
+            line-height: 1.25;
+            text-align: left;
+        }
+
+        .kop p.underline {
+            text-decoration: underline;
+        }
+
+        .note-box {
+            border: 1px solid #000;
+            min-height: 26px;
+            padding: 4px 6px;
+            white-space: pre-line;
+            text-align: left;
         }
 
         .logo {
@@ -103,12 +126,22 @@
         .value {
             text-align: justify;
             word-wrap: break-word;
+        }
+
+        .value-block {
+            text-align: left;
+            word-wrap: break-word;
             white-space: pre-line;
         }
 
         .signature {
             margin-top: 30px;
             page-break-inside: avoid;
+        }
+
+        .sig3-col {
+            width: 33.33%;
+            vertical-align: top;
         }
 
         .signature .sig-left {
@@ -174,7 +207,7 @@
                 <tr>
                     <td class="label">Uraian Penindakan</td>
                     <td class="colon">:</td>
-                    <td class="value" colspan="4">{{ optional($lphp)->uraian_kegiatan ?? '-' }}</td>
+                    <td class="value-block" colspan="4">{{ optional($lphp)->uraian_kegiatan ?? '-' }}</td>
                 </tr>
                 <tr>
                     <td class="label">Dugaan Pelanggaran</td>
@@ -205,7 +238,7 @@
                 <tr>
                     <td class="label">Komoditi/Barang</td>
                     <td class="colon">:</td>
-                    <td class="value" colspan="4">{{ optional($sbp)->jenis_barang ?? '-' }} - {{ optional($lphp)->uraian_brg_lphp_lp ?? '-' }}</td>
+                    <td class="value-block" colspan="4">{{ optional($sbp)->jenis_barang ?? '-' }} - {{ optional($lphp)->uraian_brg_lphp_lp ?? '-' }}</td>
                 </tr>
             </tbody>
         </table>
@@ -226,20 +259,12 @@
 
     {{-- ===================== 2. LPP ===================== --}}
     <div class="page">
-        <table class="header-table">
-            <tbody>
-                <tr>
-                    <td class="logo"><img src="{{public_path('assets/img/logo-kemenkeu.png')}}" width="87"></td>
-                    <td class="header-text">
-                        <h1>KEMENTERIAN KEUANGAN REPUBLIK INDONESIA</h1>
-                        <h2>DIREKTORAT JENDERAL BEA DAN CUKAI</h2>
-                        <h2>KANTOR WILAYAH DIREKTORAT JENDERAL BEA DAN CUKAI ACEH</h2>
-                        <h2>KANTOR PENGAWASAN DAN PELAYANAN BEA DAN CUKAI TIPE MADYA PABEAN C BANDA ACEH</h2>
-                        <p>Jalan Soekarno Hatta Nomor 3a, Geuceu Menara, Banda Aceh 23241;<br>TELEPON (0651) 43137; FAKSIMILE (0651) 43136; LAMAN www.beacukai.go.id; PUSAT KONTAK LAYANAN 1500225; SUREL bcaceh@customs.go.id</p>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="kop">
+            <p>Kementerian Keuangan Republik Indonesia</p>
+            <p>Direktorat Jenderal Bea dan Cukai</p>
+            <p>Kantor Wilayah Direktorat Jenderal Bea dan Cukai Aceh</p>
+            <p class="underline">Kantor Pengawasan dan Pelayanan Bea dan Cukai Tipe Madya Pabean C Banda Aceh</p>
+        </div>
 
         <div class="title">
             <h3>LEMBAR PENERIMAAN PERKARA (LPP)</h3>
@@ -276,22 +301,22 @@
                 <tr>
                     <td class="label">E. Uraian Pelanggaran</td>
                     <td class="colon">:</td>
-                    <td class="value" colspan="3">{{ $lpp->uraian_pelanggaran ?? '-' }}</td>
+                    <td class="value-block" colspan="3">{{ $lpp->uraian_pelanggaran ?? '-' }}</td>
                 </tr>
                 <tr>
                     <td class="label">F. Barang Hasil Penindakan</td>
                     <td class="colon">:</td>
-                    <td class="value" colspan="3">{{ optional($sbp)->jenis_barang ?? '-' }} - {{ optional($sbp)->uraian_barang ?? '-' }}</td>
+                    <td class="value-block" colspan="3">{{ optional($sbp)->jenis_barang ?? '-' }} - {{ optional($sbp)->uraian_barang ?? '-' }}</td>
                 </tr>
                 <tr>
                     <td class="label">G. Dokumen Barang</td>
                     <td class="colon">:</td>
-                    <td class="value" colspan="3">{{ $lpp->dokumen_barang ?? '-' }}</td>
+                    <td class="value-block" colspan="3">{{ $lpp->dokumen_barang ?? '-' }}</td>
                 </tr>
                 <tr>
                     <td class="label">H. Catatan Atasan</td>
                     <td class="colon">:</td>
-                    <td class="value" colspan="3">{{ $lpp->catatan_atasan ?? '-' }}</td>
+                    <td class="value-block" colspan="3">{{ $lpp->catatan_atasan ?? '-' }}</td>
                 </tr>
             </tbody>
         </table>
@@ -299,22 +324,19 @@
         <table class="signature">
             <tbody>
                 <tr>
-                    <td class="sig-left">
+                    <td class="sig3-col">
                         Konseptor LPP
                         <div class="name">{{ optional($lpp->konseptor)->nama ?? '-' }}<br>NIP {{ optional($lpp->konseptor)->nip_formatted ?? '-' }}</div>
                     </td>
-                    <td class="sig-right">
-                        Banda Aceh, {{ optional($lpp->tanggal_lpp)->translatedFormat('d F Y') }}<br>
-                        Yang membuat LPP,<br>Pemeriksa Bea Cukai
-                        <div class="name">{{ optional($lpp->pemeriksa)->nama ?? '-' }}<br>NIP {{ optional($lpp->pemeriksa)->nip_formatted ?? '-' }}</div>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="sig-left">
-                        &nbsp;<br>Mengetahui,<br>Kepala Seksi Penindakan dan Penyidikan
+                    <td class="sig3-col">
+                        Mengetahui,<br>Kepala Seksi Penindakan dan Penyidikan
                         <div class="name">{{ optional($lpp->pengampu)->nama ?? '-' }}<br>NIP {{ optional($lpp->pengampu)->nip_formatted ?? '-' }}</div>
                     </td>
-                    <td class="sig-right">&nbsp;</td>
+                    <td class="sig3-col">
+                        Banda Aceh, {{ optional($lpp->tanggal_lpp)->translatedFormat('d F Y') }}<br>
+                        Yang membuat LPP,<br>Pemeriksa Bea Cukai Ahli Pertama
+                        <div class="name">{{ optional($lpp->pemeriksa)->nama ?? '-' }}<br>NIP {{ optional($lpp->pemeriksa)->nip_formatted ?? '-' }}</div>
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -322,20 +344,12 @@
 
     {{-- ===================== 3. SPLIT ===================== --}}
     <div class="page">
-        <table class="header-table">
-            <tbody>
-                <tr>
-                    <td class="logo"><img src="{{public_path('assets/img/logo-kemenkeu.png')}}" width="87"></td>
-                    <td class="header-text">
-                        <h1>KEMENTERIAN KEUANGAN REPUBLIK INDONESIA</h1>
-                        <h2>DIREKTORAT JENDERAL BEA DAN CUKAI</h2>
-                        <h2>KANTOR WILAYAH DIREKTORAT JENDERAL BEA DAN CUKAI ACEH</h2>
-                        <h2>KANTOR PENGAWASAN DAN PELAYANAN BEA DAN CUKAI TIPE MADYA PABEAN C BANDA ACEH</h2>
-                        <p>Jalan Soekarno Hatta Nomor 3a, Geuceu Menara, Banda Aceh 23241;<br>TELEPON (0651) 43137; FAKSIMILE (0651) 43136; LAMAN www.beacukai.go.id; PUSAT KONTAK LAYANAN 1500225; SUREL bcaceh@customs.go.id</p>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="kop">
+            <p>Kementerian Keuangan Republik Indonesia</p>
+            <p>Direktorat Jenderal Bea dan Cukai</p>
+            <p>Kantor Wilayah Direktorat Jenderal Bea dan Cukai Aceh</p>
+            <p class="underline">Kantor Pengawasan dan Pelayanan Bea dan Cukai Tipe Madya Pabean C Banda Aceh</p>
+        </div>
 
         <div class="title">
             <h3>SURAT PERINTAH PENELITIAN (SPLIT)</h3>
@@ -347,25 +361,24 @@
                 <tr>
                     <td class="label">Dasar</td>
                     <td class="colon">:</td>
-                    <td class="value">{{ $split->dasar }}</td>
+                    <td class="value-block">{{ $split->dasar }}</td>
                 </tr>
                 <tr>
                     <td class="label">Pertimbangan</td>
                     <td class="colon">:</td>
-                    <td class="value">{{ $split->pertimbangan }}</td>
+                    <td class="value-block">{{ $split->pertimbangan }}</td>
                 </tr>
                 <tr>
                     <td class="label">Diperintahkan Kepada</td>
                     <td class="colon">:</td>
-                    <td class="value">
-                        1. {{ optional($split->petugas1)->nama ?? '-' }} (NIP {{ optional($split->petugas1)->nip_formatted ?? '-' }}) - {{ optional($split->petugas1)->jabatan ?? '-' }}<br>
-                        2. {{ optional($split->petugas2)->nama ?? '-' }} (NIP {{ optional($split->petugas2)->nip_formatted ?? '-' }}) - {{ optional($split->petugas2)->jabatan ?? '-' }}
-                    </td>
+                    <td class="value-block">1. {{ optional($split->petugas1)->nama ?? '-' }} (NIP {{ optional($split->petugas1)->nip_formatted ?? '-' }}) - {{ optional($split->petugas1)->jabatan ?? '-' }}
+2. {{ optional($split->petugas2)->nama ?? '-' }} (NIP {{ optional($split->petugas2)->nip_formatted ?? '-' }}) - {{ optional($split->petugas2)->jabatan ?? '-' }}</td>
                 </tr>
                 <tr>
                     <td class="label">Untuk</td>
                     <td class="colon">:</td>
-                    <td class="value">{{ $split->uraian_tugas }}</td>
+                    <td class="value-block">{{ $split->uraian_tugas }}
+Nama: {{ optional($sbp)->nama_pelaku ?? '-' }}; Alamat: {{ optional($sbp)->alamat_di_indonesia ?? '-' }}</td>
                 </tr>
             </tbody>
         </table>
@@ -376,7 +389,7 @@
                     <td class="sig-left">&nbsp;</td>
                     <td class="sig-right">
                         Dikeluarkan di : Banda Aceh<br>
-                        Pada tanggal : {{ optional($split->tanggal_split)->translatedFormat('d F Y') }}<br>
+                        <span style="text-decoration: underline;">Pada tanggal : {{ optional($split->tanggal_split)->translatedFormat('d F Y') }}</span><br>
                         Kepala Seksi Penindakan dan Penyidikan
                         <div class="name">{{ optional($split->penerbit)->nama ?? '-' }}<br>NIP {{ optional($split->penerbit)->nip_formatted ?? '-' }}</div>
                     </td>
@@ -387,20 +400,12 @@
 
     {{-- ===================== 4. LPF ===================== --}}
     <div class="page">
-        <table class="header-table">
-            <tbody>
-                <tr>
-                    <td class="logo"><img src="{{public_path('assets/img/logo-kemenkeu.png')}}" width="87"></td>
-                    <td class="header-text">
-                        <h1>KEMENTERIAN KEUANGAN REPUBLIK INDONESIA</h1>
-                        <h2>DIREKTORAT JENDERAL BEA DAN CUKAI</h2>
-                        <h2>KANTOR WILAYAH DIREKTORAT JENDERAL BEA DAN CUKAI ACEH</h2>
-                        <h2>KANTOR PENGAWASAN DAN PELAYANAN BEA DAN CUKAI TIPE MADYA PABEAN C BANDA ACEH</h2>
-                        <p>Jalan Soekarno Hatta Nomor 3a, Geuceu Menara, Banda Aceh 23241;<br>TELEPON (0651) 43137; FAKSIMILE (0651) 43136; LAMAN www.beacukai.go.id; PUSAT KONTAK LAYANAN 1500225; SUREL bcaceh@customs.go.id</p>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="kop">
+            <p>Kementerian Keuangan Republik Indonesia</p>
+            <p>Direktorat Jenderal Bea dan Cukai</p>
+            <p>Kantor Wilayah Direktorat Jenderal Bea dan Cukai Aceh</p>
+            <p class="underline">Kantor Pengawasan dan Pelayanan Bea dan Cukai Tipe Madya Pabean C Banda Aceh</p>
+        </div>
 
         <div class="title">
             <h3>LEMBAR PENELITIAN FORMAL (LPF)</h3>
@@ -416,14 +421,44 @@
                     <td class="value">{{ $lpf->status_penangkapan ?? '-' }}</td>
                 </tr>
                 <tr>
-                    <td class="label">Kelengkapan Dokumen</td>
+                    <td class="label">1. No. Surat Perintah/Tugas</td>
                     <td class="colon">:</td>
-                    <td class="value">{{ $lpf->kelengkapan_dokumen ?? '-' }}</td>
+                    <td class="value">{{ optional($sbp)->nomor_surat_perintah ?? '-' }} @if(optional($sbp)->tanggal_surat_perintah)({{ $sbp->tanggal_surat_perintah->translatedFormat('d F Y') }})@endif</td>
+                </tr>
+                <tr>
+                    <td class="label">2. No. Surat Limpahan</td>
+                    <td class="colon">:</td>
+                    <td class="value">{{ $lpf->nomor_surat_limpahan ?? '-' }} @if($lpf->tanggal_surat_limpahan)({{ $lpf->tanggal_surat_limpahan->translatedFormat('d F Y') }})@endif</td>
+                </tr>
+                <tr>
+                    <td class="label">3. No. LP</td>
+                    <td class="colon">:</td>
+                    <td class="value">{{ $lp->nomor_lp ?? '-' }} @if(optional($lp)->tanggal_lp)({{ $lp->tanggal_lp->translatedFormat('d F Y') }})@endif</td>
+                </tr>
+                <tr>
+                    <td class="label">4. BAW Saksi</td>
+                    <td class="colon">:</td>
+                    <td class="value">{{ $lpf->nomor_baw_saksi ?? '-' }} @if($lpf->tanggal_baw_saksi)({{ $lpf->tanggal_baw_saksi->translatedFormat('d F Y') }})@endif</td>
+                </tr>
+                <tr>
+                    <td class="label">5. BAP Tersangka</td>
+                    <td class="colon">:</td>
+                    <td class="value">{{ $lpf->nomor_bap_tersangka ?? '-' }} @if($lpf->tanggal_bap_tersangka)({{ $lpf->tanggal_bap_tersangka->translatedFormat('d F Y') }})@endif</td>
+                </tr>
+                <tr>
+                    <td class="label">6. Resume Perkara</td>
+                    <td class="colon">:</td>
+                    <td class="value">{{ $lpf->nomor_resume_perkara ?? '-' }} @if($lpf->tanggal_resume_perkara)({{ $lpf->tanggal_resume_perkara->translatedFormat('d F Y') }})@endif</td>
+                </tr>
+                <tr>
+                    <td class="label">7. Dokumen Lain</td>
+                    <td class="colon">:</td>
+                    <td class="value">{{ $lpf->nomor_dokumen_lain ?? '-' }} @if($lpf->tanggal_dokumen_lain)({{ $lpf->tanggal_dokumen_lain->translatedFormat('d F Y') }})@endif</td>
                 </tr>
                 <tr>
                     <td class="label">Barang Hasil Penindakan</td>
                     <td class="colon">:</td>
-                    <td class="value">{{ $lpf->barang_hasil_penindakan ?? '-' }}</td>
+                    <td class="value-block">{{ $lpf->barang_hasil_penindakan ?? '-' }}</td>
                 </tr>
             </tbody>
         </table>
@@ -434,45 +469,40 @@
                 <tr>
                     <td class="label">Domain Perkara</td>
                     <td class="colon">:</td>
-                    <td class="value">{{ $lpf->domain_perkara ?? '-' }}</td>
+                    <td class="value-block">{{ $lpf->domain_perkara ?? '-' }}</td>
                 </tr>
                 <tr>
                     <td class="label">Kesimpulan</td>
                     <td class="colon">:</td>
-                    <td class="value">{{ $lpf->kesimpulan ?? '-' }}</td>
+                    <td class="value-block">{{ $lpf->kesimpulan ?? '-' }}</td>
                 </tr>
                 <tr>
                     <td class="label">Usulan</td>
                     <td class="colon">:</td>
-                    <td class="value">{{ $lpf->usulan ?? '-' }}</td>
-                </tr>
-                <tr>
-                    <td class="label">Catatan/Disposisi</td>
-                    <td class="colon">:</td>
-                    <td class="value">{{ $lpf->catatan_disposisi ?? '-' }}</td>
+                    <td class="value-block">{{ $lpf->usulan ?? '-' }}</td>
                 </tr>
             </tbody>
         </table>
 
+        <div class="section-title">F. Catatan/Disposisi Atasan</div>
+        <div class="note-box">{{ $lpf->catatan_disposisi ?: '' }}</div>
+
         <table class="signature">
             <tbody>
                 <tr>
-                    <td class="sig-left">
+                    <td class="sig3-col">
                         Konseptor LPF
                         <div class="name">{{ optional($lpf->konseptor)->nama ?? '-' }}<br>NIP {{ optional($lpf->konseptor)->nip_formatted ?? '-' }}</div>
                     </td>
-                    <td class="sig-right">
-                        Banda Aceh, {{ optional($lpf->tanggal_lpf)->translatedFormat('d F Y') }}<br>
-                        Yang membuat LPF,<br>Pemeriksa Bea Cukai
-                        <div class="name">{{ optional($lpf->pemeriksa)->nama ?? '-' }}<br>NIP {{ optional($lpf->pemeriksa)->nip_formatted ?? '-' }}</div>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="sig-left">
-                        &nbsp;<br>Mengetahui,<br>Kepala Seksi Penindakan dan Penyidikan
+                    <td class="sig3-col">
+                        Mengetahui,<br>Kepala Seksi Penindakan dan Penyidikan
                         <div class="name">{{ optional($lpf->pengampu)->nama ?? '-' }}<br>NIP {{ optional($lpf->pengampu)->nip_formatted ?? '-' }}</div>
                     </td>
-                    <td class="sig-right">&nbsp;</td>
+                    <td class="sig3-col">
+                        Banda Aceh, {{ optional($lpf->tanggal_lpf)->translatedFormat('d F Y') }}<br>
+                        Yang membuat LPF,<br>Pemeriksa Bea Cukai Ahli Pertama
+                        <div class="name">{{ optional($lpf->pemeriksa)->nama ?? '-' }}<br>NIP {{ optional($lpf->pemeriksa)->nip_formatted ?? '-' }}</div>
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -527,48 +557,39 @@
         </table>
 
         <div class="section-title">B. Modus Pelanggaran</div>
-        <table class="content-table">
-            <tbody><tr><td class="value" colspan="3">{{ $lhp->modus_pelanggaran ?? '-' }}</td></tr></tbody>
-        </table>
+        <div class="note-box">{{ $lhp->modus_pelanggaran ?: '' }}</div>
 
         <div class="section-title">C. Pemenuhan Unsur Pasal</div>
-        <table class="content-table">
-            <tbody><tr><td class="value" colspan="3">{{ $lhp->pemenuhan_unsur_pasal ?? '-' }}</td></tr></tbody>
-        </table>
+        <div class="note-box">{{ $lhp->pemenuhan_unsur_pasal ?: '' }}</div>
 
         <div class="section-title">D. Kesimpulan</div>
-        <table class="content-table">
-            <tbody><tr><td class="value" colspan="3">{{ $lhp->kesimpulan ?? '-' }}</td></tr></tbody>
-        </table>
+        <div class="note-box">{{ $lhp->kesimpulan ?: '' }}</div>
 
-        <div class="section-title">E-G. Alternatif, Informasi Lain &amp; Catatan Atasan</div>
-        <table class="content-table">
-            <tbody>
-                <tr><td class="value" colspan="3">{{ $lhp->alternatif_penyelesaian ?? '-' }}</td></tr>
-                <tr><td class="value" colspan="3">{{ $lhp->informasi_lainnya ?? '-' }}</td></tr>
-                <tr><td class="value" colspan="3">{{ $lhp->catatan_atasan ?? '-' }}</td></tr>
-            </tbody>
-        </table>
+        <div class="section-title">E. Alternatif Penyelesaian Perkara</div>
+        <div class="note-box">{{ $lhp->alternatif_penyelesaian ?: '' }}</div>
+
+        <div class="section-title">F. Informasi Lainnya</div>
+        <div class="note-box">{{ $lhp->informasi_lainnya ?: '' }}</div>
+
+        <div class="section-title">G. Catatan Atasan</div>
+        <div class="note-box">{{ $lhp->catatan_atasan ?: '' }}</div>
 
         <table class="signature">
             <tbody>
                 <tr>
-                    <td class="sig-left">
+                    <td class="sig3-col">
                         Konseptor LHP
                         <div class="name">{{ optional($lhp->konseptor)->nama ?? '-' }}<br>NIP {{ optional($lhp->konseptor)->nip_formatted ?? '-' }}</div>
                     </td>
-                    <td class="sig-right">
-                        Banda Aceh, {{ optional($lhp->tanggal_lhp)->translatedFormat('d F Y') }}<br>
-                        Yang membuat LHP,<br>Pemeriksa Bea Cukai
-                        <div class="name">{{ optional($lhp->pemeriksa)->nama ?? '-' }}<br>NIP {{ optional($lhp->pemeriksa)->nip_formatted ?? '-' }}</div>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="sig-left">
-                        &nbsp;<br>Mengetahui,<br>Kepala Seksi Penindakan dan Penyidikan
+                    <td class="sig3-col">
+                        Mengetahui,<br>Kepala Seksi Penindakan dan Penyidikan
                         <div class="name">{{ optional($lhp->pengampu)->nama ?? '-' }}<br>NIP {{ optional($lhp->pengampu)->nip_formatted ?? '-' }}</div>
                     </td>
-                    <td class="sig-right">&nbsp;</td>
+                    <td class="sig3-col">
+                        Banda Aceh, {{ optional($lhp->tanggal_lhp)->translatedFormat('d F Y') }}<br>
+                        Yang membuat LHP,<br>Pemeriksa Bea Cukai Ahli Pertama
+                        <div class="name">{{ optional($lhp->pemeriksa)->nama ?? '-' }}<br>NIP {{ optional($lhp->pemeriksa)->nip_formatted ?? '-' }}</div>
+                    </td>
                 </tr>
             </tbody>
         </table>

@@ -1,329 +1,134 @@
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
-    <meta charset="UTF-8">
-    <title>{{ $lpp->nomor_lpp ?? '-' }}</title>
-    <style>
-        @page {
-            size: 215mm 330mm;
-            margin: 15mm;
-        }
+<meta charset="UTF-8">
+<title>Lembar Penerimaan Perkara (LPP) Nomor {{ $lpp->nomor_lpp ?? '-' }}</title>
+<style>
+  /* Ukuran kertas sesuai dokumen asli: F4 / Folio 8,5 x 13 inci, font Arial 10pt */
+  @page { size: 215.9mm 330.2mm; margin: 10mm 20mm 5mm 20mm; }
 
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 11pt;
-            line-height: 1;
-            color: #000;
-        }
+  * { box-sizing: border-box; }
+  /* JANGAN taruh margin/padding di selector html: DomPDF memakai style elemen
+     html untuk menghitung margin @page, jadi "html { margin: 0 }" akan
+     menimpa margin @page yang sudah diset (jadi 0 / mepet tanpa margin). */
+  body { margin: 0; padding: 0; }
+  body {
+    font-family: Arial, Helvetica, "Liberation Sans", sans-serif;
+    font-size: 10pt;
+    line-height: 1.35;
+    color: #000;
+  }
+  .kop p { margin: 0; font-weight: bold; }
+  .kop .u { text-decoration: underline; }
 
-        p {
-            margin: 0;
-        }
+  .judul { text-align: center; margin: 22px 0 18px; }
+  .judul p { margin: 0; }
+  .judul .t { font-weight: bold; text-decoration: underline; }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+  table { border-collapse: collapse; width: 100%; }
+  td { vertical-align: top; padding: 0 3px; }
+  .c { width: 2.5%; }             /* kolom titik dua */
 
-        td {
-            vertical-align: top;
-        }
+  /* Tabel nomor LP & SBP */
+  .ref td { padding-top: 0; padding-bottom: 1px; }
+  .ref .lbl { width: 17%; }
+  .ref .val { width: 50%; }
+  .ref .tgl { width: 11%; }
 
-        tr {
-            page-break-inside: avoid;
-        }
+  /* Tabel isian utama */
+  .isi td { padding-top: 1px; padding-bottom: 1px; }
+  .isi .h  { width: 6%; }         /* huruf A-H */
+  .isi .n  { width: 4.5%; }       /* nomor 1-4 */
+  .isi .l  { width: 26%; }        /* label */
+  .isi .v  { width: 61%; text-align: justify; }
+  .isi .sub  { padding-left: 4px; }
+  .isi .sub2 { padding-left: 26px; }
+  .gap td { padding-top: 8px; }
 
-        .header-table td {
-            border-bottom: 2px solid #000;
-            padding-bottom: 8px;
-        }
-
-        .logo {
-            width: 90px;
-        }
-
-        .header-text {
-            text-align: center;
-        }
-
-        .header-text h1 {
-            font-size: 13pt;
-            margin: 0;
-        }
-
-        .header-text h2 {
-            font-size: 11pt;
-            margin: 0;
-        }
-
-        .header-text p {
-            font-size: 8pt;
-            margin-top: 4px;
-        }
-
-        .title {
-            text-align: center;
-            margin: 12px 0;
-        }
-
-        .title h3 {
-            font-size: 12pt;
-            text-decoration: underline;
-            margin-bottom: 4px;
-        }
-
-        .content-table td {
-            padding: 1px 2px;
-            line-height: 1;
-        }
-
-        .num {
-            width: 20px;
-        }
-
-        .sub {
-            width: 15px;
-        }
-
-        .label {
-            width: 150px;
-        }
-
-        .colon {
-            width: 10px;
-        }
-
-        .value {
-            text-align: justify;
-            word-wrap: break-word;
-            white-space: pre-line;
-        }
-
-        .signature {
-            margin-top: 40px;
-            page-break-inside: avoid;
-        }
-
-        .signature .sig-left {
-            width: 50%;
-        }
-
-        .signature .sig-right {
-            width: 50%;
-        }
-
-        .name {
-            margin-top: 60px;
-        }
-    </style>
+  /* Blok tanda tangan */
+  /* Blok tanda tangan (kota/tanggal s.d. nama & NIP) satu kesatuan - kalau
+     tidak muat di sisa halaman, seluruh blok didorong utuh ke halaman baru. */
+  .ttd { margin-top: 36px; page-break-inside: avoid; }
+  .ttd td { padding: 1px 3px; }
+  .ttd .k1 { width: 31%; }
+  .ttd .k2 { width: 34%; }
+  .ttd .k3 { width: 35%; }
+  .ttd .space td { height: 64px; }
+</style>
 </head>
-
 <body>
-    @php
-        $lp = $lpp->lp;
-        $lphp = optional($lp)->lphp;
-        $sbp = optional($lphp)->sbp;
-    @endphp
+@php
+    $lp = $lpp->lp;
+    $lphp = optional($lp)->lphp;
+    $sbp = optional($lphp)->sbp;
+@endphp
 
-    <table class="header-table">
-        <tbody>
-            <tr>
-                <td class="logo"><img src="{{public_path('assets/img/logo-kemenkeu.png')}}" width="87"></td>
-                <td class="header-text">
-                    <h1>KEMENTERIAN KEUANGAN REPUBLIK INDONESIA</h1>
-                    <h2>DIREKTORAT JENDERAL BEA DAN CUKAI</h2>
-                    <h2>KANTOR WILAYAH DIREKTORAT JENDERAL BEA DAN CUKAI ACEH</h2>
-                    <h2>KANTOR PENGAWASAN DAN PELAYANAN BEA DAN CUKAI TIPE MADYA PABEAN C BANDA ACEH</h2>
-                    <p>Jalan Soekarno Hatta Nomor 3a, Geuceu Menara, Banda Aceh 23241;<br>TELEPON (0651) 43137; FAKSIMILE (0651) 43136; LAMAN www.beacukai.go.id; PUSAT KONTAK LAYANAN 1500225; SUREL bcaceh@customs.go.id</p>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+  <div class="kop">
+    <p>Kementerian Keuangan Republik Indonesia</p>
+    <p>Direktorat Jenderal Bea dan Cukai</p>
+    <p>Kantor Wilayah Direktorat Jenderal Bea dan Cukai Aceh</p>
+    <p class="u">Kantor Pengawasan dan Pelayanan Bea dan Cukai Tipe Madya Pabean C Banda Aceh</p>
+  </div>
 
-    <div class="title">
-        <h3>LEMBAR PENERIMAAN PERKARA (LPP)</h3>
-        <p>Nomor {{ $lpp->nomor_lpp ?? '-' }}</p>
-    </div>
+  <div class="judul">
+    <p class="t">LEMBAR PENERIMAAN PERKARA (LPP)</p>
+    <p>Nomor {{ $lpp->nomor_lpp ?? '-' }}</p>
+  </div>
 
-    <table class="content-table">
-        <tbody>
-            <tr>
-                <td class="label">LP/Surat Nomor</td>
-                <td class="colon">:</td>
-                <td class="value">{{ optional($lp)->nomor_lp ?? '-' }}</td>
-                <td class="label" style="width:60px">Tanggal</td>
-                <td class="colon">:</td>
-                <td class="value">{{ optional(optional($lp)->tanggal_lp)->translatedFormat('d F Y') ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td class="label">SBP Nomor</td>
-                <td class="colon">:</td>
-                <td class="value">{{ optional($sbp)->nomor_sbp ?? '-' }}</td>
-                <td class="label" style="width:60px">Tanggal</td>
-                <td class="colon">:</td>
-                <td class="value">{{ optional(optional($sbp)->tanggal_sbp)->translatedFormat('d F Y') ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td class="num">A.</td>
-                <td class="label" colspan="2">Asal Perkara</td>
-                <td class="colon">:</td>
-                <td class="value" colspan="2">{{ $lpp->asal_perkara ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td class="num">B.</td>
-                <td class="label" colspan="2">Jenis Penindakan</td>
-                <td class="colon">:</td>
-                <td class="value" colspan="2">{{ $lpp->jenis_penindakan ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td class="num">C.</td>
-                <td class="label" colspan="2">Jenis Perkara</td>
-                <td class="colon">:</td>
-                <td class="value" colspan="2">{{ optional($lphp)->dugaan_pelanggaran ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td class="num">D.</td>
-                <td class="label" colspan="2">Status Pelanggaran</td>
-                <td class="colon">:</td>
-                <td class="value" colspan="2">{{ $lpp->status_pelanggaran ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td class="num">E.</td>
-                <td class="label" colspan="2">Uraian Pelanggaran</td>
-                <td class="colon">:</td>
-                <td class="value" colspan="2">{{ $lpp->uraian_pelanggaran ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td></td>
-                <td class="sub">1.</td>
-                <td class="label">Jenis Pelanggaran</td>
-                <td class="colon">:</td>
-                <td class="value" colspan="2">Diduga melanggar {{ optional($lphp)->pasal ?? '-' }} {{ optional($lphp)->uu_terkait ?? '' }}</td>
-            </tr>
-            <tr>
-                <td></td>
-                <td class="sub">2.</td>
-                <td class="label">Modus Operandi</td>
-                <td class="colon">:</td>
-                <td class="value" colspan="2">{{ optional($sbp)->alasan_penindakan ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td></td>
-                <td class="sub">3.</td>
-                <td class="label">Lokasi</td>
-                <td class="colon"></td>
-                <td class="value" colspan="2"></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td class="label">Tempat</td>
-                <td class="colon">:</td>
-                <td class="value" colspan="2">{{ optional($sbp)->lokasi_penindakan ?? '-' }}, Kec. {{ optional($sbp)->kecamatan_penindakan ?? '-' }}, {{ optional($sbp)->kota_penindakan ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td class="label">Tanggal</td>
-                <td class="colon">:</td>
-                <td class="value" colspan="2">{{ optional(optional($sbp)->tanggal_sbp)->translatedFormat('d F Y') ?? '-' }} pukul {{ optional($sbp)->waktu_penindakan ?? '-' }} WIB</td>
-            </tr>
-            <tr>
-                <td></td>
-                <td class="sub">4.</td>
-                <td class="label">Pelaku Pelanggaran</td>
-                <td class="colon"></td>
-                <td class="value" colspan="2"></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td class="label">Nama</td>
-                <td class="colon">:</td>
-                <td class="value" colspan="2">{{ optional($sbp)->nama_pelaku ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td class="label">Jenis Kelamin</td>
-                <td class="colon">:</td>
-                <td class="value" colspan="2">{{ optional($sbp)->jenis_kelamin ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td class="label">Alamat</td>
-                <td class="colon">:</td>
-                <td class="value" colspan="2">{{ optional($sbp)->alamat_di_indonesia ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td class="num">F.</td>
-                <td class="label" colspan="2">Barang Hasil Penindakan</td>
-                <td class="colon"></td>
-                <td class="value" colspan="2"></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td class="sub">1.</td>
-                <td class="label">Komoditi</td>
-                <td class="colon">:</td>
-                <td class="value" colspan="2">{{ optional($sbp)->jenis_barang ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td></td>
-                <td class="sub">2.</td>
-                <td class="label">Jumlah</td>
-                <td class="colon">:</td>
-                <td class="value" colspan="2">{{ optional($sbp)->jumlah_barang ?? '-' }} {{ optional($sbp)->jenis_satuan ?? '' }}</td>
-            </tr>
-            <tr>
-                <td></td>
-                <td class="sub">3.</td>
-                <td class="label">Detail Uraian Barang</td>
-                <td class="colon">:</td>
-                <td class="value" colspan="2">{{ optional($sbp)->uraian_barang ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td class="num">G.</td>
-                <td class="label" colspan="2">Dokumen Barang</td>
-                <td class="colon">:</td>
-                <td class="value" colspan="2">{{ $lpp->dokumen_barang ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td class="num">H.</td>
-                <td class="label" colspan="2">Catatan Atasan Pembuat LPP</td>
-                <td class="colon">:</td>
-                <td class="value" colspan="2">{{ $lpp->catatan_atasan ?? '-' }}</td>
-            </tr>
-        </tbody>
-    </table>
+  <table class="ref">
+    <tr>
+      <td class="lbl">LP/Surat Nomor</td><td class="c">:</td><td class="val">{{ optional($lp)->nomor_lp ?? '-' }}</td>
+      <td class="tgl">Tanggal</td><td class="c">:</td><td>{{ optional(optional($lp)->tanggal_lp)->translatedFormat('d F Y') ?? '-' }}</td>
+    </tr>
+    <tr>
+      <td class="lbl">SBP Nomor</td><td class="c">:</td><td class="val">{{ optional($sbp)->nomor_sbp ?? '-' }}</td>
+      <td class="tgl">Tanggal</td><td class="c">:</td><td>{{ optional(optional($sbp)->tanggal_sbp)->translatedFormat('d F Y') ?? '-' }}</td>
+    </tr>
+  </table>
 
-    <table class="signature">
-        <tbody>
-            <tr>
-                <td class="sig-left">
-                    Konseptor LPP
-                    <div class="name">{{ optional($lpp->konseptor)->nama ?? '-' }}<br>NIP {{ optional($lpp->konseptor)->nip_formatted ?? '-' }}</div>
-                </td>
-                <td class="sig-right">
-                    Banda Aceh, {{ optional($lpp->tanggal_lpp)->translatedFormat('d F Y') }}<br>
-                    Yang membuat LPP,<br>
-                    Pemeriksa Bea Cukai
-                    <div class="name">{{ optional($lpp->pemeriksa)->nama ?? '-' }}<br>NIP {{ optional($lpp->pemeriksa)->nip_formatted ?? '-' }}</div>
-                </td>
-            </tr>
-            <tr>
-                <td class="sig-left">
-                    &nbsp;<br>
-                    Mengetahui,<br>
-                    Kepala Seksi Penindakan dan Penyidikan
-                    <div class="name">{{ optional($lpp->pengampu)->nama ?? '-' }}<br>NIP {{ optional($lpp->pengampu)->nip_formatted ?? '-' }}</div>
-                </td>
-                <td class="sig-right">&nbsp;</td>
-            </tr>
-        </tbody>
-    </table>
+  <table class="isi">
+    <tr><td class="h">A.</td><td colspan="2">Asal Perkara</td><td class="c">:</td><td class="v">{{ $lpp->asal_perkara ?? '-' }}</td></tr>
+    <tr><td class="h">B.</td><td colspan="2">Jenis Penindakan</td><td class="c">:</td><td class="v">{{ $lpp->jenis_penindakan ?? '-' }}</td></tr>
+    <tr><td class="h">C.</td><td colspan="2">Jenis Perkara</td><td class="c">:</td><td class="v">{{ optional($lphp)->dugaan_pelanggaran ?? '-' }}</td></tr>
+    <tr><td class="h">D.</td><td colspan="2">Status Pelanggaran</td><td class="c">:</td><td class="v">{{ $lpp->status_pelanggaran ?? '-' }}</td></tr>
+    <tr><td class="h">E.</td><td colspan="2">Uraian Pelanggaran</td><td class="c">:</td><td class="v">{{ $lpp->uraian_pelanggaran ?? '-' }}</td></tr>
+
+    <tr><td class="h"></td><td class="n">1.</td><td class="l">Jenis Pelanggaran</td><td class="c">:</td><td class="v">Diduga melanggar {{ optional($lphp)->pasal ?? '-' }} {{ optional($lphp)->uu_terkait ?? '' }}</td></tr>
+    <tr class="gap"><td class="h"></td><td class="n">2.</td><td class="l">Modus Operandi</td><td class="c">:</td><td class="v">{{ optional($sbp)->alasan_penindakan ?? '-' }}</td></tr>
+
+    <tr><td class="h"></td><td class="n">3.</td><td class="l">Lokasi</td><td class="c"></td><td class="v"></td></tr>
+    <tr><td class="h"></td><td class="n"></td><td class="l sub">a.&nbsp;&nbsp;Tempat</td><td class="c">:</td><td class="v">{{ optional($sbp)->lokasi_penindakan ?? '-' }}, Kec. {{ optional($sbp)->kecamatan_penindakan ?? '-' }}, {{ optional($sbp)->kota_penindakan ?? '-' }}</td></tr>
+    <tr><td class="h"></td><td class="n"></td><td class="l sub">b.&nbsp;&nbsp;Tanggal</td><td class="c">:</td><td class="v">{{ optional($sbp)->waktu_penindakan ?? '-' }} WIB</td></tr>
+
+    <tr><td class="h"></td><td class="n">4.</td><td class="l">Pelaku Pelanggaran</td><td class="c"></td><td class="v"></td></tr>
+    <tr><td class="h"></td><td class="n"></td><td class="l sub">a.&nbsp;&nbsp;Nama</td><td class="c">:</td><td class="v">{{ optional($sbp)->nama_pelaku ?? '-' }}</td></tr>
+    <tr><td class="h"></td><td class="n"></td><td class="l sub2">Umur</td><td class="c">:</td><td class="v">-</td></tr>
+    <tr><td class="h"></td><td class="n"></td><td class="l sub2">Jenis Kelamin</td><td class="c">:</td><td class="v">{{ optional($sbp)->jenis_kelamin ?? '-' }}</td></tr>
+    <tr><td class="h"></td><td class="n"></td><td class="l sub2">Alamat</td><td class="c">:</td><td class="v">{{ optional($sbp)->alamat_di_indonesia ?? '-' }}</td></tr>
+    <tr><td class="h"></td><td class="n"></td><td class="l sub2">Keterangan</td><td class="c">:</td><td class="v">-</td></tr>
+
+    <tr><td class="h">F.</td><td colspan="2">Barang Hasil Penindakan</td><td class="c"></td><td class="v"></td></tr>
+    <tr><td class="h"></td><td class="n">1.</td><td class="l">Komoditi</td><td class="c">:</td><td class="v">{{ optional($sbp)->jenis_barang ?? '-' }}</td></tr>
+    <tr><td class="h"></td><td class="n">2.</td><td class="l">Jumlah</td><td class="c">:</td><td class="v">{{ optional($sbp)->jumlah_barang ?? '-' }} {{ optional($sbp)->jenis_satuan ?? '' }}</td></tr>
+    <tr><td class="h"></td><td class="n">3.</td><td class="l">Detail Uraian Barang</td><td class="c">:</td><td class="v">{{ optional($sbp)->uraian_barang ?? '-' }}</td></tr>
+
+    <tr class="gap"><td class="h">G.</td><td colspan="2">Dokumen Barang</td><td class="c">:</td><td class="v">{{ $lpp->dokumen_barang ?? '-' }}</td></tr>
+    <tr><td class="h">H.</td><td colspan="2">Catatan Atasan Pembuat LPP</td><td class="c">:</td><td class="v">{{ $lpp->catatan_atasan ?? '-' }}</td></tr>
+  </table>
+
+  <table class="ttd">
+    <tr><td class="k1"></td><td class="k2"></td><td class="k3">Banda Aceh, {{ optional($lpp->tanggal_lpp)->translatedFormat('d F Y') ?? '-' }}</td></tr>
+    <tr><td class="k1"></td><td class="k2"></td><td class="k3">Yang membuat LPP,</td></tr>
+    <tr><td class="k1">Konseptor LPP</td><td class="k2"></td><td class="k3">Pemeriksa Bea Cukai Ahli Pertama</td></tr>
+    <tr class="space"><td></td><td></td><td></td></tr>
+    <tr><td class="k1">{{ optional($lpp->konseptor)->nama ?? '-' }}</td><td class="k2"></td><td class="k3">{{ optional($lpp->pemeriksa)->nama ?? '-' }}</td></tr>
+    <tr><td class="k1">NIP {{ optional($lpp->konseptor)->nip_formatted ?? '-' }}</td><td class="k2"></td><td class="k3">NIP {{ optional($lpp->pemeriksa)->nip_formatted ?? '-' }}</td></tr>
+    <tr><td class="k1"></td><td class="k2">Mengetahui,</td><td class="k3"></td></tr>
+    <tr><td class="k1"></td><td class="k2">Kepala Seksi Penindakan dan Penyidikan</td><td class="k3"></td></tr>
+    <tr class="space"><td></td><td></td><td></td></tr>
+    <tr><td class="k1"></td><td class="k2">{{ optional($lpp->pengampu)->nama ?? '-' }}</td><td class="k3"></td></tr>
+    <tr><td class="k1"></td><td class="k2">NIP {{ optional($lpp->pengampu)->nip_formatted ?? '-' }}</td><td class="k3"></td></tr>
+  </table>
+
 </body>
-
 </html>

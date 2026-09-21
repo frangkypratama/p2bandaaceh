@@ -17,9 +17,24 @@ class Lpf extends Model
         'nomor_lpf',
         'tanggal_lpf',
         'status_penangkapan',
-        'kelengkapan_dokumen',
+        'nomor_surat_limpahan',
+        'tanggal_surat_limpahan',
+        'nomor_baw_saksi',
+        'tanggal_baw_saksi',
+        'nomor_bap_tersangka',
+        'tanggal_bap_tersangka',
+        'nomor_resume_perkara',
+        'tanggal_resume_perkara',
+        'nomor_dokumen_lain',
+        'tanggal_dokumen_lain',
         'barang_hasil_penindakan',
         'domain_perkara',
+        'lengkap_berkas',
+        'cukup_barang_bukti',
+        'cukup_alat_bukti',
+        'keberadaan_pelaku',
+        'keterkaitan_bukti_pelaku',
+        'indikasi_pelanggaran',
         'kesimpulan',
         'usulan',
         'catatan_disposisi',
@@ -30,6 +45,11 @@ class Lpf extends Model
 
     protected $casts = [
         'tanggal_lpf' => 'date',
+        'tanggal_surat_limpahan' => 'date',
+        'tanggal_baw_saksi' => 'date',
+        'tanggal_bap_tersangka' => 'date',
+        'tanggal_resume_perkara' => 'date',
+        'tanggal_dokumen_lain' => 'date',
     ];
 
     /**
@@ -107,16 +127,39 @@ class Lpf extends Model
     }
 
     /**
-     * Saran narasi "Kesimpulan" default (poin lengkap/cukup tidaknya berkas, barang bukti,
-     * alat bukti, keberadaan pelaku, keterkaitan, dan indikasi pelanggaran).
+     * Pilihan dropdown untuk poin "Lengkap/Cukup tidaknya ..." pada D. Kesimpulan.
      */
-    public static function defaultKesimpulan(): string
+    public static function opsiCukup(): array
     {
-        return "Lengkap tidaknya berkas penindakan: Cukup.\n"
-            . "Cukup tidaknya barang bukti: Cukup.\n"
-            . "Cukup tidaknya alat bukti: Cukup.\n"
-            . "Keberadaan pelaku: Ada.\n"
-            . "Keterkaitan alat bukti, barang bukti dan pelaku: Ada.\n"
-            . 'Ada tidaknya indikasi pelanggaran: Ada.';
+        return ['Cukup', 'Tidak Lengkap'];
+    }
+
+    /**
+     * Pilihan dropdown untuk poin "Ada tidaknya ..." pada D. Kesimpulan.
+     */
+    public static function opsiAda(): array
+    {
+        return ['Ada', 'Tidak Ada'];
+    }
+
+    /**
+     * Susun ringkasan naratif dari 6 poin D. Kesimpulan (dipakai sebagai isi kolom
+     * "kesimpulan" - dipertahankan untuk kompatibilitas tampilan lama seperti cetak
+     * gabungan berkas penyidikan yang masih membaca $lpf->kesimpulan sebagai teks).
+     */
+    public static function composeKesimpulan(
+        string $lengkapBerkas,
+        string $cukupBarangBukti,
+        string $cukupAlatBukti,
+        string $keberadaanPelaku,
+        string $keterkaitanBuktiPelaku,
+        string $indikasiPelanggaran
+    ): string {
+        return "Lengkap tidaknya berkas penindakan: {$lengkapBerkas}.\n"
+            . "Cukup tidaknya barang bukti: {$cukupBarangBukti}.\n"
+            . "Cukup tidaknya alat bukti: {$cukupAlatBukti}.\n"
+            . "Keberadaan pelaku: {$keberadaanPelaku}.\n"
+            . "Keterkaitan alat bukti, barang bukti dan pelaku: {$keterkaitanBuktiPelaku}.\n"
+            . "Ada tidaknya indikasi pelanggaran: {$indikasiPelanggaran}.";
     }
 }

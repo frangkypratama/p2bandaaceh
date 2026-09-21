@@ -42,9 +42,10 @@ class LpfController extends Controller
 
         $petugasData = Petugas::orderBy('nama')->get();
         $defaultDomainPerkara = Lpf::defaultDomainPerkara();
-        $defaultKesimpulan = Lpf::defaultKesimpulan();
+        $opsiCukup = Lpf::opsiCukup();
+        $opsiAda = Lpf::opsiAda();
 
-        return view('lpf.create', compact('lpp', 'petugasData', 'defaultDomainPerkara', 'defaultKesimpulan'));
+        return view('lpf.create', compact('lpp', 'petugasData', 'defaultDomainPerkara', 'opsiCukup', 'opsiAda'));
     }
 
     public function store(Request $request)
@@ -53,16 +54,39 @@ class LpfController extends Controller
             'lpp_id'                   => ['required', 'exists:lpp,id', Rule::unique('lpf', 'lpp_id')->whereNull('deleted_at')],
             'tanggal_lpf'              => 'required|date',
             'status_penangkapan'       => 'required|string|max:255',
-            'kelengkapan_dokumen'      => 'required|string',
+            'nomor_surat_limpahan'     => 'nullable|string|max:255',
+            'tanggal_surat_limpahan'   => 'nullable|date',
+            'nomor_baw_saksi'          => 'nullable|string|max:255',
+            'tanggal_baw_saksi'        => 'nullable|date',
+            'nomor_bap_tersangka'      => 'nullable|string|max:255',
+            'tanggal_bap_tersangka'    => 'nullable|date',
+            'nomor_resume_perkara'     => 'nullable|string|max:255',
+            'tanggal_resume_perkara'   => 'nullable|date',
+            'nomor_dokumen_lain'       => 'nullable|string|max:255',
+            'tanggal_dokumen_lain'     => 'nullable|date',
             'barang_hasil_penindakan'  => 'nullable|string',
             'domain_perkara'           => 'required|string',
-            'kesimpulan'               => 'required|string',
+            'lengkap_berkas'           => ['required', Rule::in(Lpf::opsiCukup())],
+            'cukup_barang_bukti'       => ['required', Rule::in(Lpf::opsiCukup())],
+            'cukup_alat_bukti'         => ['required', Rule::in(Lpf::opsiCukup())],
+            'keberadaan_pelaku'        => ['required', Rule::in(Lpf::opsiAda())],
+            'keterkaitan_bukti_pelaku' => ['required', Rule::in(Lpf::opsiAda())],
+            'indikasi_pelanggaran'     => ['required', Rule::in(Lpf::opsiAda())],
             'usulan'                   => 'required|string',
             'catatan_disposisi'        => 'nullable|string',
             'konseptor_id'             => 'required|exists:petugas,id',
             'pengampu_id'              => 'required|exists:petugas,id',
             'pemeriksa_id'             => 'required|exists:petugas,id',
         ]);
+
+        $validatedData['kesimpulan'] = Lpf::composeKesimpulan(
+            $validatedData['lengkap_berkas'],
+            $validatedData['cukup_barang_bukti'],
+            $validatedData['cukup_alat_bukti'],
+            $validatedData['keberadaan_pelaku'],
+            $validatedData['keterkaitan_bukti_pelaku'],
+            $validatedData['indikasi_pelanggaran']
+        );
 
         try {
             DB::transaction(function () use ($validatedData) {
@@ -85,8 +109,10 @@ class LpfController extends Controller
     {
         $lpf->load('lpp.lp.lphp.sbp');
         $petugasData = Petugas::orderBy('nama')->get();
+        $opsiCukup = Lpf::opsiCukup();
+        $opsiAda = Lpf::opsiAda();
 
-        return view('lpf.edit', compact('lpf', 'petugasData'));
+        return view('lpf.edit', compact('lpf', 'petugasData', 'opsiCukup', 'opsiAda'));
     }
 
     public function update(Request $request, Lpf $lpf)
@@ -94,16 +120,39 @@ class LpfController extends Controller
         $validatedData = $request->validate([
             'tanggal_lpf'              => 'required|date',
             'status_penangkapan'       => 'required|string|max:255',
-            'kelengkapan_dokumen'      => 'required|string',
+            'nomor_surat_limpahan'     => 'nullable|string|max:255',
+            'tanggal_surat_limpahan'   => 'nullable|date',
+            'nomor_baw_saksi'          => 'nullable|string|max:255',
+            'tanggal_baw_saksi'        => 'nullable|date',
+            'nomor_bap_tersangka'      => 'nullable|string|max:255',
+            'tanggal_bap_tersangka'    => 'nullable|date',
+            'nomor_resume_perkara'     => 'nullable|string|max:255',
+            'tanggal_resume_perkara'   => 'nullable|date',
+            'nomor_dokumen_lain'       => 'nullable|string|max:255',
+            'tanggal_dokumen_lain'     => 'nullable|date',
             'barang_hasil_penindakan'  => 'nullable|string',
             'domain_perkara'           => 'required|string',
-            'kesimpulan'               => 'required|string',
+            'lengkap_berkas'           => ['required', Rule::in(Lpf::opsiCukup())],
+            'cukup_barang_bukti'       => ['required', Rule::in(Lpf::opsiCukup())],
+            'cukup_alat_bukti'         => ['required', Rule::in(Lpf::opsiCukup())],
+            'keberadaan_pelaku'        => ['required', Rule::in(Lpf::opsiAda())],
+            'keterkaitan_bukti_pelaku' => ['required', Rule::in(Lpf::opsiAda())],
+            'indikasi_pelanggaran'     => ['required', Rule::in(Lpf::opsiAda())],
             'usulan'                   => 'required|string',
             'catatan_disposisi'        => 'nullable|string',
             'konseptor_id'             => 'required|exists:petugas,id',
             'pengampu_id'              => 'required|exists:petugas,id',
             'pemeriksa_id'             => 'required|exists:petugas,id',
         ]);
+
+        $validatedData['kesimpulan'] = Lpf::composeKesimpulan(
+            $validatedData['lengkap_berkas'],
+            $validatedData['cukup_barang_bukti'],
+            $validatedData['cukup_alat_bukti'],
+            $validatedData['keberadaan_pelaku'],
+            $validatedData['keterkaitan_bukti_pelaku'],
+            $validatedData['indikasi_pelanggaran']
+        );
 
         try {
             DB::transaction(function () use ($validatedData, $lpf) {
