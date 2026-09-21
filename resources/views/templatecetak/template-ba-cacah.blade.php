@@ -104,6 +104,7 @@
         /* ===== SIGNATURE ===== */
         .signature {
             margin-top: 20px;
+            page-break-inside: avoid; /* "Yang Melakukan Pencacahan," & tanda tangan tidak boleh terpisah halaman */
         }
 
         .signature td {
