@@ -41,8 +41,9 @@ class LpController extends Controller
         }
 
         $petugasData = Petugas::orderBy('nama')->get();
+        $defaultTanggalLp = Lp::defaultTanggalLp($lphp->sbp);
 
-        return view('lp.create', compact('lphp', 'petugasData'));
+        return view('lp.create', compact('lphp', 'petugasData', 'defaultTanggalLp'));
     }
 
     public function store(Request $request)

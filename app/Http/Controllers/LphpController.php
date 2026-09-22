@@ -95,7 +95,8 @@ class LphpController extends Controller
         $petugasData = Petugas::orderBy('nama')->get();
         $nationalities = $this->getNationalities();
 
-        $previewYear = optional($selectedSbp->tanggal_sbp)->year ?? date('Y');
+        $defaultTanggalLphp = Lphp::defaultTanggalLphp($selectedSbp);
+        $previewYear = optional($defaultTanggalLphp)->year ?? date('Y');
         $previewNomorLphp = Lphp::formatNomorLphp($selectedSbp->nomor_sbp_int, $previewYear);
         $defaultDugaanPelanggaran = Lphp::inferDugaanPelanggaran($selectedSbp->jenis_barang);
         $defaultNamaTempat = Lphp::namaTempatUntuk($selectedSbp);
@@ -106,6 +107,7 @@ class LphpController extends Controller
             'petugasData',
             'nationalities',
             'previewNomorLphp',
+            'defaultTanggalLphp',
             'defaultDugaanPelanggaran',
             'defaultNamaTempat',
             'categoryDefaults'

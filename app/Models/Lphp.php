@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 
 class Lphp extends Model
 {
@@ -106,6 +107,14 @@ class Lphp extends Model
     public static function formatNomorLphp(int $nomorSbpInt, int $tahun): string
     {
         return "LPHP-{$nomorSbpInt}/KBC.010202/{$tahun}";
+    }
+
+    /**
+     * Tanggal LPHP default: 6 hari setelah tanggal SBP.
+     */
+    public static function defaultTanggalLphp(Sbp $sbp): ?Carbon
+    {
+        return $sbp->tanggal_sbp?->copy()->addDays(6);
     }
 
     /**
