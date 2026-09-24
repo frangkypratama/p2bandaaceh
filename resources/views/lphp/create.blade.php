@@ -221,18 +221,6 @@
                                             @enderror
                                         </div>
                                         <div class="col-md-4">
-                                            <label for="pengampu_id" class="form-label">Pengampu Pejabat Penyusun LPHP</label>
-                                            <select class="form-select @error('pengampu_id') is-invalid @enderror" id="pengampu_id" name="pengampu_id" required>
-                                                <option value="" disabled selected>Pilih Petugas...</option>
-                                                @foreach($petugasData as $petugas)
-                                                    <option value="{{ $petugas->id }}" {{ old('pengampu_id') == $petugas->id ? 'selected' : '' }}>{{ $petugas->nama }}</option>
-                                                @endforeach
-                                            </select>
-                                            @error('pengampu_id')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                        <div class="col-md-4">
                                             <label for="pemeriksa_id" class="form-label">Pemeriksa Bea dan Cukai Ahli Pertama</label>
                                             <select class="form-select @error('pemeriksa_id') is-invalid @enderror" id="pemeriksa_id" name="pemeriksa_id" required>
                                                 <option value="" disabled selected>Pilih Petugas...</option>
@@ -241,6 +229,18 @@
                                                 @endforeach
                                             </select>
                                             @error('pemeriksa_id')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="pengampu_id" class="form-label">Pengampu Pejabat Penyusun LPHP</label>
+                                            <select class="form-select @error('pengampu_id') is-invalid @enderror" id="pengampu_id" name="pengampu_id" required>
+                                                <option value="" disabled selected>Pilih Petugas...</option>
+                                                @foreach($petugasData as $petugas)
+                                                    <option value="{{ $petugas->id }}" {{ old('pengampu_id') == $petugas->id ? 'selected' : '' }}>{{ $petugas->nama }}</option>
+                                                @endforeach
+                                            </select>
+                                            @error('pengampu_id')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
                                         </div>

@@ -45,14 +45,6 @@
                                                     <i class="cil-print"></i>
                                                 </button>
 
-                                                @if($item->lp)
-                                                    <button type="button" class="btn btn-sm btn-info text-white preview-btn me-2"
-                                                            data-pdf-url="{{ route('lp.preview', $item->lp->id) }}"
-                                                            data-pdf-title="{{ $item->lp->nomor_lp }}" title="Cetak Laporan Pelanggaran">
-                                                        <i class="cil-description"></i>
-                                                    </button>
-                                                @endif
-
                                                 <a href="{{ route('lphp.edit', $item->id) }}" class="btn btn-sm btn-warning text-white me-2" title="Edit Data">
                                                     <i class="cil-pencil"></i>
                                                 </a>

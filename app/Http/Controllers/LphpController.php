@@ -52,7 +52,7 @@ class LphpController extends Controller
 
     public function index()
     {
-        $lphp = Lphp::with(['sbp', 'konseptor', 'pengampu', 'pemeriksa', 'lp'])
+        $lphp = Lphp::with(['sbp', 'konseptor', 'pengampu', 'pemeriksa'])
             ->join('sbp', 'sbp.id', '=', 'lphp.sbp_id')
             ->select('lphp.*')
             ->orderBy('lphp.tanggal_lphp', 'desc')

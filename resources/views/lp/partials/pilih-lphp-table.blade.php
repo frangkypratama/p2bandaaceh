@@ -16,7 +16,7 @@
                     <td>{{ $loop->iteration + $lphp->firstItem() - 1 }}</td>
                     <td>{{ $item->nomor_lphp }}</td>
                     <td>{{ \Carbon\Carbon::parse($item->tanggal_lphp)->format('d-m-Y') }}</td>
-                    <td>{{ optional($item->sbp)->nomor_sbp ?? '-' }}</td>
+                    <td><span class="badge bg-info text-white">{{ optional($item->sbp)->nomor_sbp ?? 'N/A' }}</span></td>
                     <td>{{ optional($item->sbp)->nama_pelaku ?? '-' }}</td>
                     <td>
                         @if($item->lp)
