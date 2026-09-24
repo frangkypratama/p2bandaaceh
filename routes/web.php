@@ -212,6 +212,7 @@ Route::resource('lpp', LppController::class)->except(['show']);
 |--------------------------------------------------------------------------
 */
 Route::get('/split/{id}/preview', [SplitController::class, 'preview'])->name('split.preview');
+Route::get('/split/pilih-lpf', [SplitController::class, 'pickLpf'])->name('split.pilih-lpf');
 Route::resource('split', SplitController::class)->except(['show']);
 
 /*
@@ -220,6 +221,7 @@ Route::resource('split', SplitController::class)->except(['show']);
 |--------------------------------------------------------------------------
 */
 Route::get('/lpf/{id}/preview', [LpfController::class, 'preview'])->name('lpf.preview');
+Route::get('/lpf/pilih-lpp', [LpfController::class, 'pickLpp'])->name('lpf.pilih-lpp');
 Route::resource('lpf', LpfController::class)->except(['show']);
 
 /*
@@ -229,6 +231,7 @@ Route::resource('lpf', LpfController::class)->except(['show']);
 */
 Route::get('/lhp/{id}/preview', [LhpController::class, 'preview'])->name('lhp.preview');
 Route::get('/lhp/{id}/preview-berkas', [LhpController::class, 'previewBerkas'])->name('lhp.preview-berkas');
+Route::get('/lhp/pilih-split', [LhpController::class, 'pickSplit'])->name('lhp.pilih-split');
 Route::resource('lhp', LhpController::class)->except(['show']);
 
 /*

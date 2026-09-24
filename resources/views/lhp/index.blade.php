@@ -9,10 +9,10 @@
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0"><strong>Data Lembar Hasil Penelitian (LHP)</strong></h5>
-                    <a href="{{ route('split.index') }}" class="btn btn-primary">
+                    <button type="button" class="btn btn-primary" data-coreui-toggle="modal" data-coreui-target="#splitPickerModal">
                         <i class="cil-plus"></i>
                         Tambah Data
-                    </a>
+                    </button>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -87,5 +87,58 @@
     </div>
 </div>
 
+{{-- Modal Pilih SPLIT (di luar form apa pun - hanya berfungsi sebagai navigasi ke halaman create) --}}
+<div class="modal fade" id="splitPickerModal" tabindex="-1" aria-labelledby="splitPickerModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="splitPickerModalLabel">Pilih SPLIT untuk Dibuat LHP</h5>
+                <button type="button" class="btn-close" data-coreui-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="splitPickerModalBody">
+                <div class="d-flex justify-content-center align-items-center" style="height: 200px;">
+                    <div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 @include('partials._pdf-viewer')
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var splitPickerModalEl = document.getElementById('splitPickerModal');
+    var splitPickerModalBody = document.getElementById('splitPickerModalBody');
+    var loaded = false;
+
+    function loadSplitPicker(url) {
+        splitPickerModalBody.innerHTML = '<div class="d-flex justify-content-center align-items-center" style="height: 200px;"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+
+        fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(function (response) { return response.text(); })
+            .then(function (html) { splitPickerModalBody.innerHTML = html; })
+            .catch(function () {
+                splitPickerModalBody.innerHTML = '<p class="text-center text-danger">Gagal memuat data SPLIT. Silakan coba lagi.</p>';
+            });
+    }
+
+    splitPickerModalEl.addEventListener('show.coreui.modal', function () {
+        if (!loaded) {
+            loaded = true;
+            loadSplitPicker('{{ route('lhp.pilih-split') }}');
+        }
+    });
+
+    splitPickerModalBody.addEventListener('click', function (e) {
+        var pageLink = e.target.closest('.pagination a');
+        if (pageLink) {
+            e.preventDefault();
+            loadSplitPicker(pageLink.getAttribute('href'));
+        }
+    });
+});
+</script>
+@endpush

@@ -81,11 +81,19 @@
     <tr><td class="c1">2.</td><td class="c2">Tempat</td><td class="c3">:</td><td class="just">{{ optional($sbp)->lokasi_penindakan ?? '-' }}, Kec. {{ optional($sbp)->kecamatan_penindakan ?? '-' }}, {{ optional($sbp)->kota_penindakan ?? '-' }}</td></tr>
     <tr><td class="c1">3.</td><td class="c2">Waktu</td><td class="c3">:</td><td>{{ optional(optional($sbp)->tanggal_sbp)->translatedFormat('d F Y') ?? '-' }} pukul {{ optional($sbp)->waktu_penindakan ?? '-' }} WIB</td></tr>
     <tr><td class="c1">4.</td><td class="c2">Pelaku</td><td class="c3"></td><td></td></tr>
+    @if(optional($lphp)->pelaku_tidak_ditemukan)
+    <tr><td class="c1"></td><td class="c2 sub">a.&nbsp;&nbsp;Nama</td><td class="c3">:</td><td>Pelaku tidak ditemukan</td></tr>
+    <tr><td class="c1"></td><td class="c2 sub2">Umur</td><td class="c3">:</td><td>-</td></tr>
+    <tr><td class="c1"></td><td class="c2 sub2">Jenis Kelamin</td><td class="c3">:</td><td>-</td></tr>
+    <tr><td class="c1"></td><td class="c2 sub2">Alamat</td><td class="c3">:</td><td>-</td></tr>
+    <tr><td class="c1"></td><td class="c2 sub2">Keterangan</td><td class="c3">:</td><td>-</td></tr>
+    @else
     <tr><td class="c1"></td><td class="c2 sub">a.&nbsp;&nbsp;Nama</td><td class="c3">:</td><td>{{ optional($sbp)->nama_pelaku ?? '-' }}</td></tr>
     <tr><td class="c1"></td><td class="c2 sub2">Umur</td><td class="c3">:</td><td>-</td></tr>
     <tr><td class="c1"></td><td class="c2 sub2">Jenis Kelamin</td><td class="c3">:</td><td>{{ optional($sbp)->jenis_kelamin ?? '-' }}</td></tr>
     <tr><td class="c1"></td><td class="c2 sub2">Alamat</td><td class="c3">:</td><td>{{ optional($sbp)->alamat_di_indonesia ?? '-' }}</td></tr>
     <tr><td class="c1"></td><td class="c2 sub2">Keterangan</td><td class="c3">:</td><td>-</td></tr>
+    @endif
     <tr><td class="c1">5.</td><td class="c2">Status Penangkapan</td><td class="c3">:</td><td>{{ $lpf->status_penangkapan ?? '-' }}</td></tr>
   </table>
 

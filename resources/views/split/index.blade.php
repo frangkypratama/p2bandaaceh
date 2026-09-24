@@ -9,10 +9,10 @@
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0"><strong>Data Surat Perintah Penelitian (SPLIT)</strong></h5>
-                    <a href="{{ route('lpf.index') }}" class="btn btn-primary">
+                    <button type="button" class="btn btn-primary" data-coreui-toggle="modal" data-coreui-target="#lpfPickerModal">
                         <i class="cil-plus"></i>
                         Tambah Data
-                    </a>
+                    </button>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -48,18 +48,6 @@
                                                     <i class="cil-print"></i>
                                                 </button>
 
-                                                @if($item->lhp)
-                                                    <button type="button" class="btn btn-sm btn-info text-white preview-btn me-2"
-                                                            data-pdf-url="{{ route('lhp.preview', $item->lhp->id) }}"
-                                                            data-pdf-title="{{ $item->lhp->nomor_lhp }}" title="Cetak LHP">
-                                                        <i class="cil-description"></i>
-                                                    </button>
-                                                @else
-                                                    <a href="{{ route('lhp.create', ['split_id' => $item->id]) }}" class="btn btn-sm btn-success text-white me-2" title="Buat LHP">
-                                                        <i class="cil-plus"></i>
-                                                    </a>
-                                                @endif
-
                                                 <a href="{{ route('split.edit', $item->id) }}" class="btn btn-sm btn-warning text-white me-2" title="Edit Data">
                                                     <i class="cil-pencil"></i>
                                                 </a>
@@ -91,5 +79,58 @@
     </div>
 </div>
 
+{{-- Modal Pilih LPF (di luar form apa pun - hanya berfungsi sebagai navigasi ke halaman create) --}}
+<div class="modal fade" id="lpfPickerModal" tabindex="-1" aria-labelledby="lpfPickerModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="lpfPickerModalLabel">Pilih LPF untuk Dibuat SPLIT</h5>
+                <button type="button" class="btn-close" data-coreui-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="lpfPickerModalBody">
+                <div class="d-flex justify-content-center align-items-center" style="height: 200px;">
+                    <div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 @include('partials._pdf-viewer')
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var lpfPickerModalEl = document.getElementById('lpfPickerModal');
+    var lpfPickerModalBody = document.getElementById('lpfPickerModalBody');
+    var loaded = false;
+
+    function loadLpfPicker(url) {
+        lpfPickerModalBody.innerHTML = '<div class="d-flex justify-content-center align-items-center" style="height: 200px;"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+
+        fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(function (response) { return response.text(); })
+            .then(function (html) { lpfPickerModalBody.innerHTML = html; })
+            .catch(function () {
+                lpfPickerModalBody.innerHTML = '<p class="text-center text-danger">Gagal memuat data LPF. Silakan coba lagi.</p>';
+            });
+    }
+
+    lpfPickerModalEl.addEventListener('show.coreui.modal', function () {
+        if (!loaded) {
+            loaded = true;
+            loadLpfPicker('{{ route('split.pilih-lpf') }}');
+        }
+    });
+
+    lpfPickerModalBody.addEventListener('click', function (e) {
+        var pageLink = e.target.closest('.pagination a');
+        if (pageLink) {
+            e.preventDefault();
+            loadLpfPicker(pageLink.getAttribute('href'));
+        }
+    });
+});
+</script>
+@endpush

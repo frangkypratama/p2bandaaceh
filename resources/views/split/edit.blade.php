@@ -36,7 +36,7 @@
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form-label">Diduga Dilakukan Oleh</label>
-                                            <input type="text" class="form-control" value="{{ optional($sbp)->nama_pelaku ?? '-' }}" readonly>
+                                            <input type="text" class="form-control" value="{{ optional($lphp)->pelaku_tidak_ditemukan ? 'Pelaku tidak ditemukan' : (optional($sbp)->nama_pelaku ?? '-') }}" readonly>
                                         </div>
                                     </div>
                                 </div>

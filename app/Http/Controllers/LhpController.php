@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use setasign\Fpdi\Fpdi;
 
 class LhpController extends Controller
 {
@@ -22,6 +23,17 @@ class LhpController extends Controller
             ->appends(request()->query());
 
         return view('lhp.index', compact('lhp'));
+    }
+
+    public function pickSplit(Request $request)
+    {
+        $splitList = Split::with('lhp')
+            ->orderBy('tanggal_split', 'desc')
+            ->orderBy('id', 'desc')
+            ->paginate(10)
+            ->appends($request->query());
+
+        return view('lhp.partials.pilih-split-table', ['split' => $splitList]);
     }
 
     public function create(Request $request)
@@ -179,11 +191,64 @@ class LhpController extends Controller
         $lpp = $lpf->lpp;
         $lp = $lpp->lp;
 
-        $pdf = Pdf::loadView('templatecetak.template-berkas-penyidikan', compact('lp', 'lpp', 'lpf', 'split', 'lhp'))
-            ->setPaper([0, 0, 595.28, 935.43], 'portrait');
-
         $filename = 'Berkas-Penyidikan-' . str_replace('/', '-', $lp->nomor_lp) . '.pdf';
+        $tempPath = storage_path('app/temp');
+        if (!file_exists($tempPath)) {
+            mkdir($tempPath, 0777, true);
+        }
 
-        return $pdf->stream($filename);
+        // Setiap dokumen dirender terpisah memakai template cetaknya masing-masing
+        // (persis seperti cetak satuan), lalu halamannya digabung dengan FPDI - bukan
+        // menumpuk banyak stylesheet dalam satu HTML, supaya CSS antar-template
+        // (mis. .kop, .judul, .ttd yang dipakai ulang dengan nilai berbeda-beda di
+        // tiap dokumen) tidak saling tabrakan.
+        $views = [
+            'templatecetak.template-lpp' => compact('lpp'),
+            'templatecetak.template-lpf' => compact('lpf'),
+            'templatecetak.template-split' => compact('split'),
+            'templatecetak.template-lhp' => compact('lhp'),
+        ];
+
+        $tempFiles = [];
+
+        foreach ($views as $view => $data) {
+            $pdf = Pdf::loadView($view, $data)->setPaper([0, 0, 595.28, 935.43], 'portrait');
+            $path = $tempPath . '/' . uniqid('berkas_') . '.pdf';
+            $pdf->save($path);
+            $tempFiles[] = $path;
+        }
+
+        try {
+            $fpdi = new Fpdi();
+
+            foreach ($tempFiles as $tempFile) {
+                $pageCount = $fpdi->setSourceFile($tempFile);
+                for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
+                    $templateId = $fpdi->importPage($pageNo);
+                    $size = $fpdi->getTemplateSize($templateId);
+                    $fpdi->AddPage($size['orientation'], $size);
+                    $fpdi->useTemplate($templateId);
+                }
+            }
+
+            $output = $fpdi->Output('S', $filename);
+
+            foreach ($tempFiles as $tempFile) {
+                if (file_exists($tempFile)) unlink($tempFile);
+            }
+
+            return response($output, 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="' . $filename . '"',
+            ]);
+        } catch (\Exception $e) {
+            foreach ($tempFiles as $tempFile) {
+                if (file_exists($tempFile)) unlink($tempFile);
+            }
+
+            logger()->error('Gagal menggabungkan berkas penyidikan: ' . $e->getMessage());
+
+            return redirect()->back()->with('error', 'Gagal mencetak berkas penyidikan. Silakan coba lagi.');
+        }
     }
 }

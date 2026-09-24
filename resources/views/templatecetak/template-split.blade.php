@@ -48,7 +48,7 @@
 </head>
 <body>
 @php
-    $lpp = $split->lpp;
+    $lpp = optional($split->lpf)->lpp;
     $lp = optional($lpp)->lp;
     $lphp = optional($lp)->lphp;
     $sbp = optional($lphp)->sbp;
@@ -119,10 +119,17 @@
 @else
 Melakukan tugas penelitian berupa mencari, mengumpulkan bahan keterangan, dan menemukan bukti permulaan yang cukup atas perkara yang diduga dilakukan oleh :
 @endif</td></tr>
+    @if(optional($lphp)->pelaku_tidak_ditemukan)
+    <tr><td class="k1"></td><td class="k2"></td><td class="k3">Nama</td><td class="k4">:</td><td>Pelaku tidak ditemukan</td></tr>
+    <tr><td class="k1"></td><td class="k2"></td><td class="k3">Pekerjaan</td><td class="k4">:</td><td>-</td></tr>
+    <tr><td class="k1"></td><td class="k2"></td><td class="k3">Tempat/tanggal lahir</td><td class="k4">:</td><td>-</td></tr>
+    <tr><td class="k1"></td><td class="k2"></td><td class="k3">Alamat</td><td class="k4">:</td><td>-</td></tr>
+    @else
     <tr><td class="k1"></td><td class="k2"></td><td class="k3">Nama</td><td class="k4">:</td><td>{{ optional($sbp)->nama_pelaku ?? '-' }}</td></tr>
     <tr><td class="k1"></td><td class="k2"></td><td class="k3">Pekerjaan</td><td class="k4">:</td><td>-</td></tr>
     <tr><td class="k1"></td><td class="k2"></td><td class="k3">Tempat/tanggal lahir</td><td class="k4">:</td><td>-</td></tr>
     <tr><td class="k1"></td><td class="k2"></td><td class="k3">Alamat</td><td class="k4">:</td><td>{{ optional($sbp)->alamat_di_indonesia ?? '-' }}</td></tr>
+    @endif
     <tr class="kosong"><td></td><td></td><td></td><td></td><td></td></tr>
     <tr><td class="k1"></td><td class="k2">2.</td><td colspan="3">{{ $tugasLines->count() > 1 ? $tugasLines->skip(1)->implode(' ') : 'Setelah melaksanakan Surat Perintah ini agar melaporkan kepada yang memberi perintah.' }}</td></tr>
   </table>

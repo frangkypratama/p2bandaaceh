@@ -38,7 +38,7 @@
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form-label">Diduga Dilakukan Oleh</label>
-                                            <input type="text" class="form-control" value="{{ optional($sbp)->nama_pelaku ?? '-' }}" readonly>
+                                            <input type="text" class="form-control" value="{{ optional($lphp)->pelaku_tidak_ditemukan ? 'Pelaku tidak ditemukan' : (optional($sbp)->nama_pelaku ?? '-') }}" readonly>
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form-label">NIK / No. Paspor</label>
@@ -145,7 +145,7 @@
                                             <label for="pemenuhan_unsur_pasal" class="form-label">C. Pemenuhan Unsur Pasal</label>
                                             <textarea class="form-control @error('pemenuhan_unsur_pasal') is-invalid @enderror"
                                                       id="pemenuhan_unsur_pasal" name="pemenuhan_unsur_pasal" rows="3"
-                                                      required>{{ old('pemenuhan_unsur_pasal', 'Berdasarkan keterangan dan bukti-bukti tersebut ' . (optional($sbp)->nama_pelaku ?? 'pelaku') . ' diduga melanggar ' . (optional($lphp)->pasal ?? '-') . ' ' . (optional($lphp)->uu_terkait ?? '')) }}</textarea>
+                                                      required>{{ old('pemenuhan_unsur_pasal', 'Berdasarkan keterangan dan bukti-bukti tersebut ' . (optional($lphp)->pelaku_tidak_ditemukan ? 'pelaku yang tidak ditemukan' : (optional($sbp)->nama_pelaku ?? 'pelaku')) . ' diduga melanggar ' . (optional($lphp)->pasal ?? '-') . ' ' . (optional($lphp)->uu_terkait ?? '')) }}</textarea>
                                             @error('pemenuhan_unsur_pasal')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror

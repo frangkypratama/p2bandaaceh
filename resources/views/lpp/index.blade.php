@@ -48,18 +48,6 @@
                                                     <i class="cil-print"></i>
                                                 </button>
 
-                                                @if($item->lpf)
-                                                    <button type="button" class="btn btn-sm btn-info text-white preview-btn me-2"
-                                                            data-pdf-url="{{ route('lpf.preview', $item->lpf->id) }}"
-                                                            data-pdf-title="{{ $item->lpf->nomor_lpf }}" title="Cetak LPF">
-                                                        <i class="cil-description"></i>
-                                                    </button>
-                                                @else
-                                                    <a href="{{ route('lpf.create', ['lpp_id' => $item->id]) }}" class="btn btn-sm btn-success text-white me-2" title="Buat LPF">
-                                                        <i class="cil-plus"></i>
-                                                    </a>
-                                                @endif
-
                                                 <a href="{{ route('lpp.edit', $item->id) }}" class="btn btn-sm btn-warning text-white me-2" title="Edit Data">
                                                     <i class="cil-pencil"></i>
                                                 </a>

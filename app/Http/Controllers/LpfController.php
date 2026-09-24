@@ -24,6 +24,17 @@ class LpfController extends Controller
         return view('lpf.index', compact('lpf'));
     }
 
+    public function pickLpp(Request $request)
+    {
+        $lppList = Lpp::with('lpf')
+            ->orderBy('tanggal_lpp', 'desc')
+            ->orderBy('id', 'desc')
+            ->paginate(10)
+            ->appends($request->query());
+
+        return view('lpf.partials.pilih-lpp-table', ['lpp' => $lppList]);
+    }
+
     public function create(Request $request)
     {
         $lpp = null;

@@ -88,6 +88,16 @@
 
     <tr><td colspan="5">PELAKU PELANGGARAN</td></tr>
     <tr><td class="c1">a.</td><td colspan="4">Pelanggaran Administrasi</td></tr>
+    @if(optional($lphp)->pelaku_tidak_ditemukan)
+    <tr><td class="c1"></td><td colspan="2">Nama Pelanggar</td><td class="c4">:</td><td>Pelaku tidak ditemukan</td></tr>
+    <tr><td class="c1"></td><td colspan="2">Tempat/Tanggal Lahir</td><td class="c4">:</td><td>-</td></tr>
+    <tr><td class="c1"></td><td colspan="2">NIK/No.Paspor</td><td class="c4">:</td><td>-</td></tr>
+    <tr><td class="c1"></td><td colspan="2">NPWP</td><td class="c4">:</td><td>-</td></tr>
+    <tr><td class="c1"></td><td colspan="2">Nomor Telepon</td><td class="c4">:</td><td>-</td></tr>
+    <tr><td class="c1"></td><td colspan="2">Nomor Rekening</td><td class="c4">:</td><td>-</td></tr>
+    <tr><td class="c1"></td><td colspan="2">Jenis Kelamin</td><td class="c4">:</td><td>-</td></tr>
+    <tr><td class="c1"></td><td colspan="2">Alamat</td><td class="c4">:</td><td>-</td></tr>
+    @else
     <tr><td class="c1"></td><td colspan="2">Nama Pelanggar</td><td class="c4">:</td><td>{{ optional($sbp)->nama_pelaku ?? '-' }}</td></tr>
     <tr><td class="c1"></td><td colspan="2">Tempat/Tanggal Lahir</td><td class="c4">:</td><td>-</td></tr>
     <tr><td class="c1"></td><td colspan="2">NIK/No.Paspor</td><td class="c4">:</td><td>{{ optional($sbp)->nomor_identitas ?? '-' }}</td></tr>
@@ -96,6 +106,7 @@
     <tr><td class="c1"></td><td colspan="2">Nomor Rekening</td><td class="c4">:</td><td>-</td></tr>
     <tr><td class="c1"></td><td colspan="2">Jenis Kelamin</td><td class="c4">:</td><td>{{ optional($sbp)->jenis_kelamin ?? '-' }}</td></tr>
     <tr><td class="c1"></td><td colspan="2">Alamat</td><td class="c4">:</td><td>{{ optional($sbp)->alamat_di_indonesia ?? '-' }}</td></tr>
+    @endif
     <tr><td class="c1"></td><td colspan="2">Pengulangan Pelanggaran</td><td class="c4">:</td><td>-</td></tr>
     <tr><td class="c1">b</td><td colspan="4">Pelanggaran Pidana Dengan Pelaku Tidak Dikenal</td></tr>
     <tr><td class="c1"></td><td colspan="4">Saksi-saksi</td></tr>

@@ -24,6 +24,17 @@ class SplitController extends Controller
         return view('split.index', compact('split'));
     }
 
+    public function pickLpf(Request $request)
+    {
+        $lpfList = Lpf::with('split')
+            ->orderBy('tanggal_lpf', 'desc')
+            ->orderBy('id', 'desc')
+            ->paginate(10)
+            ->appends($request->query());
+
+        return view('split.partials.pilih-lpf-table', ['lpf' => $lpfList]);
+    }
+
     public function create(Request $request)
     {
         $lpf = null;

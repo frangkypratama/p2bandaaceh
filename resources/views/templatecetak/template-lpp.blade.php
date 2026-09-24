@@ -101,11 +101,19 @@
     <tr><td class="h"></td><td class="n"></td><td class="l sub">b.&nbsp;&nbsp;Tanggal</td><td class="c">:</td><td class="v">{{ optional($sbp)->waktu_penindakan ?? '-' }} WIB</td></tr>
 
     <tr><td class="h"></td><td class="n">4.</td><td class="l">Pelaku Pelanggaran</td><td class="c"></td><td class="v"></td></tr>
+    @if(optional($lphp)->pelaku_tidak_ditemukan)
+    <tr><td class="h"></td><td class="n"></td><td class="l sub">a.&nbsp;&nbsp;Nama</td><td class="c">:</td><td class="v">Pelaku tidak ditemukan</td></tr>
+    <tr><td class="h"></td><td class="n"></td><td class="l sub2">Umur</td><td class="c">:</td><td class="v">-</td></tr>
+    <tr><td class="h"></td><td class="n"></td><td class="l sub2">Jenis Kelamin</td><td class="c">:</td><td class="v">-</td></tr>
+    <tr><td class="h"></td><td class="n"></td><td class="l sub2">Alamat</td><td class="c">:</td><td class="v">-</td></tr>
+    <tr><td class="h"></td><td class="n"></td><td class="l sub2">Keterangan</td><td class="c">:</td><td class="v">-</td></tr>
+    @else
     <tr><td class="h"></td><td class="n"></td><td class="l sub">a.&nbsp;&nbsp;Nama</td><td class="c">:</td><td class="v">{{ optional($sbp)->nama_pelaku ?? '-' }}</td></tr>
     <tr><td class="h"></td><td class="n"></td><td class="l sub2">Umur</td><td class="c">:</td><td class="v">-</td></tr>
     <tr><td class="h"></td><td class="n"></td><td class="l sub2">Jenis Kelamin</td><td class="c">:</td><td class="v">{{ optional($sbp)->jenis_kelamin ?? '-' }}</td></tr>
     <tr><td class="h"></td><td class="n"></td><td class="l sub2">Alamat</td><td class="c">:</td><td class="v">{{ optional($sbp)->alamat_di_indonesia ?? '-' }}</td></tr>
     <tr><td class="h"></td><td class="n"></td><td class="l sub2">Keterangan</td><td class="c">:</td><td class="v">-</td></tr>
+    @endif
 
     <tr><td class="h">F.</td><td colspan="2">Barang Hasil Penindakan</td><td class="c"></td><td class="v"></td></tr>
     <tr><td class="h"></td><td class="n">1.</td><td class="l">Komoditi</td><td class="c">:</td><td class="v">{{ optional($sbp)->jenis_barang ?? '-' }}</td></tr>
