@@ -52,9 +52,11 @@ class LphpController extends Controller
 
     public function index()
     {
-        $lphp = Lphp::with(['sbp', 'konseptor', 'pengampu', 'pemeriksa', 'lp'])
-            ->orderBy('tanggal_lphp', 'desc')
-            ->orderBy('id', 'desc')
+        $lphp = Lphp::with(['sbp', 'konseptor', 'pengampu', 'pemeriksa'])
+            ->join('sbp', 'sbp.id', '=', 'lphp.sbp_id')
+            ->select('lphp.*')
+            ->orderBy('lphp.tanggal_lphp', 'desc')
+            ->orderBy('sbp.nomor_sbp_int', 'desc')
             ->paginate(10)
             ->appends(request()->query());
 
@@ -95,7 +97,8 @@ class LphpController extends Controller
         $petugasData = Petugas::orderBy('nama')->get();
         $nationalities = $this->getNationalities();
 
-        $previewYear = optional($selectedSbp->tanggal_sbp)->year ?? date('Y');
+        $defaultTanggalLphp = Lphp::defaultTanggalLphp($selectedSbp);
+        $previewYear = optional($defaultTanggalLphp)->year ?? date('Y');
         $previewNomorLphp = Lphp::formatNomorLphp($selectedSbp->nomor_sbp_int, $previewYear);
         $defaultDugaanPelanggaran = Lphp::inferDugaanPelanggaran($selectedSbp->jenis_barang);
         $defaultNamaTempat = Lphp::namaTempatUntuk($selectedSbp);
@@ -106,6 +109,7 @@ class LphpController extends Controller
             'petugasData',
             'nationalities',
             'previewNomorLphp',
+            'defaultTanggalLphp',
             'defaultDugaanPelanggaran',
             'defaultNamaTempat',
             'categoryDefaults'
