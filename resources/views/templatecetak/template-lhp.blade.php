@@ -122,7 +122,7 @@
 
     <tr><td colspan="5">URAIAN BARANG</td></tr>
     <tr><td class="c1">a.</td><td colspan="2">Komoditas</td><td class="c4">:</td><td>{{ optional($sbp)->jenis_barang ?? '-' }}</td></tr>
-    <tr><td class="c1">b.</td><td colspan="2">Uraian Barang</td><td class="c4">:</td><td>{{ optional($sbp)->uraian_barang ?? '-' }}</td></tr>
+    <tr><td class="c1">b.</td><td colspan="2">Uraian Barang</td><td class="c4">:</td><td>{{ optional($lphp)->uraian_brg_lphp_lp ?? optional($sbp)->uraian_barang ?? '-' }}</td></tr>
     <tr><td class="c1">c.</td><td colspan="2">Merk/type</td><td class="c4">:</td><td>-</td></tr>
     <tr><td class="c1">d.</td><td colspan="2">Kondisi</td><td class="c4">:</td><td>-</td></tr>
     <tr><td class="c1">e.</td><td colspan="2">Kemasan</td><td class="c4">:</td><td>-</td></tr>

@@ -118,7 +118,7 @@
     <tr><td class="h">F.</td><td colspan="2">Barang Hasil Penindakan</td><td class="c"></td><td class="v"></td></tr>
     <tr><td class="h"></td><td class="n">1.</td><td class="l">Komoditi</td><td class="c">:</td><td class="v">{{ optional($sbp)->jenis_barang ?? '-' }}</td></tr>
     <tr><td class="h"></td><td class="n">2.</td><td class="l">Jumlah</td><td class="c">:</td><td class="v">{{ optional($sbp)->jumlah_barang ?? '-' }} {{ optional($sbp)->jenis_satuan ?? '' }}</td></tr>
-    <tr><td class="h"></td><td class="n">3.</td><td class="l">Detail Uraian Barang</td><td class="c">:</td><td class="v">{{ optional($sbp)->uraian_barang ?? '-' }}</td></tr>
+    <tr><td class="h"></td><td class="n">3.</td><td class="l">Detail Uraian Barang</td><td class="c">:</td><td class="v">{{ optional($lphp)->uraian_brg_lphp_lp ?? optional($sbp)->uraian_barang ?? '-' }}</td></tr>
 
     <tr class="gap"><td class="h">G.</td><td colspan="2">Dokumen Barang</td><td class="c">:</td><td class="v">{{ $lpp->dokumen_barang ?? '-' }}</td></tr>
     <tr><td class="h">H.</td><td colspan="2">Catatan Atasan Pembuat LPP</td><td class="c">:</td><td class="v">{{ $lpp->catatan_atasan ?? '-' }}</td></tr>

@@ -192,7 +192,7 @@
                                             <label for="barang_hasil_penindakan" class="form-label">Barang Hasil Penindakan (opsional)</label>
                                             <textarea class="form-control @error('barang_hasil_penindakan') is-invalid @enderror"
                                                       id="barang_hasil_penindakan" name="barang_hasil_penindakan" rows="3"
-                                                      placeholder="Merek, kondisi, tipe, spesifikasi, jumlah/jenis koli, dokumen pabean asal, sarana pengangkut, dsb.">{{ old('barang_hasil_penindakan', optional($sbp)->uraian_barang) }}</textarea>
+                                                      placeholder="Merek, kondisi, tipe, spesifikasi, jumlah/jenis koli, dokumen pabean asal, sarana pengangkut, dsb.">{{ old('barang_hasil_penindakan', optional($lphp)->uraian_brg_lphp_lp ?? optional($sbp)->uraian_barang) }}</textarea>
                                             @error('barang_hasil_penindakan')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
