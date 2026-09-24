@@ -142,11 +142,8 @@
 
   <table class="bag" style="margin-top:16px"><tr><td class="hrf">E.</td><td>Usulan</td></tr></table>
   <p class="usulan just">{{ $lpf->usulan ?? '-' }}</p>
-</div>
 
-<!-- ===================== HALAMAN 2 ===================== -->
-<div style="page-break-before: always;">
-  <table class="bag" style="margin-top:0"><tr><td class="hrf">F.</td><td>Catatan/Disposisi Atasan</td></tr></table>
+  <table class="bag" style="margin-top:16px"><tr><td class="hrf">F.</td><td>Catatan/Disposisi Atasan</td></tr></table>
   <div class="disposisi" style="text-align: left; white-space: pre-line;">{{ $lpf->catatan_disposisi ?: '' }}</div>
 
   <table class="ttd ind" style="margin-left:3.9%; width:95.2%">
@@ -164,7 +161,7 @@
   </table>
 </div>
 
-<!-- ===================== HALAMAN 3 (LAMPIRAN) ===================== -->
+<!-- ===================== HALAMAN 2 (LAMPIRAN) ===================== -->
 <div style="page-break-before: always;">
   <table class="lampiran">
     <tr><td colspan="3" class="b">LAMPIRAN</td></tr>
@@ -176,7 +173,7 @@
 
   <table class="barang">
     <tr class="kepala"><td style="width:73.5%">Uraian Barang</td><td class="b">Keterangan</td></tr>
-    <tr class="isi"><td class="just">{{ $lpf->barang_hasil_penindakan ?? optional($sbp)->uraian_barang ?? '-' }}</td><td></td></tr>
+    <tr class="isi"><td class="just">{{ $lpf->barang_hasil_penindakan ?? optional($sbp)->uraian_barang ?? '-' }}</td><td>{{ $lpf->cukup_barang_bukti === 'Cukup' ? 'Sesuai' : ($lpf->cukup_barang_bukti ? 'Tidak Sesuai' : '-') }}</td></tr>
   </table>
 
   <table class="ttd" style="margin-top:36px">
