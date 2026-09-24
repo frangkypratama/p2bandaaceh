@@ -191,6 +191,7 @@ Route::resource('lphp', LphpController::class)->except(['show']);
 |--------------------------------------------------------------------------
 */
 Route::get('/lp/{id}/preview', [LpController::class, 'preview'])->name('lp.preview');
+Route::get('/lp/pilih-lphp', [LpController::class, 'pickLphp'])->name('lp.pilih-lphp');
 Route::resource('lp', LpController::class)->except(['show']);
 
 /*

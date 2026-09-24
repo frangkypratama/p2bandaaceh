@@ -51,10 +51,6 @@
                                                             data-pdf-title="{{ $item->lp->nomor_lp }}" title="Cetak Laporan Pelanggaran">
                                                         <i class="cil-description"></i>
                                                     </button>
-                                                @else
-                                                    <a href="{{ route('lp.create', ['lphp_id' => $item->id]) }}" class="btn btn-sm btn-success text-white me-2" title="Buat Laporan Pelanggaran">
-                                                        <i class="cil-plus"></i>
-                                                    </a>
                                                 @endif
 
                                                 <a href="{{ route('lphp.edit', $item->id) }}" class="btn btn-sm btn-warning text-white me-2" title="Edit Data">

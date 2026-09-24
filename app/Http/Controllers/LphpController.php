@@ -53,8 +53,10 @@ class LphpController extends Controller
     public function index()
     {
         $lphp = Lphp::with(['sbp', 'konseptor', 'pengampu', 'pemeriksa', 'lp'])
-            ->orderBy('tanggal_lphp', 'desc')
-            ->orderBy('id', 'desc')
+            ->join('sbp', 'sbp.id', '=', 'lphp.sbp_id')
+            ->select('lphp.*')
+            ->orderBy('lphp.tanggal_lphp', 'desc')
+            ->orderBy('sbp.nomor_sbp_int', 'desc')
             ->paginate(10)
             ->appends(request()->query());
 

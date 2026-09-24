@@ -16,12 +16,32 @@ class LpController extends Controller
     public function index()
     {
         $lp = Lp::with(['lphp.sbp'])
-            ->orderBy('tanggal_lp', 'desc')
-            ->orderBy('id', 'desc')
+            ->join('lphp', 'lphp.id', '=', 'lp.lphp_id')
+            ->join('sbp', 'sbp.id', '=', 'lphp.sbp_id')
+            ->select('lp.*')
+            ->orderBy('lp.tanggal_lp', 'desc')
+            ->orderBy('sbp.nomor_sbp_int', 'desc')
             ->paginate(10)
             ->appends(request()->query());
 
         return view('lp.index', compact('lp'));
+    }
+
+    /**
+     * Daftar LPHP untuk modal pemilihan LPHP (dipakai dari halaman index sebelum
+     * masuk ke form create).
+     */
+    public function pickLphp(Request $request)
+    {
+        $lphpList = Lphp::with(['sbp', 'lp'])
+            ->join('sbp', 'sbp.id', '=', 'lphp.sbp_id')
+            ->select('lphp.*')
+            ->orderBy('lphp.tanggal_lphp', 'desc')
+            ->orderBy('sbp.nomor_sbp_int', 'desc')
+            ->paginate(10)
+            ->appends($request->query());
+
+        return view('lp.partials.pilih-lphp-table', ['lphp' => $lphpList]);
     }
 
     public function create(Request $request)
@@ -32,12 +52,12 @@ class LpController extends Controller
             $lphp = Lphp::with(['sbp', 'lp'])->find($request->query('lphp_id'));
 
             if ($lphp && $lphp->lp) {
-                return redirect()->route('lphp.index')->with('error', 'LPHP ini sudah memiliki Laporan Pelanggaran.');
+                return redirect()->route('lp.index')->with('error', 'LPHP ini sudah memiliki Laporan Pelanggaran.');
             }
         }
 
         if (!$lphp) {
-            return redirect()->route('lphp.index')->with('error', 'Pilih LPHP dari halaman Data LPHP untuk membuat Laporan Pelanggaran.');
+            return redirect()->route('lp.index')->with('error', 'Pilih LPHP terlebih dahulu untuk membuat Laporan Pelanggaran.');
         }
 
         $petugasData = Petugas::orderBy('nama')->get();
