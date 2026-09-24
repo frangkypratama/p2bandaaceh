@@ -325,7 +325,13 @@ class SbpController extends Controller
      */
     public function generatePdfChecklist($id)
     {
-        $sbp = Sbp::with(['petugas1', 'petugas2', 'bast', 'lpt', 'lphp.lp'])->findOrFail($id);
+        $sbp = Sbp::with(['petugas1', 'petugas2', 'bast', 'lpt', 'lphp.lp.lpp.lpf.split.lhp'])->findOrFail($id);
+
+        $lp = optional($sbp->lphp)->lp;
+        $lpp = optional($lp)->lpp;
+        $lpf = optional($lpp)->lpf;
+        $split = optional($lpf)->split;
+        $lhp = optional($split)->lhp;
 
         $checklistItems = [
             ['nama' => 'SURAT TUGAS (INTELIJEN)', 'status' => false],
@@ -354,11 +360,11 @@ class SbpController extends Controller
             ['nama' => 'LAPORAN PELANGGARAN (LP)*', 'status' => !empty(optional($sbp->lphp)->lp)],
             ['nama' => 'BERITA ACARA SERAH TERIMA (BAST KE PENYIDIKAN)', 'status' => !empty($sbp->bast)],
             ['nama' => 'BERITA ACARA PEMUSNAHAN', 'status' => !empty($sbp->nomor_ba_musnah)],
-            ['nama' => 'LEMBAR PENERIMAAN PERKARA (LPP)*', 'status' => false],
-            ['nama' => 'LEMBAR PENELITIAN FORMAL (LPF)*', 'status' => false],
+            ['nama' => 'LEMBAR PENERIMAAN PERKARA (LPP)*', 'status' => !empty($lpp)],
+            ['nama' => 'LEMBAR PENELITIAN FORMAL (LPF)*', 'status' => !empty($lpf)],
             ['nama' => 'LAPORAN PELANGGARAN DARI UNIT/INSTANSI LAIN (LP-1)', 'status' => false],
-            ['nama' => 'SURAT PERINTAH PENELITIAN (SPLIT)*', 'status' => false],
-            ['nama' => 'LEMBAR HASIL PENELITIAN (LHP)*', 'status' => false],
+            ['nama' => 'SURAT PERINTAH PENELITIAN (SPLIT)*', 'status' => !empty($split)],
+            ['nama' => 'LEMBAR HASIL PENELITIAN (LHP)*', 'status' => !empty($lhp)],
             ['nama' => 'LEMBAR RESUME PERKARA (LRP)*', 'status' => false],
             ['nama' => 'BERITA ACARA PENCACAHAN', 'status' => false],
             ['nama' => 'KEP BDN', 'status' => false],
