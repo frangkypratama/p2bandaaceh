@@ -42,15 +42,28 @@ class Lp extends Model
         });
 
         static::deleting(function ($lp) {
-            if (!$lp->isForceDeleting()) {
+            if ($lp->isForceDeleting()) {
+                optional($lp->lpp)->forceDelete();
+            } else {
+                optional($lp->lpp)->delete();
+
                 $lp->forceFill(['lphp_id_active' => null])->saveQuietly();
             }
+        });
+
+        static::restoring(function ($lp) {
+            optional($lp->lpp()->withTrashed()->first())->restore();
         });
     }
 
     public function lphp()
     {
         return $this->belongsTo(Lphp::class);
+    }
+
+    public function lpp()
+    {
+        return $this->hasOne(Lpp::class);
     }
 
     public function pejabatPenerbit()
