@@ -19,6 +19,7 @@
                             <th scope="col" class="text-center" style="width: 5%;">No</th>
                             <th scope="col">Nama</th>
                             <th scope="col">NIP</th>
+                            <th scope="col">Role</th>
                             <th scope="col">Petugas Terkait</th>
                             <th scope="col" class="text-center" style="width: 20%;">Aksi</th>
                         </tr>
@@ -29,6 +30,11 @@
                                 <th scope="row" class="text-center">{{ $userData->firstItem() + $key }}</th>
                                 <td>{{ $user->name }}</td>
                                 <td>{{ $user->nip }}</td>
+                                <td>
+                                    <span class="badge {{ $user->isAdmin() ? 'bg-primary' : 'bg-secondary' }}">
+                                        {{ $user->role->label ?? '-' }}
+                                    </span>
+                                </td>
                                 <td>
                                     @if ($user->petugas)
                                         <span class="badge bg-success">{{ $user->petugas->nama }}</span>
@@ -82,6 +88,18 @@
                                                     <input type="text" class="form-control" id="nip-{{ $user->id }}" name="nip" value="{{ old('nip', $user->nip) }}" required>
                                                 </div>
                                                 <div class="mb-3">
+                                                    <label for="role_id-{{ $user->id }}" class="form-label">Role</label>
+                                                    <select class="form-select" id="role_id-{{ $user->id }}" name="role_id" {{ $user->id === auth()->id() ? 'disabled' : '' }} required>
+                                                        @foreach ($roles as $roleOption)
+                                                            <option value="{{ $roleOption->id }}" {{ old('role_id', $user->role_id) == $roleOption->id ? 'selected' : '' }}>{{ $roleOption->label }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                    @if ($user->id === auth()->id())
+                                                        <input type="hidden" name="role_id" value="{{ $user->role_id }}">
+                                                        <div class="form-text">Role akun sendiri tidak bisa diubah lewat sini.</div>
+                                                    @endif
+                                                </div>
+                                                <div class="mb-3">
                                                     <label for="petugas_id-{{ $user->id }}" class="form-label">Tautkan ke Petugas</label>
                                                     @php
                                                         $editPetugasOptions = $petugasOptions;
@@ -109,7 +127,7 @@
                             </div>
                         @empty
                             <tr>
-                                <td colspan="5" class="text-center py-4">Belum ada akun user. Silakan tambahkan.</td>
+                                <td colspan="6" class="text-center py-4">Belum ada akun user. Silakan tambahkan.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -141,6 +159,14 @@
                         <label for="nip" class="form-label">NIP (username)</label>
                         <input type="text" class="form-control" id="nip" name="nip" value="{{ old('nip') }}" required>
                         <div class="form-text">NIP tanpa spasi akan dipakai sebagai username sekaligus password awal.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="role_id" class="form-label">Role</label>
+                        <select class="form-select" id="role_id" name="role_id" required>
+                            @foreach ($roles as $roleOption)
+                                <option value="{{ $roleOption->id }}" {{ old('role_id', $defaultRoleId) == $roleOption->id ? 'selected' : '' }}>{{ $roleOption->label }}</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="mb-3">
                         <label for="petugas_id_tambah" class="form-label">Tautkan ke Petugas (opsional)</label>

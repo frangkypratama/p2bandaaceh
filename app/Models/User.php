@@ -22,6 +22,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'nip',
+        'role_id',
         'petugas_id',
         'email',
         'password',
@@ -34,6 +35,32 @@ class User extends Authenticatable
     public function petugas(): BelongsTo
     {
         return $this->belongsTo(Petugas::class);
+    }
+
+    public function role(): BelongsTo
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    /**
+     * Admin (role dengan is_admin = true) selalu punya akses penuh,
+     * di luar matrix permission per role.
+     */
+    public function isAdmin(): bool
+    {
+        return (bool) $this->role?->is_admin;
+    }
+
+    /**
+     * Cek apakah user boleh mengakses modul tertentu (mis. 'sbp', 'lphp').
+     */
+    public function hasPermission(string $key): bool
+    {
+        if ($this->isAdmin()) {
+            return true;
+        }
+
+        return $this->role?->permissions->contains('key', $key) ?? false;
     }
 
     /**

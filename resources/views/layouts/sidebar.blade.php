@@ -15,171 +15,222 @@
                 </a>
             </li>
 
-            <li class="nav-title">
-                <h2 class="fs-6 text-uppercase">Pemeriksaan</h2>
-            </li>
+            @if (auth()->user()->hasPermission('pemeriksaan-badan'))
+                <li class="nav-title">
+                    <h2 class="fs-6 text-uppercase">Pemeriksaan</h2>
+                </li>
 
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('pemeriksaan-badan.index') }}">
-                    <i class="nav-icon cil-user-follow"></i>
-                    Pemeriksaan Badan
-                </a>
-            </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('pemeriksaan-badan.index') }}">
+                        <i class="nav-icon cil-user-follow"></i>
+                        Pemeriksaan Badan
+                    </a>
+                </li>
+            @endif
 
-            <li class="nav-title">
-                <h2 class="fs-6 text-uppercase">Penindakan</h2>
-            </li>
+            @if (auth()->user()->hasPermission('sbp') || auth()->user()->hasPermission('lpt'))
+                <li class="nav-title">
+                    <h2 class="fs-6 text-uppercase">Penindakan</h2>
+                </li>
 
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('sbp.create') }}">
-                    <i class="nav-icon cil-pencil"></i>
-                    Input SBP
-                </a>
-            </li>
+                @if (auth()->user()->hasPermission('sbp'))
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('sbp.create') }}">
+                            <i class="nav-icon cil-pencil"></i>
+                            Input SBP
+                        </a>
+                    </li>
 
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('sbp.index') }}">
-                    <i class="nav-icon cil-list-rich"></i>
-                    Data SBP
-                </a>
-            </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('sbp.index') }}">
+                            <i class="nav-icon cil-list-rich"></i>
+                            Data SBP
+                        </a>
+                    </li>
+                @endif
 
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('lpt.index') }}">
-                    <i class="nav-icon cil-description"></i>
-                    Data LPT
-                </a>
-            </li>
+                @if (auth()->user()->hasPermission('lpt'))
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('lpt.index') }}">
+                            <i class="nav-icon cil-description"></i>
+                            Data LPT
+                        </a>
+                    </li>
+                @endif
+            @endif
 
-            <li class="nav-title">
-                <h2 class="fs-6 text-uppercase">Pencacahan</h2>
-            </li>
+            @if (auth()->user()->hasPermission('pencacahan'))
+                <li class="nav-title">
+                    <h2 class="fs-6 text-uppercase">Pencacahan</h2>
+                </li>
 
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('pencacahan.index') }}">
+                        <i class="nav-icon cil-calculator"></i>
+                        Berita Acara Pencacahan
+                    </a>
+                </li>
+            @endif
 
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('pencacahan.index') }}">
-                    <i class="nav-icon cil-calculator"></i>
-                    Berita Acara Pencacahan
-                </a>
-            </li>
+            @if (auth()->user()->hasPermission('lphp') || auth()->user()->hasPermission('lp'))
+                <li class="nav-title">
+                    <h2 class="fs-6 text-uppercase">Penelitian Penindakan</h2>
+                </li>
 
-            <li class="nav-title">
-                <h2 class="fs-6 text-uppercase">Penelitian Penindakan</h2>
-            </li>
+                @if (auth()->user()->hasPermission('lphp'))
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('lphp.index') }}">
+                            <i class="nav-icon cil-description"></i>
+                            LPHP
+                        </a>
+                    </li>
+                @endif
 
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('lphp.index') }}">
-                    <i class="nav-icon cil-description"></i>
-                    LPHP
-                </a>
-            </li>
+                @if (auth()->user()->hasPermission('lp'))
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('lp.index') }}">
+                            <i class="nav-icon cil-newspaper"></i>
+                            Laporan Pelanggaran
+                        </a>
+                    </li>
+                @endif
+            @endif
 
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('lp.index') }}">
-                    <i class="nav-icon cil-newspaper"></i>
-                    Laporan Pelanggaran
-                </a>
-            </li>
+            @if (auth()->user()->hasPermission('lpp') || auth()->user()->hasPermission('lpf') || auth()->user()->hasPermission('split') || auth()->user()->hasPermission('lhp'))
+                <li class="nav-title">
+                    <h2 class="fs-6 text-uppercase">Penelitian Perkara</h2>
+                </li>
 
-            <li class="nav-title">
-                <h2 class="fs-6 text-uppercase">Penelitian Perkara</h2>
-            </li>
+                @if (auth()->user()->hasPermission('lpp'))
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('lpp.index') }}">
+                            <i class="nav-icon cil-folder"></i>
+                            LPP
+                        </a>
+                    </li>
+                @endif
 
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('lpp.index') }}">
-                    <i class="nav-icon cil-folder"></i>
-                    LPP
-                </a>
-            </li>
+                @if (auth()->user()->hasPermission('lpf'))
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('lpf.index') }}">
+                            <i class="nav-icon cil-task"></i>
+                            LPF
+                        </a>
+                    </li>
+                @endif
 
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('lpf.index') }}">
-                    <i class="nav-icon cil-task"></i>
-                    LPF
-                </a>
-            </li>
+                @if (auth()->user()->hasPermission('split'))
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('split.index') }}">
+                            <i class="nav-icon cil-clipboard"></i>
+                            SPLIT
+                        </a>
+                    </li>
+                @endif
 
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('split.index') }}">
-                    <i class="nav-icon cil-clipboard"></i>
-                    SPLIT
-                </a>
-            </li>
+                @if (auth()->user()->hasPermission('lhp'))
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('lhp.index') }}">
+                            <i class="nav-icon cil-check-circle"></i>
+                            LHP
+                        </a>
+                    </li>
+                @endif
+            @endif
 
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('lhp.index') }}">
-                    <i class="nav-icon cil-check-circle"></i>
-                    LHP
-                </a>
-            </li>
+            @if (auth()->user()->hasPermission('petugas') || auth()->user()->hasPermission('ref-pelanggaran') || auth()->user()->hasPermission('ref-satuan') || auth()->user()->hasPermission('ref-jenis-barang') || auth()->user()->hasPermission('surat-perintah') || auth()->user()->hasPermission('ref-tarif-cukai'))
+                <li class="nav-title">
+                    <h2 class="fs-6 text-uppercase">Referensi</h2>
+                </li>
 
-            <li class="nav-title">
-                <h2 class="fs-6 text-uppercase">Referensi</h2>
-            </li>
+                @if (auth()->user()->hasPermission('petugas'))
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('petugas.index') }}">
+                            <i class="nav-icon cil-user"></i>
+                            Data Petugas
+                        </a>
+                    </li>
+                @endif
 
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('petugas.index') }}">
-                    <i class="nav-icon cil-user"></i>
-                    Data Petugas
-                </a>
-            </li>
+                @if (auth()->user()->hasPermission('ref-pelanggaran'))
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('ref-pelanggaran.index') }}">
+                            <i class="nav-icon cil-book"></i>
+                            Referensi Pelanggaran
+                        </a>
+                    </li>
+                @endif
 
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('ref-pelanggaran.index') }}">
-                    <i class="nav-icon cil-book"></i>
-                    Referensi Pelanggaran
-                </a>
-            </li>
+                @if (auth()->user()->hasPermission('ref-satuan'))
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('ref-satuan.index') }}">
+                            <i class="nav-icon cil-tags"></i>
+                            Referensi Satuan
+                        </a>
+                    </li>
+                @endif
 
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('ref-satuan.index') }}">
-                    <i class="nav-icon cil-tags"></i>
-                    Referensi Satuan
-                </a>
-            </li>
+                @if (auth()->user()->hasPermission('ref-jenis-barang'))
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('ref-jenis-barang.index') }}">
+                            <i class="nav-icon cil-layers"></i>
+                            Referensi Jenis Barang
+                        </a>
+                    </li>
+                @endif
 
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('ref-jenis-barang.index') }}">
-                    <i class="nav-icon cil-layers"></i>
-                    Referensi Jenis Barang
-                </a>
-            </li>
+                @if (auth()->user()->hasPermission('surat-perintah'))
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('surat-perintah.index') }}">
+                            <i class="nav-icon cil-description"></i>
+                            Referensi Surat Perintah
+                        </a>
+                    </li>
+                @endif
 
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('surat-perintah.index') }}">
-                    <i class="nav-icon cil-description"></i>
-                    Referensi Surat Perintah
-                </a>
-            </li>
+                @if (auth()->user()->hasPermission('ref-tarif-cukai'))
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('ref-tarif-cukai.index') }}">
+                            <i class="nav-icon cil-money"></i>
+                            Referensi Tarif Cukai
+                        </a>
+                    </li>
+                @endif
+            @endif
 
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('ref-tarif-cukai.index') }}">
-                    <i class="nav-icon cil-money"></i>
-                    Referensi Tarif Cukai
-                </a>
-            </li>
+            @if (auth()->user()->hasPermission('database') || auth()->user()->isAdmin())
+                <li class="nav-title">
+                    <h2 class="fs-6 text-uppercase">System</h2>
+                </li>
 
-            <li class="nav-title">
-                <h2 class="fs-6 text-uppercase">System</h2>
-            </li>
+                @if (auth()->user()->hasPermission('database'))
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('database.database') }}">
+                            <i class="nav-icon cil-storage"></i> Database
+                        </a>
+                    </li>
+                @endif
 
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('database.database') }}">
-                    <i class="nav-icon cil-storage"></i> Database
-                </a>
-            </li>
+                @if (auth()->user()->isAdmin())
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('activity-log.index') }}">
+                            <i class="nav-icon cil-history"></i> Log Aktivitas
+                        </a>
+                    </li>
 
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('activity-log.index') }}">
-                    <i class="nav-icon cil-history"></i> Log Aktivitas
-                </a>
-            </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('user-management.index') }}">
+                            <i class="nav-icon cil-people"></i> User Management
+                        </a>
+                    </li>
 
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('user-management.index') }}">
-                    <i class="nav-icon cil-people"></i> User Management
-                </a>
-            </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('role-management.index') }}">
+                            <i class="nav-icon cil-shield-alt"></i> Role Management
+                        </a>
+                    </li>
+                @endif
+            @endif
 
         </ul>
     </nav>
