@@ -9,6 +9,7 @@
         'deleted' => ['Dihapus', 'danger'],
         'login' => ['Login', 'info'],
         'logout' => ['Logout', 'secondary'],
+        'login_failed' => ['Login Gagal', 'danger'],
     ];
 @endphp
 
@@ -85,7 +86,7 @@
                         @forelse ($logs as $log)
                             <tr>
                                 <td>{{ $log->created_at->format('d-m-Y H:i') }}</td>
-                                <td>{{ $log->user->name ?? 'Sistem' }}</td>
+                                <td>{{ $log->user->name ?? ($log->action === 'login_failed' ? 'Tidak dikenal' : 'Sistem') }}</td>
                                 <td>
                                     @php [$label, $color] = $actionLabels[$log->action] ?? [ucfirst($log->action), 'secondary']; @endphp
                                     <span class="badge bg-{{ $color }}">{{ $label }}</span>
