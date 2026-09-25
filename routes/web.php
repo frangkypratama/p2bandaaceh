@@ -23,6 +23,24 @@ use App\Http\Controllers\RefJenisBarangController;
 use App\Http\Controllers\LokasiController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\RefTarifCukaiController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\ActivityLogController;
+
+/*
+|--------------------------------------------------------------------------
+| Autentikasi
+|--------------------------------------------------------------------------
+*/
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
+    Route::post('/login', [AuthenticatedSessionController::class, 'store']);
+});
+
+Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
+    ->middleware('auth')
+    ->name('logout');
+
+Route::middleware('auth')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
@@ -253,3 +271,12 @@ Route::resource('pencacahan', PencacahanController::class);
 */
 Route::get('/database', [DatabaseController::class, 'database'])->name('database.database');
 Route::get('/database/{table}', [DatabaseController::class, 'showTable'])->name('database.table');
+
+/*
+|--------------------------------------------------------------------------
+| Log Aktivitas
+|--------------------------------------------------------------------------
+*/
+Route::get('/activity-log', [ActivityLogController::class, 'index'])->name('activity-log.index');
+
+}); // end Route::middleware('auth')

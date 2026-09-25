@@ -169,6 +169,12 @@
                 </a>
             </li>
 
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('activity-log.index') }}">
+                    <i class="nav-icon cil-history"></i> Log Aktivitas
+                </a>
+            </li>
+
         </ul>
     </nav>
 </aside>
