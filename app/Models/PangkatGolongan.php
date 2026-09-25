@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\LogsActivity;
+use App\Traits\Cacheable;
 
 class PangkatGolongan extends Model
 {
-    use HasFactory, LogsActivity;
+    use HasFactory, LogsActivity, Cacheable;
 
     /**
      * The table associated with the model.
@@ -26,4 +27,9 @@ class PangkatGolongan extends Model
         'pangkat',
         'golongan',
     ];
+
+    protected static function cacheOrderBy(): ?string
+    {
+        return 'golongan';
+    }
 }

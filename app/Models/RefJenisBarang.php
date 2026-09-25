@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Traits\LogsActivity;
+use App\Traits\Cacheable;
 
 class RefJenisBarang extends Model
 {
-    use HasFactory, LogsActivity;
+    use HasFactory, LogsActivity, Cacheable;
 
     /**
      * The table associated with the model.
@@ -31,5 +32,10 @@ class RefJenisBarang extends Model
     public function satuan(): BelongsTo
     {
         return $this->belongsTo(RefSatuan::class, 'id_satuan_default');
+    }
+
+    protected static function cacheOrderBy(): ?string
+    {
+        return 'nomor_urut';
     }
 }

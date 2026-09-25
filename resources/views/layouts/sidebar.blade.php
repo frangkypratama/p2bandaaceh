@@ -229,6 +229,12 @@
                             <i class="nav-icon cil-shield-alt"></i> Role Management
                         </a>
                     </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('system-cache.index') }}">
+                            <i class="nav-icon cil-reload"></i> Cache
+                        </a>
+                    </li>
                 @endif
             @endif
 

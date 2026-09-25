@@ -45,10 +45,18 @@ class User extends Authenticatable
     /**
      * Admin (role dengan is_admin = true) selalu punya akses penuh,
      * di luar matrix permission per role.
+     *
+     * Dibaca dari cache (Role::cachedSummary) supaya sidebar & middleware yang
+     * memanggil ini berkali-kali per request tidak query role+permissions
+     * berulang-ulang ke database.
      */
     public function isAdmin(): bool
     {
-        return (bool) $this->role?->is_admin;
+        if (! $this->role_id) {
+            return false;
+        }
+
+        return (bool) (Role::cachedSummary($this->role_id)['is_admin'] ?? false);
     }
 
     /**
@@ -56,11 +64,17 @@ class User extends Authenticatable
      */
     public function hasPermission(string $key): bool
     {
-        if ($this->isAdmin()) {
-            return true;
+        if (! $this->role_id) {
+            return false;
         }
 
-        return $this->role?->permissions->contains('key', $key) ?? false;
+        $summary = Role::cachedSummary($this->role_id);
+
+        if (! $summary) {
+            return false;
+        }
+
+        return $summary['is_admin'] || in_array($key, $summary['permissions'], true);
     }
 
     /**

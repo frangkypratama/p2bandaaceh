@@ -9,7 +9,7 @@ class RefSatuanController extends Controller
 {
     public function index()
     {
-        $satuan = RefSatuan::all();
+        $satuan = RefSatuan::cached();
         return view('ref-satuan', compact('satuan'));
     }
 
@@ -28,7 +28,7 @@ class RefSatuanController extends Controller
     public function edit($id)
     {
         $satuan_edit = RefSatuan::findOrFail($id);
-        $satuan = RefSatuan::all();
+        $satuan = RefSatuan::cached();
         return view('ref-satuan', compact('satuan_edit', 'satuan'));
     }
 

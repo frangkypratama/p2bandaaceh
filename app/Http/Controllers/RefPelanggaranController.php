@@ -9,7 +9,7 @@ class RefPelanggaranController extends Controller
 {
     public function index()
     {
-        $pelanggaran = RefPelanggaran::all();
+        $pelanggaran = RefPelanggaran::cached();
         return view('ref-pelanggaran', compact('pelanggaran'));
     }
 
@@ -28,7 +28,7 @@ class RefPelanggaranController extends Controller
     public function edit($id)
     {
         $pelanggaran_edit = RefPelanggaran::findOrFail($id);
-        $pelanggaran = RefPelanggaran::all();
+        $pelanggaran = RefPelanggaran::cached();
         return view('ref-pelanggaran', compact('pelanggaran_edit', 'pelanggaran'));
     }
 

@@ -12,7 +12,7 @@ class RefTarifCukaiController extends Controller
      */
     public function index()
     {
-        $tarifCukai = RefTarifCukai::all();
+        $tarifCukai = RefTarifCukai::cached();
         return view('ref-tarif-cukai', compact('tarifCukai'));
     }
 

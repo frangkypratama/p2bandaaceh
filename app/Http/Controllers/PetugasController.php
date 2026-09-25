@@ -16,7 +16,7 @@ class PetugasController extends Controller
     public function index()
     {
         $petugasData = Petugas::orderBy('nama', 'asc')->paginate(10);
-        $pangkatGolonganData = PangkatGolongan::orderBy('golongan', 'asc')->get();
+        $pangkatGolonganData = PangkatGolongan::cached();
         return view('data-petugas', compact('petugasData', 'pangkatGolonganData'));
     }
 

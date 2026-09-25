@@ -70,9 +70,9 @@ class PencacahanController extends Controller
     public function create()
     {
         $petugasData = Petugas::all();
-        $satuanData = RefSatuan::all();
-        $jenisBarangData = RefJenisBarang::get();
-        $tarifCukaiData = RefTarifCukai::all();
+        $satuanData = RefSatuan::cached();
+        $jenisBarangData = RefJenisBarang::cached();
+        $tarifCukaiData = RefTarifCukai::cached();
         $oldSbpData = [];
 
         if (old('id_sbp')) {
@@ -175,9 +175,9 @@ class PencacahanController extends Controller
     {
         $pencacahan = Pencacahan::with('sbp')->findOrFail($id);
         $petugasData = Petugas::all();
-        $satuanData = RefSatuan::all();
-        $jenisBarangData = RefJenisBarang::get();
-        $tarifCukaiData = RefTarifCukai::all();
+        $satuanData = RefSatuan::cached();
+        $jenisBarangData = RefJenisBarang::cached();
+        $tarifCukaiData = RefTarifCukai::cached();
         
         $sbpDataForView = $pencacahan->sbp()->withPivot('id')->get();
         
@@ -382,8 +382,8 @@ class PencacahanController extends Controller
             ? 'pencacahan.partials.fields._conditional'
             : 'pencacahan.partials.fields._default';
 
-        $satuanData = RefSatuan::all();
-        $tarifCukaiData = RefTarifCukai::all();
+        $satuanData = RefSatuan::cached();
+        $tarifCukaiData = RefTarifCukai::cached();
         $data = json_decode($request->input('data', '{}'), true);
         $nama_barang = $jenisBarang->nama_barang;
 

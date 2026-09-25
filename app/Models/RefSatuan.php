@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Traits\LogsActivity;
+use App\Traits\Cacheable;
 
 /**
  * Class RefSatuan
@@ -16,7 +17,7 @@ use App\Traits\LogsActivity;
  */
 class RefSatuan extends Model
 {
-    use HasFactory, LogsActivity;
+    use HasFactory, LogsActivity, Cacheable;
 
     /**
      * The table associated with the model.
@@ -38,5 +39,10 @@ class RefSatuan extends Model
     public function jenisBarangs(): HasMany
     {
         return $this->hasMany(RefJenisBarang::class, 'id_satuan_default');
+    }
+
+    protected static function cacheOrderBy(): ?string
+    {
+        return 'nama_satuan';
     }
 }

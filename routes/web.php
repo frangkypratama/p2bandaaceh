@@ -27,6 +27,7 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\SystemCacheController;
 use App\Http\Controllers\ProfileController;
 
 /*
@@ -326,6 +327,9 @@ Route::middleware('admin')->group(function () {
     Route::post('/data-role', [RoleController::class, 'store'])->name('role-management.store');
     Route::put('/data-role/{role}', [RoleController::class, 'update'])->name('role-management.update');
     Route::delete('/data-role/{role}', [RoleController::class, 'destroy'])->name('role-management.destroy');
+
+    Route::get('/system-cache', [SystemCacheController::class, 'index'])->name('system-cache.index');
+    Route::post('/system-cache/clear', [SystemCacheController::class, 'clear'])->name('system-cache.clear');
 });
 
 /*

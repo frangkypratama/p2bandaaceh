@@ -45,6 +45,7 @@ class RoleController extends Controller
         ]);
 
         $role->permissions()->sync($request->input('permissions', []));
+        Role::forgetCache($role->id);
 
         return redirect()->route('role-management.index')->with('success', 'Role berhasil ditambahkan.');
     }
@@ -69,6 +70,8 @@ class RoleController extends Controller
         $role->update([
             'label' => $request->label,
         ]);
+
+        Role::forgetCache($role->id);
 
         return redirect()->route('role-management.index')->with('success', 'Role berhasil diperbarui.');
     }

@@ -17,7 +17,7 @@ class RefJenisBarangController extends Controller
         $jenisBarang = RefJenisBarang::with('satuan')->orderBy('id', 'asc')->get();
         
         // Get all 'satuan' for the modal form
-        $satuans = RefSatuan::orderBy('nama_satuan', 'asc')->get();
+        $satuans = RefSatuan::cached();
 
         // Pass both datasets to the view
         return view('ref-jenis-barang', compact('jenisBarang', 'satuans'));

@@ -126,10 +126,10 @@ class SbpController extends Controller
     public function create()
     {
         $petugasData = Petugas::orderBy('nama', 'asc')->get();
-        $refPelanggaranData = RefPelanggaran::all();
-        $refSatuanData = RefSatuan::orderBy('nama_satuan', 'asc')->get();
+        $refPelanggaranData = RefPelanggaran::cached();
+        $refSatuanData = RefSatuan::cached();
         $suratPerintahData = SuratPerintah::orderBy('tanggal_prin', 'desc')->get();
-        $jenisBarang = RefJenisBarang::orderBy('nomor_urut', 'asc')->get();
+        $jenisBarang = RefJenisBarang::cached();
 
         return view('input-sbp', compact('petugasData', 'refPelanggaranData', 'refSatuanData', 'suratPerintahData', 'jenisBarang'));
     }
@@ -159,10 +159,10 @@ class SbpController extends Controller
         $sbp->load('bast');
 
         $petugasData = Petugas::orderBy('nama', 'asc')->get();
-        $refPelanggaranData = RefPelanggaran::all();
-        $refSatuanData = RefSatuan::orderBy('nama_satuan', 'asc')->get();
+        $refPelanggaranData = RefPelanggaran::cached();
+        $refSatuanData = RefSatuan::cached();
         $suratPerintahData = SuratPerintah::orderBy('tanggal_prin', 'desc')->get();
-        $jenisBarang = RefJenisBarang::orderBy('nomor_urut', 'asc')->get();
+        $jenisBarang = RefJenisBarang::cached();
 
         return view('edit-sbp', compact('sbp', 'petugasData', 'refPelanggaranData', 'refSatuanData', 'suratPerintahData', 'jenisBarang'));
     }
