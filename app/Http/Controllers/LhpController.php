@@ -18,7 +18,7 @@ class LhpController extends Controller
     {
         $lhp = Lhp::with(['split.lpf.lpp.lp.lphp.sbp'])
             ->orderBy('tanggal_lhp', 'desc')
-            ->orderBy('id', 'desc')
+            ->orderBy('nomor_lhp', 'desc')
             ->paginate(10)
             ->appends(request()->query());
 

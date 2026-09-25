@@ -17,7 +17,7 @@ class LpfController extends Controller
     {
         $lpf = Lpf::with(['lpp.lp.lphp.sbp'])
             ->orderBy('tanggal_lpf', 'desc')
-            ->orderBy('id', 'desc')
+            ->orderBy('nomor_lpf', 'desc')
             ->paginate(10)
             ->appends(request()->query());
 

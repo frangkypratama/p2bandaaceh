@@ -17,7 +17,7 @@ class SplitController extends Controller
     {
         $split = Split::with(['lpf.lpp.lp.lphp.sbp'])
             ->orderBy('tanggal_split', 'desc')
-            ->orderBy('id', 'desc')
+            ->orderBy('nomor_split', 'desc')
             ->paginate(10)
             ->appends(request()->query());
 
