@@ -28,7 +28,7 @@ class LpfController extends Controller
     {
         $lppList = Lpp::with('lpf')
             ->orderBy('tanggal_lpp', 'desc')
-            ->orderBy('id', 'desc')
+            ->orderBy('nomor_lpp', 'desc')
             ->paginate(10)
             ->appends($request->query());
 

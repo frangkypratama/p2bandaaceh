@@ -29,7 +29,7 @@ class LhpController extends Controller
     {
         $splitList = Split::with('lhp')
             ->orderBy('tanggal_split', 'desc')
-            ->orderBy('id', 'desc')
+            ->orderBy('nomor_split', 'desc')
             ->paginate(10)
             ->appends($request->query());
 

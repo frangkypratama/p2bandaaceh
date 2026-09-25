@@ -32,7 +32,7 @@ class LppController extends Controller
     {
         $lpList = Lp::with('lpp')
             ->orderBy('tanggal_lp', 'desc')
-            ->orderBy('id', 'desc')
+            ->orderBy('nomor_lp', 'desc')
             ->paginate(10)
             ->appends($request->query());
 
