@@ -10,17 +10,19 @@
     @vite(['resources/css/app.scss', 'resources/js/app.js'])
 </head>
 <body>
-    <div class="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center">
+    <div class="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center py-5">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-md-6 col-lg-5">
-                    <div class="card p-2 shadow-sm">
-                        <div class="card-body">
-                            <div class="text-center mb-4">
-                                <img src="{{ asset('assets/img/logo-bc-banda-aceh.png') }}" alt="Logo" height="64" class="mb-3">
-                                <h1 class="h4 mb-1">P2 Banda Aceh</h1>
-                                <p class="text-body-secondary">Silakan masuk menggunakan NIP Anda</p>
-                            </div>
+
+                    <div class="text-center mb-4">
+                        <img src="{{ asset('assets/img/logo-bc-banda-aceh.png') }}" alt="Logo" height="56">
+                        <span class="fs-3 fw-semibold align-middle ms-2">P2 Banda Aceh</span>
+                    </div>
+
+                    <div class="card shadow-sm">
+                        <div class="card-body p-4">
+                            <h1 class="h4 text-center mb-4">Masuk ke akun Anda</h1>
 
                             @if ($errors->any())
                                 <div class="alert alert-danger" role="alert">
@@ -31,13 +33,11 @@
                             <form method="POST" action="{{ route('login') }}">
                                 @csrf
 
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text">
-                                        <i class="cil-user"></i>
-                                        NIP
-                                    </span>
+                                <div class="mb-3">
+                                    <label for="nip" class="form-label">NIP</label>
                                     <input
                                         type="text"
+                                        id="nip"
                                         name="nip"
                                         class="form-control @error('nip') is-invalid @enderror"
                                         placeholder="NIP tanpa spasi"
@@ -48,31 +48,48 @@
                                         required>
                                 </div>
 
-                                <div class="input-group mb-4">
-                                    <span class="input-group-text">
-                                        <i class="cil-lock-locked"></i>
-                                        Password
-                                    </span>
-                                    <input
-                                        type="password"
-                                        name="password"
-                                        class="form-control @error('password') is-invalid @enderror"
-                                        placeholder="Password"
-                                        autocomplete="current-password"
-                                        required>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-12">
-                                        <button type="submit" class="btn btn-primary w-100">Masuk</button>
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">Password</label>
+                                    <div class="input-group">
+                                        <input
+                                            type="password"
+                                            id="password"
+                                            name="password"
+                                            class="form-control @error('password') is-invalid @enderror"
+                                            placeholder="Password"
+                                            autocomplete="current-password"
+                                            required>
+                                        <button class="btn btn-outline-secondary" type="button" id="togglePassword" aria-label="Tampilkan password">
+                                            <i class="cil-low-vision" id="togglePasswordIcon"></i>
+                                        </button>
                                     </div>
                                 </div>
+
+                                <div class="mb-4 form-check">
+                                    <input type="checkbox" class="form-check-input" id="remember" name="remember">
+                                    <label class="form-check-label" for="remember">Ingat saya di perangkat ini</label>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary w-100">Sign in</button>
                             </form>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
     </div>
+
+    <script>
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            var input = document.getElementById('password');
+            var icon = document.getElementById('togglePasswordIcon');
+            var isHidden = input.type === 'password';
+
+            input.type = isHidden ? 'text' : 'password';
+            icon.classList.toggle('cil-low-vision', !isHidden);
+            icon.classList.toggle('cil-eye', isHidden);
+        });
+    </script>
 </body>
 </html>
