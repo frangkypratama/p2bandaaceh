@@ -29,5 +29,11 @@ class RoleSeeder extends Seeder
 
         $user->permissions()->sync(Permission::pluck('id'));
         $admin->permissions()->sync([]);
+
+        // sync() tidak memicu event Eloquent 'saved' pada Role, jadi cache
+        // ringkasan role (Role::cachedSummary) harus dibersihkan manual di sini
+        // supaya perubahan permission langsung berlaku, bukan menunggu cache habis.
+        Role::forgetCache($user->id);
+        Role::forgetCache($admin->id);
     }
 }
