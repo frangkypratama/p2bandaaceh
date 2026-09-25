@@ -139,6 +139,13 @@
                         <label for="jabatan" class="form-label">Jabatan</label>
                         <input type="text" class="form-control" id="jabatan" name="jabatan" value="{{ old('jabatan') }}">
                     </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="buat_user" name="buat_user" value="1" {{ old('buat_user') ? 'checked' : '' }}>
+                        <label class="form-check-label" for="buat_user">
+                            Buatkan akun login untuk petugas ini
+                        </label>
+                        <div class="form-text">NIP akan dipakai sebagai username sekaligus password awal akun.</div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-coreui-dismiss="modal">Batal</button>

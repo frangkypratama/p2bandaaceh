@@ -18,6 +18,10 @@
                     <span>{{ auth()->user()->name }}</span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-end">
+                    <a class="dropdown-item" href="{{ route('profile.edit') }}">
+                        <i class="cil-settings me-2"></i> Profil Saya
+                    </a>
+                    <div class="dropdown-divider"></div>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit" class="dropdown-item">

@@ -175,6 +175,12 @@
                 </a>
             </li>
 
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('user-management.index') }}">
+                    <i class="nav-icon cil-people"></i> User Management
+                </a>
+            </li>
+
         </ul>
     </nav>
 </aside>

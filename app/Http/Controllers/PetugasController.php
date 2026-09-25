@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Petugas;
 use App\Models\PangkatGolongan;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -24,21 +25,30 @@ class PetugasController extends Controller
      */
     public function store(Request $request)
     {
+        $buatUser = $request->boolean('buat_user');
+
+        $nipRules = [
+            'required',
+            'string',
+            'max:20',
+            Rule::unique('petugas')->whereNull('deleted_at'),
+        ];
+
+        // Kalau sekalian dibuatkan akun login, NIP juga harus unik di tabel users.
+        if ($buatUser) {
+            $nipRules[] = Rule::unique('users', 'nip');
+        }
+
         $request->validate([
             'nama' => 'required|string|max:255',
-            'nip' => [
-                'required',
-                'string',
-                'max:20',
-                Rule::unique('petugas')->whereNull('deleted_at'),
-            ],
+            'nip' => $nipRules,
             'pangkat_golongan_id' => 'nullable|exists:pangkat_golongan,id',
             'jabatan' => 'nullable|string|max:255',
         ]);
 
         $pangkatGolongan = PangkatGolongan::find($request->pangkat_golongan_id);
 
-        Petugas::create([
+        $petugas = Petugas::create([
             'nama' => $request->nama,
             'nip' => $request->nip,
             'pangkat' => $pangkatGolongan ? $pangkatGolongan->pangkat : null,
@@ -46,7 +56,19 @@ class PetugasController extends Controller
             'jabatan' => $request->jabatan,
         ]);
 
-        return redirect()->back()->with('success', 'Data petugas berhasil ditambahkan.');
+        if ($buatUser) {
+            User::create([
+                'name' => $petugas->nama,
+                'nip' => $petugas->nip,
+                'petugas_id' => $petugas->id,
+                'password' => $petugas->nip,
+            ]);
+        }
+
+        $message = 'Data petugas berhasil ditambahkan.'
+            . ($buatUser ? ' Akun login (NIP sebagai username & password) juga berhasil dibuat.' : '');
+
+        return redirect()->back()->with('success', $message);
     }
 
     /**

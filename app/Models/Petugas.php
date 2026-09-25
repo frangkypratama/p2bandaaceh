@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
 use App\Traits\LogsActivity;
 
@@ -20,7 +21,15 @@ class Petugas extends Model
         'golongan',
         'jabatan',
     ];
-    
+
+    /**
+     * Akun login milik petugas ini, jika ada (tidak semua petugas punya akun).
+     */
+    public function user(): HasOne
+    {
+        return $this->hasOne(User::class);
+    }
+
     public function getNipFormattedAttribute()
     {
         $nip = $this->nip;

@@ -25,6 +25,8 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\RefTarifCukaiController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -278,5 +280,25 @@ Route::get('/database/{table}', [DatabaseController::class, 'showTable'])->name(
 |--------------------------------------------------------------------------
 */
 Route::get('/activity-log', [ActivityLogController::class, 'index'])->name('activity-log.index');
+
+/*
+|--------------------------------------------------------------------------
+| User Management
+|--------------------------------------------------------------------------
+*/
+Route::get('/data-user', [UserController::class, 'index'])->name('user-management.index');
+Route::post('/data-user', [UserController::class, 'store'])->name('user-management.store');
+Route::put('/data-user/{user}', [UserController::class, 'update'])->name('user-management.update');
+Route::put('/data-user/{user}/reset-password', [UserController::class, 'resetPassword'])->name('user-management.reset-password');
+Route::delete('/data-user/{user}', [UserController::class, 'destroy'])->name('user-management.destroy');
+
+/*
+|--------------------------------------------------------------------------
+| Profil Saya (user management pribadi milik sendiri)
+|--------------------------------------------------------------------------
+*/
+Route::get('/profil', [ProfileController::class, 'edit'])->name('profile.edit');
+Route::put('/profil', [ProfileController::class, 'update'])->name('profile.update');
+Route::put('/profil/password', [ProfileController::class, 'updatePassword'])->name('profile.update-password');
 
 }); // end Route::middleware('auth')

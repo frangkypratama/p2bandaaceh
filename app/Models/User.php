@@ -4,13 +4,15 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Traits\LogsActivity;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, LogsActivity;
 
     /**
      * The attributes that are mass assignable.
@@ -20,9 +22,19 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'nip',
+        'petugas_id',
         'email',
         'password',
     ];
+
+    /**
+     * Data petugas yang berkaitan dengan akun login ini (opsional —
+     * tidak semua petugas punya akun, dan akun ini bisa juga tanpa petugas).
+     */
+    public function petugas(): BelongsTo
+    {
+        return $this->belongsTo(Petugas::class);
+    }
 
     /**
      * The attributes that should be hidden for serialization.
