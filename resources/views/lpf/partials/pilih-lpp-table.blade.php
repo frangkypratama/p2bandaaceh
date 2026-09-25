@@ -21,7 +21,7 @@
                     <td>{{ optional($sbp)->nama_pelaku ?? '-' }}</td>
                     <td>
                         @if($item->lpf)
-                            <span class="badge bg-success">Telah Dibuat LPF</span>
+                            <span class="badge bg-success">LPF telah dibuat</span>
                         @else
                             <a href="{{ route('lpf.create', ['lpp_id' => $item->id]) }}" class="btn btn-sm btn-primary">
                                 Pilih

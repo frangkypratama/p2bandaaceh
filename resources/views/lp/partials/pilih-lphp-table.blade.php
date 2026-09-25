@@ -20,7 +20,7 @@
                     <td>{{ optional($item->sbp)->nama_pelaku ?? '-' }}</td>
                     <td>
                         @if($item->lp)
-                            <span class="badge bg-success">Telah Dibuat LP</span>
+                            <span class="badge bg-success">LP telah dibuat</span>
                         @else
                             <a href="{{ route('lp.create', ['lphp_id' => $item->id]) }}" class="btn btn-sm btn-primary">
                                 Pilih

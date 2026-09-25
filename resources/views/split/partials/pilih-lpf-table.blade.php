@@ -21,7 +21,7 @@
                     <td>{{ optional($sbp)->nama_pelaku ?? '-' }}</td>
                     <td>
                         @if($item->split)
-                            <span class="badge bg-success">Telah Dibuat SPLIT</span>
+                            <span class="badge bg-success">SPLIT telah dibuat</span>
                         @else
                             <a href="{{ route('split.create', ['lpf_id' => $item->id]) }}" class="btn btn-sm btn-primary">
                                 Pilih
