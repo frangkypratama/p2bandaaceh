@@ -53,11 +53,12 @@ class SplitController extends Controller
 
         $lp = $lpf->lpp->lp;
         $petugasData = Petugas::orderBy('nama')->get();
+        $defaultTanggalSplit = Split::defaultTanggalSplit($lpf);
         $defaultDasar = Split::defaultDasar($lp);
         $defaultPertimbangan = Split::defaultPertimbangan();
         $defaultUraianTugas = Split::defaultUraianTugas();
 
-        return view('split.create', compact('lpf', 'petugasData', 'defaultDasar', 'defaultPertimbangan', 'defaultUraianTugas'));
+        return view('split.create', compact('lpf', 'petugasData', 'defaultTanggalSplit', 'defaultDasar', 'defaultPertimbangan', 'defaultUraianTugas'));
     }
 
     public function store(Request $request)

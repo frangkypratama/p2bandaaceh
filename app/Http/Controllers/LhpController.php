@@ -54,9 +54,10 @@ class LhpController extends Controller
 
         $petugasData = Petugas::orderBy('nama')->get();
         $sbp = optional(optional(optional($split->lpf)->lpp)->lp)->lphp?->sbp;
+        $defaultTanggalLhp = Lhp::defaultTanggalLhp($split->lpf);
         $defaultJenisPelanggaran = optional(optional($split->lpf->lpp->lp)->lphp)->dugaan_pelanggaran ?? 'Kepabeanan';
 
-        return view('lhp.create', compact('split', 'petugasData', 'sbp', 'defaultJenisPelanggaran'));
+        return view('lhp.create', compact('split', 'petugasData', 'sbp', 'defaultTanggalLhp', 'defaultJenisPelanggaran'));
     }
 
     public function store(Request $request)

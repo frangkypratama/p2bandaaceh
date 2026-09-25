@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 
 class Split extends Model
 {
@@ -92,6 +93,14 @@ class Split extends Model
     public static function formatNomorSplit(int $nomorSbpInt, int $tahun): string
     {
         return "SPLIT-{$nomorSbpInt}/KBC.010202/{$tahun}";
+    }
+
+    /**
+     * Tanggal SPLIT default: sama dengan tanggal LPF.
+     */
+    public static function defaultTanggalSplit(Lpf $lpf): ?Carbon
+    {
+        return $lpf->tanggal_lpf?->copy();
     }
 
     /**

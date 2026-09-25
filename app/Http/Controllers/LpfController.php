@@ -52,11 +52,12 @@ class LpfController extends Controller
         }
 
         $petugasData = Petugas::orderBy('nama')->get();
+        $defaultTanggalLpf = Lpf::defaultTanggalLpf($lpp);
         $defaultDomainPerkara = Lpf::defaultDomainPerkara();
         $opsiCukup = Lpf::opsiCukup();
         $opsiAda = Lpf::opsiAda();
 
-        return view('lpf.create', compact('lpp', 'petugasData', 'defaultDomainPerkara', 'opsiCukup', 'opsiAda'));
+        return view('lpf.create', compact('lpp', 'petugasData', 'defaultTanggalLpf', 'defaultDomainPerkara', 'opsiCukup', 'opsiAda'));
     }
 
     public function store(Request $request)

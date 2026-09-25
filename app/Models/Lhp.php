@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 
 class Lhp extends Model
 {
@@ -88,5 +89,13 @@ class Lhp extends Model
     public static function formatNomorLhp(int $nomorSbpInt, int $tahun): string
     {
         return "LHP-{$nomorSbpInt}/KBC.010202/{$tahun}";
+    }
+
+    /**
+     * Tanggal LHP default: sama dengan tanggal LPF.
+     */
+    public static function defaultTanggalLhp(Lpf $lpf): ?Carbon
+    {
+        return $lpf->tanggal_lpf?->copy();
     }
 }

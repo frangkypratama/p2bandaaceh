@@ -60,7 +60,7 @@
                                         <div class="col-md-6">
                                             <label for="tanggal_lhp" class="form-label">Tanggal LHP</label>
                                             <input type="date" class="form-control @error('tanggal_lhp') is-invalid @enderror"
-                                                   id="tanggal_lhp" name="tanggal_lhp" value="{{ old('tanggal_lhp', now()->format('Y-m-d')) }}" required>
+                                                   id="tanggal_lhp" name="tanggal_lhp" value="{{ old('tanggal_lhp', optional($defaultTanggalLhp)->format('Y-m-d')) }}" required>
                                             @error('tanggal_lhp')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror

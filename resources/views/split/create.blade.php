@@ -58,7 +58,7 @@
                                         <div class="col-md-6">
                                             <label for="tanggal_split" class="form-label">Tanggal Dikeluarkan</label>
                                             <input type="date" class="form-control @error('tanggal_split') is-invalid @enderror"
-                                                   id="tanggal_split" name="tanggal_split" value="{{ old('tanggal_split', now()->format('Y-m-d')) }}" required>
+                                                   id="tanggal_split" name="tanggal_split" value="{{ old('tanggal_split', optional($defaultTanggalSplit)->format('Y-m-d')) }}" required>
                                             @error('tanggal_split')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror

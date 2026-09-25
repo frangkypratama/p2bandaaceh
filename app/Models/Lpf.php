@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 
 class Lpf extends Model
 {
@@ -116,6 +117,14 @@ class Lpf extends Model
     public static function formatNomorLpf(int $nomorSbpInt, int $tahun): string
     {
         return "LPF-{$nomorSbpInt}/KBC.010202/{$tahun}";
+    }
+
+    /**
+     * Tanggal LPF default: 5 hari setelah tanggal LPP.
+     */
+    public static function defaultTanggalLpf(Lpp $lpp): ?Carbon
+    {
+        return $lpp->tanggal_lpp?->copy()->addDays(5);
     }
 
     /**
